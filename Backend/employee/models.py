@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from service.models import Service
+from departement.models import Departement
 
 class EmployeManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -14,6 +16,12 @@ class EmployeManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
         return self.create_user(email, password, **extra_fields)
 
 class Employe(AbstractBaseUser, PermissionsMixin):
@@ -63,8 +71,23 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     rib_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="RIB Bancaire")
 
     # Department and Service
-    departement = models.ForeignKey('Departement', on_delete=models.PROTECT, null=False, blank=False, verbose_name="Département")
-    service = models.ForeignKey('Service', on_delete=models.PROTECT, null=False, blank=False, verbose_name="Service")
+    departement = models.ForeignKey(
+        Departement,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+        verbose_name="Département",
+        related_name="employes",  # Unique related_name
+    )
+
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False,
+        verbose_name="Service",
+        related_name="employes",  # Unique related_name
+    )
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de Création")
@@ -72,12 +95,30 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     # Authentication Fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False, verbose_name="Superuser Status")
+
+    # Groups and Permissions
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name="employe_groups",  # Unique related_name
+        blank=True,
+        verbose_name="groups",
+        help_text="The groups this user belongs to.",
+    )
+
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name="employe_user_permissions",  # Unique related_name
+        blank=True,
+        verbose_name="user permissions",
+        help_text="Specific permissions for this user.",
+    )
 
     objects = EmployeManager()
 
-    USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
-    REQUIRED_FIELDS = ['nom', 'prenom', 'matricule']  # Fields required when creating a user
-
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['nom', 'prenom', 'matricule']
+    
     def __str__(self):
         return f"{self.nom} {self.prenom} ({self.matricule})"
 

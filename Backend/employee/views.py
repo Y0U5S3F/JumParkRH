@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics
 from .models import Employe
 from .serializers import EmployeSerializer
@@ -6,3 +5,8 @@ from .serializers import EmployeSerializer
 class EmployeListCreateView(generics.ListCreateAPIView):
     queryset = Employe.objects.all()
     serializer_class = EmployeSerializer
+
+class EmployeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Employe.objects.all()
+    serializer_class = EmployeSerializer
+    lookup_field = 'matricule'
