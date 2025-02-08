@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ServiceListCreateView, ServiceRetrieveUpdateDestroyView
+from service.views import ServiceListCreateView, ServiceRetrieveUpdateDestroyView
 
 urlpatterns = [
     path('services/', ServiceListCreateView.as_view(), name='service-list-create'),

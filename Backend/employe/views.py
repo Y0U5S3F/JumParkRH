@@ -1,6 +1,6 @@
 from rest_framework import generics
-from .models import Employe
-from .serializers import EmployeSerializer
+from employe.models import Employe
+from employe.serializers import EmployeSerializer
 
 class EmployeListCreateView(generics.ListCreateAPIView):
     queryset = Employe.objects.all()

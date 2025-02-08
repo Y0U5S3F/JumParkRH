@@ -44,7 +44,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     ]
 
     # Personal Information
-    matricule = models.CharField(max_length=50, primary_key=True, verbose_name="Matricule")
+    matricule = models.CharField(max_length=6, primary_key=True, verbose_name="Matricule")
     nom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Nom")
     prenom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Prénom")
     email = models.EmailField(unique=True, null=False, blank=False, verbose_name="Email", db_index=True)
@@ -76,7 +76,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
         on_delete=models.PROTECT,
         null=False,
         blank=False,
-        verbose_name="Département",
+        verbose_name="Departement",
         related_name="employes",  # Unique related_name
     )
 

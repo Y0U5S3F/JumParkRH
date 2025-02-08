@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Departement
+from departement.models import Departement
 
 class DepartementSerializer(serializers.ModelSerializer):
     class Meta:

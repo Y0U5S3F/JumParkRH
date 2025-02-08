@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-23!dyv#)$k9zv280$58*=ql2@$hb&5n@o&99o$+z*huacv(t@e'
+SECRET_KEY = 'django-insecure-3r-r!e&a4ks%#qf#cn@=&a(pzm$&z6m%0om#0c8%^@=q1kxzx0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,7 +31,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
-
 
 # Application definition
 
