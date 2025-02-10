@@ -71,23 +71,8 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     rib_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="RIB Bancaire")
 
     # Department and Service
-    departement = models.ForeignKey(
-        Departement,
-        on_delete=models.PROTECT,
-        null=False,
-        blank=False,
-        verbose_name="Departement",
-        related_name="employes",  # Unique related_name
-    )
-
-    service = models.ForeignKey(
-        Service,
-        on_delete=models.PROTECT,
-        null=False,
-        blank=False,
-        verbose_name="Service",
-        related_name="employes",  # Unique related_name
-    )
+    departement = models.ForeignKey(Departement,on_delete=models.PROTECT,null=False,blank=False,verbose_name="Departement",related_name="employes",)
+    service = models.ForeignKey(Service,on_delete=models.PROTECT,null=False,blank=False,verbose_name="Service",related_name="employes",)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de Création")
