@@ -1,0 +1,42 @@
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider, CssBaseline } from "@mui/material"; // Import MUI ThemeProvider
+import darkTheme from "./theme/Theme"; // Import the dark theme
+import Login from "./pages/login";
+import Home from "./pages/home";
+import Register from "./pages/register";
+import NotFound from "./pages/NotFound";
+import Layout from "./components/Layout";
+import Department from "./pages/Department";
+import Service from "./pages/Service";
+
+function Logout() {
+  localStorage.clear();
+  return <Navigate to="/login" />;
+}
+
+function RegisterAndLogout() {
+  return <Register />;
+}
+
+function App() {
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline /> {/* Applies global dark theme styles */}
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/department" element={<Department />} />
+            <Route path="/service" element={<Service />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/register" element={<RegisterAndLogout />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
+  );
+}
+
+export default App;
