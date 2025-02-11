@@ -25,6 +25,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',  # Allow access to anyone
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [],  # Disable authentication
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 SIMPLE_JWT = {
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'corsheaders',
     'absence',
