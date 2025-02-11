@@ -7,8 +7,24 @@ class Absence(models.Model):
     raison = models.CharField(max_length=255, null=True, blank=True, verbose_name="Adresse")
     certifie = models.BooleanField(default=False, verbose_name="Certifié")
 
+    employe = models.ForeignKey(
+        Employe,
+        on_delete=models.PROTECT,
+        verbose_name="Employé",
+        related_name="absences"
+    )
 
-    employe = models.ForeignKey(Employe,on_delete=models.PROTECT,null=False,blank=False,verbose_name="Employe",related_name="Absences",)
+    class Meta:
+        ordering = ['-date']
+        verbose_name = "Absence"
+        verbose_name_plural = "Absences"
+        constraints = [
+            models.UniqueConstraint(fields=['employe', 'date'], name='unique_employe_date')
+        ]
+        indexes = [
+            models.Index(fields=['date']),
+            models.Index(fields=['employe']),
+        ]
 
     def __str__(self):
         return f"Absence of {self.employe} on {self.date}"
