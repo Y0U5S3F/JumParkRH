@@ -1,4 +1,3 @@
-# filepath: /home/youfi/Documents/Projects/JumpParkRH/Backend/app/emploi/models.py
 from django.db import models
 from employe.models import Employe
 
