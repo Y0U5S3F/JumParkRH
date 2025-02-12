@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
-    borderRadius: "8px",
+    borderRadius: '8px',
     display: "flex",
     flexDirection: "column",
   },
@@ -64,10 +64,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home() {
   const [employees, setEmployees] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [services, setServices] = useState([]);
   const [open, setOpen] = useState(false);
   const [newEmployee, setNewEmployee] = useState({});
+  const [departments, setDepartments] = useState([]);
+  const [services, setServices] = useState([]);
   const classes = useStyles();
 
   useEffect(() => {
@@ -118,14 +118,12 @@ export default function Home() {
     fetchServices();
   }, []);
 
-
   const handleInputChange = (e) => {
     setNewEmployee({ ...newEmployee, [e.target.name]: e.target.value });
   };
 
   const handleAddEmployee = async () => {
     try {
-      console.log("newEmployee", newEmployee);
       await axios.post(
         "http://127.0.0.1:8000/api/employe/create/",
         newEmployee
@@ -162,280 +160,248 @@ export default function Home() {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" color="white" gutterBottom>
-              Informations personnelles
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Matricule"
-                  type="search"
-                  variant="outlined"
-                  name="matricule"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Nom"
-                  nom="nom"
-                  type="search"
-                  variant="outlined"
-                  onChange={handleInputChange}
-                  fullWidth
-      
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Prenom"
-                  nom="prenom"
-                  type="search"
-                  variant="outlined"
-                  expanded
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Email"
-                  nom="email"
-                  type="search"
-                  variant="outlined"
-                  expanded
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Grid2>
-              <Grid2 size={4}>
+          <Typography variant="body1" color="white" gutterBottom>
+            Informations personnelles
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Grid2 container spacing={2}>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Matricule"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+            </Grid2>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Nom"
+                type="search"
+                variant="outlined"
+                expanded
+                fullWidth
+              />
+            </Grid2>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Prenom"
+                type="search"
+                variant="outlined"
+                expanded
+                fullWidth
+              />
+            </Grid2>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Email"
+                type="search"
+                variant="outlined"
+                expanded
+                fullWidth
+              />
+            </Grid2>
+            <Grid2 size={4}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Role</InputLabel>
+                <Select label="Role" defaultValue="" name="role">
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Manager">Manager</MenuItem>
+                  <MenuItem value="Employee">Employee</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid2>
+            <Grid2 size={4}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker sx={{ width: "100%" }} label="Date de naissance" />
+              </LocalizationProvider>
+            </Grid2>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Lieu de naissance"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Nationalité"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Genre légal</InputLabel>
+                <Select label="Genre légal" defaultValue="" name="role">
+                  <MenuItem value="Homme">Homme</MenuItem>
+                  <MenuItem value="Femme">Femme</MenuItem>
+                  <MenuItem value="Miboun">Miboun</MenuItem>
+                </Select>
+              </FormControl>
+          </Grid2>
+          <Grid2 size={4}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Situation familiale</InputLabel>
+                <Select label="Situation familiale" defaultValue="" name="role">
+                  <MenuItem value="Admin">Celibataire</MenuItem>
+                  <MenuItem value="Manager">Marié(e)</MenuItem>
+                </Select>
+              </FormControl>
+          </Grid2>
+          </Grid2>
+          <Typography variant="body1" color="white" sx={{pt:2}}gutterBottom>
+            {" "}
+            Informations personnelles
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Grid2 container spacing={2}>
+            <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Numero de telephone"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Adresse"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Ville"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Code postal"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          </Grid2>
+          <Typography sx={{mt:2}}variant="body1" color="white" gutterBottom>
+          Contact d&apos;urgence
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Grid2 container spacing={2}>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Code postal"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Code postal"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+        </Grid2>
+          <Typography sx={{mt:2}}variant="body1" color="white" gutterBottom>
+          Contact d&apos;urgence
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Grid2 container spacing={2}>
+          <Grid2 size={4}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel>Role</InputLabel>
+                <Select label="Role" defaultValue="" name="role">
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Manager">Manager</MenuItem>
+                  <MenuItem value="Manager">Employé</MenuItem>
+                </Select>
+              </FormControl>
+          </Grid2>
+          <Grid2 size={4}>
                 <FormControl fullWidth variant="outlined">
-                  <InputLabel>Role</InputLabel>
-                  <Select nom="role" label="Role" defaultValue="" name="role" onChange={handleInputChange}>
-                    <MenuItem value="Admin">Admin</MenuItem>
-                    <MenuItem value="Manager">Manager</MenuItem>
-                    <MenuItem value="Employee">Employee</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid2>
-              <Grid2 size={4}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                  nom="date_de_naissance"
-                  onChange={handleInputChange}
-                    sx={{ width: "100%" }}
-                    label="Date de naissance"
-                  />
-                </LocalizationProvider>
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Lieu de naissance"
-                  nom="lieu_de_naissance"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Nationalité"
-                  type="search"
-                  variant="outlined"
-                  nom="nationalite"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Genre légal</InputLabel>
-                  <Select nom="genre_legal"label="Genre légal" onChange={handleInputChange} defaultValue="" name="role">
-                    <MenuItem value="Homme">Homme</MenuItem>
-                    <MenuItem value="Femme">Femme</MenuItem>
-                    <MenuItem value="Miboun">Miboun</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid2>
-              <Grid2 size={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Situation familiale</InputLabel>
+                  <InputLabel>Département</InputLabel>
                   <Select
-                  onChange={handleInputChange}
-                    label="Situation familiale"
+                    label="Département"
                     defaultValue=""
-                    name="situation_familiale"
+                    name="departement"
+                    onChange={handleInputChange}
                   >
-                    <MenuItem value="Admin">Celibataire</MenuItem>
-                    <MenuItem value="Manager">Marié(e)</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid2>
-            </Grid2>
-            <Typography
-              variant="body1"
-              color="white"
-              sx={{ pt: 2 }}
-              gutterBottom
-            >
-              {" "}
-              Informations personnelles
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Numero de telephone"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Adresse"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Ville"
-                  type="search"
-                  variant="outlined"
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Code postal"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-            </Grid2>
-            <Typography
-              sx={{ mt: 2 }}
-              variant="body1"
-              color="white"
-              gutterBottom
-            >
-              Contact d&apos;urgence
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Nom"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Numero"
-                  type="search"
-                  variant="outlined"
-                  fullWidth
-                  onChange={handleInputChange}
-                />
-              </Grid2>
-            </Grid2>
-            <Typography
-              sx={{ mt: 2 }}
-              variant="body1"
-              color="white"
-              gutterBottom
-            >
-              Contact d&apos;urgence
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Role</InputLabel>
-                  <Select label="Role" defaultValue="" name="role" onChange={handleInputChange}>
-                    <MenuItem value="Admin">Admin</MenuItem>
-                    <MenuItem value="Manager">Manager</MenuItem>
-                    <MenuItem value="Manager">Employé</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid2>
-              <Grid2 size={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Department</InputLabel>
-                  <Select label="Departement" defaultValue="" name="role" onChange={handleInputChange}>
-                    <MenuItem value="Admin">Celibataire</MenuItem>
-                    <MenuItem value="Manager">Marié(e)</MenuItem>
+                    {departments.map((dept) => (
+                      <MenuItem key={dept.id} value={dept.id}>
+                        {dept.nom}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid2>
               <Grid2 size={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Service</InputLabel>
-                  <Select label="Service" defaultValue="" name="role" onChange={handleInputChange}
+                  <Select
+                    label="Service"
+                    defaultValue=""
+                    name="service"
+                    onChange={handleInputChange}
                   >
-                    <MenuItem value="Admin">Celibataire</MenuItem>
-                    <MenuItem value="Manager">Marié(e)</MenuItem>
+                    {services
+                      .filter((service) => service.departement === newEmployee.departement)
+                      .map((service) => (
+                        <MenuItem key={service.id} value={service.id}>
+                          {service.nom}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid2>
-            </Grid2>
-            <Typography
-              sx={{ mt: 2 }}
-              variant="body1"
-              color="white"
-              gutterBottom
-            >
-              Contact d&apos;urgence
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid2 container spacing={2}>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Compte bancaire"
-                  type="search"
-                  variant="outlined"
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Grid2>
-              <Grid2 size={4}>
-                <TextField
-                  id="outlined-search"
-                  label="RIB bancaire"
-                  type="search"
-                  variant="outlined"
-                  onChange={handleInputChange}
-                  fullWidth
-                />
-              </Grid2>
-            </Grid2>
+          </Grid2>
+          <Typography sx={{mt:2}}variant="body1" color="white" gutterBottom>
+          Contact d&apos;urgence
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Grid2 container spacing={2}>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="Compte bancaire"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          <Grid2 size={4}>
+              <TextField
+                id="outlined-search"
+                label="RIB bancaire"
+                type="search"
+                variant="outlined"
+                fullWidth
+              />
+          </Grid2>
+          </Grid2>
           </Box>
+
 
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button variant="outlined" onClick={() => setNewEmployee({})}>
