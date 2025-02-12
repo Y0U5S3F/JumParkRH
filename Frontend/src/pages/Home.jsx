@@ -205,16 +205,6 @@ export default function Home() {
               />
             </Grid2>
             <Grid2 size={4}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Role</InputLabel>
-                <Select label="Role" defaultValue="" name="role">
-                  <MenuItem value="Admin">Admin</MenuItem>
-                  <MenuItem value="Manager">Manager</MenuItem>
-                  <MenuItem value="Employee">Employee</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid2>
-            <Grid2 size={4}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker sx={{ width: "100%" }} label="Date de naissance" />
               </LocalizationProvider>
@@ -248,13 +238,24 @@ export default function Home() {
               </FormControl>
           </Grid2>
           <Grid2 size={4}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Situation familiale</InputLabel>
-                <Select label="Situation familiale" defaultValue="" name="role">
-                  <MenuItem value="Admin">Celibataire</MenuItem>
-                  <MenuItem value="Manager">Marié(e)</MenuItem>
-                </Select>
-              </FormControl>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Situation familiale</InputLabel>
+              <Select label="Situation familiale" defaultValue="Celibataire" name="situation_familiale">
+                <MenuItem value="Celibataire">Célibataire</MenuItem>
+                <MenuItem value="Marie">Marié(e)</MenuItem>
+                <MenuItem value="Divorce">Divorcé(e)</MenuItem>
+                <MenuItem value="Veuf">Veuf(ve)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid2>
+          <Grid2 size={4}>
+            <TextField 
+              fullWidth 
+              variant="outlined" 
+              label="CIN" 
+              name="cin" 
+              inputProps={{ maxLength: 8 }} 
+            />
           </Grid2>
           </Grid2>
           <Typography variant="body1" color="white" sx={{pt:2}}gutterBottom>
@@ -308,7 +309,7 @@ export default function Home() {
           <Grid2 size={4}>
               <TextField
                 id="outlined-search"
-                label="Code postal"
+                label="Nom du Contact d'Urgence"
                 type="search"
                 variant="outlined"
                 fullWidth
@@ -317,7 +318,7 @@ export default function Home() {
           <Grid2 size={4}>
               <TextField
                 id="outlined-search"
-                label="Code postal"
+                label="Numéro de Téléphone d'Urgence"
                 type="search"
                 variant="outlined"
                 fullWidth
@@ -325,7 +326,7 @@ export default function Home() {
           </Grid2>
         </Grid2>
           <Typography sx={{mt:2}}variant="body1" color="white" gutterBottom>
-          Contact d&apos;urgence
+          Position
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Grid2 container spacing={2}>
@@ -377,7 +378,7 @@ export default function Home() {
               </Grid2>
           </Grid2>
           <Typography sx={{mt:2}}variant="body1" color="white" gutterBottom>
-          Contact d&apos;urgence
+          Information Banquaire
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Grid2 container spacing={2}>
