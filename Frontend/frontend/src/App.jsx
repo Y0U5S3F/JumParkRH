@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material"; // Import MUI ThemeProvider
 import darkTheme from "./theme/Theme"; // Import the dark theme
-import Login from "./pages/login";
-import Home from "./pages/home";
-import Register from "./pages/register";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Department from "./pages/Department";
