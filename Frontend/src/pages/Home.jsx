@@ -68,34 +68,11 @@ export default function Home() {
   const [departments, setDepartments] = useState([]);
   const [services, setServices] = useState([]);
   const classes = useStyles();
-  const [newEmployee, setNewEmployee] = useState({
-    matricule: "",
-    nom: "",
-    prenom: "",
-    email: "",
-    date_naissance: "",
-    lieu_naissance: "",
-    nationalite: "",
-    genre: "",
-    situation_familiale: "",
-    cin: "",
-    telephone: "",
-    adresse: "",
-    ville: "",
-    code_postal: "",
-    contact_urgence_nom: "",
-    contact_urgence_telephone: "",
-    role: "",
-    departement_id: "",
-    service_id: "",
-    compte_bancaire: "",
-    rib_bancaire: ""
-  });  
+  const [newEmployee, setNewEmployee] = useState(new Employe("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""));
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee((prev) => ({ ...prev, [name]: value }));
   };
-  
 
   useEffect(() => {
     // Fetch employees data
@@ -147,46 +124,44 @@ export default function Home() {
 
   const handleAddEmployee = async () => {
     try {
-      // Ensure departement_id and service_id are not empty
       if (!newEmployee.departement_id || !newEmployee.service_id) {
         console.error("Departement and Service fields are required.");
         return;
       }
-  
-      // Update field names here to match the backend's expected format
-      const employeeToSend = {
-        matricule: newEmployee.matricule,
-        nom: newEmployee.nom,
-        prenom: newEmployee.prenom,
-        email: newEmployee.email,
-        role: newEmployee.role,
-        date_de_naissance: newEmployee.date_naissance,  // Corrected field name
-        lieu_de_naissance: newEmployee.lieu_naissance,  // Corrected field name
-        nationalite: newEmployee.nationalite,
-        genre_legal: newEmployee.genre,  // Corrected field name
-        situation_familiale: newEmployee.situation_familiale,
-        CIN: newEmployee.cin,  // Corrected field name
-        num_telephone: newEmployee.telephone,  // Corrected field name
-        adresse: newEmployee.adresse,
-        ville: newEmployee.ville,
-        code_postal: newEmployee.code_postal,
-        nom_urgence: newEmployee.contact_urgence_nom,  // Corrected field name
-        num_telephone_urgence: newEmployee.contact_urgence_telephone,  // Corrected field name
-        compte_bancaire: newEmployee.compte_bancaire,
-        rib_bancaire: newEmployee.rib_bancaire,
-        departement_id: newEmployee.departement_id,  // Ensure this is included
-        service_id: newEmployee.service_id,  // Ensure this is included
-      };
-  
+
+      const employeeToSend = new Employe(
+        newEmployee.matricule,
+        newEmployee.nom,
+        newEmployee.prenom,
+        newEmployee.email,
+        newEmployee.date_naissance,
+        newEmployee.lieu_naissance,
+        newEmployee.nationalite,
+        newEmployee.genre,
+        newEmployee.situation_familiale,
+        newEmployee.cin,
+        newEmployee.telephone,
+        newEmployee.adresse,
+        newEmployee.ville,
+        newEmployee.code_postal,
+        newEmployee.contact_urgence_nom,
+        newEmployee.contact_urgence_telephone,
+        newEmployee.role,
+        newEmployee.departement_id,
+        newEmployee.service_id,
+        newEmployee.compte_bancaire,
+        newEmployee.rib_bancaire
+      );
+
       console.log("Sending employee data:", employeeToSend);
-  
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/employe/employes/",
         employeeToSend
       );
-  
+
       console.log("Response from server:", response);
-  
+
       setOpen(false);
       setNewEmployee(new Employe("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""));
     } catch (error) {
@@ -196,7 +171,6 @@ export default function Home() {
       }
     }
   };
-  
 
   const columns = [
     { field: "matricule", headerName: "Matricule", width: 150 },
@@ -223,302 +197,299 @@ export default function Home() {
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
-          <Typography variant="body1" color="white" gutterBottom>
-            Informations personnelles
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Matricule"
-                type="search"
-                variant="outlined"
-                name="matricule"
-                value={newEmployee.matricule}
-                onChange={handleInputChange}
-                fullWidth
-              />
+            <Typography variant="body1" color="white" gutterBottom>
+              Informations personnelles
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Matricule"
+                  type="search"
+                  variant="outlined"
+                  name="matricule"
+                  value={newEmployee.matricule}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nom"
+                  type="search"
+                  variant="outlined"
+                  name="nom"
+                  value={newEmployee.nom}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Prenom"
+                  type="search"
+                  name="prenom"
+                  value={newEmployee.prenom}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Email"
+                  type="search"
+                  variant="outlined"
+                  name="email"
+                  value={newEmployee.email}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    label="Date de naissance"
+                    value={newEmployee.date_naissance ? dayjs(newEmployee.date_naissance) : null}
+                    onChange={(date) => handleInputChange({ target: { name: 'date_naissance', value: date?.format('YYYY-MM-DD') } })}
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Lieu de naissance"
+                  type="search"
+                  name="lieu_naissance"
+                  value={newEmployee.lieu_naissance}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nationalité"
+                  type="search"
+                  name="nationalite"
+                  value={newEmployee.nationalite}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Genre légal</InputLabel>
+                  <Select label="Genre légal" value={newEmployee.genre} onChange={handleInputChange} name="genre">
+                    <MenuItem value="Homme">Homme</MenuItem>
+                    <MenuItem value="Femme">Femme</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Situation familiale</InputLabel>
+                  <Select label="Situation familiale" value={newEmployee.situation_familiale} onChange={handleInputChange} name="situation_familiale">
+                    <MenuItem value="Celibataire">Célibataire</MenuItem>
+                    <MenuItem value="Marie">Marié(e)</MenuItem>
+                    <MenuItem value="Divorce">Divorcé(e)</MenuItem>
+                    <MenuItem value="Veuf">Veuf(ve)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="CIN"
+                  name="cin"
+                  value={newEmployee.cin}
+                  onChange={handleInputChange}
+                  inputProps={{ maxLength: 8 }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Nom"
-                type="search"
-                variant="outlined"
-                name="nom"
-                value={newEmployee.nom}
-                onChange={handleInputChange}
-                fullWidth
-              />
+            <Typography variant="body1" color="white" sx={{ pt: 2 }} gutterBottom>
+              Informations personnelles
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numero de telephone"
+                  type="search"
+                  name="telephone"
+                  value={newEmployee.telephone}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Adresse"
+                  type="search"
+                  name="adresse"
+                  value={newEmployee.adresse}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Ville"
+                  type="search"
+                  name="ville"
+                  value={newEmployee.ville}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Code postal"
+                  type="search"
+                  name="code_postal"
+                  value={newEmployee.code_postal}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Prenom"
-                type="search"
-                name="prenom"
-                value={newEmployee.prenom}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
+            <Typography sx={{ mt: 2 }} variant="body1" color="white" gutterBottom>
+              Contact d&apos;urgence
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nom du Contact d'Urgence"
+                  name="contact_urgence_nom"
+                  value={newEmployee.contact_urgence_nom}
+                  onChange={handleInputChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numéro de Téléphone d'Urgence"
+                  name="contact_urgence_telephone"
+                  value={newEmployee.contact_urgence_telephone}
+                  onChange={handleInputChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Email"
-                type="search"
-                variant="outlined"
-                name="email"
-                value={newEmployee.email}
-                onChange={handleInputChange}
-                fullWidth
-              />
+            <Typography sx={{ mt: 2 }} variant="body1" color="white" gutterBottom>
+              Position
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Role</InputLabel>
+                  <Select
+                    label="Role"
+                    value={newEmployee.role}
+                    onChange={handleInputChange}
+                    name="role"
+                  >
+                    <MenuItem value="Admin">Admin</MenuItem>
+                    <MenuItem value="Manager">Manager</MenuItem>
+                    <MenuItem value="Employe">Employé</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Département</InputLabel>
+                  <Select
+                    label="Département"
+                    name="departement_id"
+                    value={newEmployee.departement_id}
+                    onChange={handleInputChange}
+                  >
+                    {departments.map((dept) => (
+                      <MenuItem key={dept.id} value={dept.id}>
+                        {dept.nom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Service</InputLabel>
+                  <Select
+                    label="Service"
+                    name="service_id"
+                    value={newEmployee.service_id}
+                    onChange={handleInputChange}
+                  >
+                    {services
+                      .filter((service) => service.departement === newEmployee.departement_id)
+                      .map((service) => (
+                        <MenuItem key={service.id} value={service.id}>
+                          {service.nom}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-           <Grid item xs={4}>
-           <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                sx={{ width: "100%" }}
-                label="Date de naissance"
-                value={newEmployee.date_naissance ? dayjs(newEmployee.date_naissance) : null}  // Ensure proper date format
-                onChange={(date) => handleInputChange({ target: { name: 'date_naissance', value: date?.format('YYYY-MM-DD') } })}
-              />
-           </LocalizationProvider>
+            <Typography sx={{ mt: 2 }} variant="body1" color="white" gutterBottom>
+              Information Banquaire
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Compte bancaire"
+                  name="compte_bancaire"
+                  value={newEmployee.compte_bancaire}
+                  onChange={handleInputChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="RIB bancaire"
+                  name="rib_bancaire"
+                  type="search"
+                  variant="outlined"
+                  value={newEmployee.rib_bancaire}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Lieu de naissance"
-                type="search"
-                name="lieu_naissance"
-                value={newEmployee.lieu_naissance}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Nationalité"
-                type="search"
-                name="nationalite"
-                value={newEmployee.nationalite}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Genre légal</InputLabel>
-                <Select label="Genre légal" value={newEmployee.genre} onChange={handleInputChange} name="genre">
-                  <MenuItem value="Homme">Homme</MenuItem>
-                  <MenuItem value="Femme">Femme</MenuItem>
-                </Select>
-              </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Situation familiale</InputLabel>
-              <Select label="Situation familiale" value={newEmployee.situation_familiale} onChange={handleInputChange} name="situation_familiale">
-                <MenuItem value="Celibataire">Célibataire</MenuItem>
-                <MenuItem value="Marie">Marié(e)</MenuItem>
-                <MenuItem value="Divorce">Divorcé(e)</MenuItem>
-                <MenuItem value="Veuf">Veuf(ve)</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <TextField 
-              fullWidth 
-              variant="outlined" 
-              label="CIN" 
-              name="cin"
-              value={newEmployee.cin}
-              onChange={handleInputChange}
-              inputProps={{ maxLength: 8 }} 
-            />
-          </Grid>
-          </Grid>
-          <Typography variant="body1" color="white" sx={{pt:2}} gutterBottom>
-            {" "}
-            Informations personnelles
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Numero de telephone"
-                type="search"
-                name="telephone"
-                value={newEmployee.telephone}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Adresse"
-                type="search"
-                name="adresse"
-                value={newEmployee.adresse}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Ville"
-                type="search"
-                name="ville"
-                value={newEmployee.ville}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Code postal"
-                type="search"
-                name="code_postal"
-                value={newEmployee.code_postal}
-                onChange={handleInputChange}
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          </Grid>
-          <Typography sx={{mt:2}} variant="body1" color="white" gutterBottom>
-          Contact d&apos;urgence
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Nom du Contact d'Urgence"
-                name="contact_urgence_nom"
-                value={newEmployee.contact_urgence_nom}
-                onChange={handleInputChange}
-                type="search"
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Numéro de Téléphone d'Urgence"
-                name="contact_urgence_telephone"
-                value={newEmployee.contact_urgence_telephone}
-                onChange={handleInputChange}
-                type="search"
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-        </Grid>
-          <Typography sx={{mt:2}} variant="body1" color="white" gutterBottom>
-          Position
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Role</InputLabel>
-              <Select
-                label="Role"
-                value={newEmployee.role}
-                onChange={handleInputChange}
-                name="role"
-              >
-                <MenuItem value="Admin">Admin</MenuItem>
-                <MenuItem value="Manager">Manager</MenuItem>
-                <MenuItem value="Employe">Employé</MenuItem> {/* Ensure this value matches the backend */}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Département</InputLabel>
-              <Select
-                label="Département"
-                name="departement_id" // Send as `departement_id` in the payload
-                value={newEmployee.departement_id} // Ensure this is the department ID, not the name
-                onChange={handleInputChange}
-              >
-                {departments.map((dept) => (
-                  <MenuItem key={dept.id} value={dept.id}>
-                    {dept.nom}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth variant="outlined">
-              <InputLabel>Service</InputLabel>
-              <Select
-                label="Service"
-                name="service_id" // Send as `service_id` in the payload
-                value={newEmployee.service_id} // Ensure this is the service ID
-                onChange={handleInputChange}
-              >
-                {services
-                  .filter((service) => service.departement === newEmployee.departement_id)
-                  .map((service) => (
-                    <MenuItem key={service.id} value={service.id}>
-                      {service.nom}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          </Grid>
-          <Typography sx={{mt:2}} variant="body1" color="white" gutterBottom>
-          Information Banquaire
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="Compte bancaire"
-                name="compte_bancaire"
-                value={newEmployee.compte_bancaire}
-                onChange={handleInputChange}
-                type="search"
-                variant="outlined"
-                fullWidth
-              />
-          </Grid>
-          <Grid item xs={4}>
-              <TextField
-                id="outlined-search"
-                label="RIB bancaire"
-                name="rib_bancaire"
-                type="search"
-                variant="outlined"
-                value={newEmployee.rib_bancaire}
-                onChange={handleInputChange}
-                fullWidth
-              />
-          </Grid>
-          </Grid>
           </Box>
-
-
           <Box mt={3} display="flex" justifyContent="space-between">
-            <Button variant="outlined" onClick={() => setNewEmployee({})}>
+            <Button variant="outlined" onClick={() => setNewEmployee(new Employe("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""))}>
               Réinitialiser
             </Button>
             <Button
