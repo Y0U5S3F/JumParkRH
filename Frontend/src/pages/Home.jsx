@@ -147,6 +147,12 @@ export default function Home() {
 
   const handleAddEmployee = async () => {
     try {
+      // Ensure departement_id and service_id are not empty
+      if (!newEmployee.departement_id || !newEmployee.service_id) {
+        console.error("Departement and Service fields are required.");
+        return;
+      }
+  
       // Update field names here to match the backend's expected format
       const employeeToSend = {
         matricule: newEmployee.matricule,
@@ -168,6 +174,8 @@ export default function Home() {
         num_telephone_urgence: newEmployee.contact_urgence_telephone,  // Corrected field name
         compte_bancaire: newEmployee.compte_bancaire,
         rib_bancaire: newEmployee.rib_bancaire,
+        departement_id: newEmployee.departement_id,  // Ensure this is included
+        service_id: newEmployee.service_id,  // Ensure this is included
       };
   
       console.log("Sending employee data:", employeeToSend);
