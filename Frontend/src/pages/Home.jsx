@@ -9,6 +9,8 @@ import {
   Box,
   Modal,
   Typography,
+  Alert,
+  Snackbar,
   MenuItem,
   Divider,
   Grid,
@@ -60,6 +62,12 @@ const useStyles = makeStyles((theme) => ({
     gap: "15px",
     marginTop: "10px",
   },
+  alertContainer: {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    zIndex: 1000,
+  },
 }));
 
 export default function Home() {
@@ -67,6 +75,8 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [services, setServices] = useState([]);
+  const [snackbar, setSnackbar] = useState({ open: false, severity: "", message: "" });
+
   const classes = useStyles();
   const [newEmployee, setNewEmployee] = useState(new Employe("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""));
   const handleInputChange = (e) => {
@@ -162,14 +172,26 @@ export default function Home() {
 
       console.log("Response from server:", response);
 
+      if (response.status === 201) {
+        setSnackbar({ open: true, severity: "success", message: "Employee added successfully!" });
+      } else {
+        setSnackbar({ open: true, severity: "error", message: "Failed to add employee." });
+      }
+
       setOpen(false);
       setNewEmployee(new Employe("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""));
     } catch (error) {
       console.error("Error adding employee:", error);
+      setSnackbar({ open: true, severity: "error", message: "Error adding employee." });
+
       if (error.response) {
         console.error("Server response:", error.response.data);
       }
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   const columns = [
@@ -509,6 +531,17 @@ export default function Home() {
         pageSize={5}
         checkboxSelection
       />
+
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
