@@ -6,11 +6,11 @@ import {
   Button,
   Box,
   IconButton
-
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Departement from "../models/departement";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -26,26 +26,25 @@ export default function Department() {
   const [departements, setDepartements] = useState([]);
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const [newDepartment, setNewDepartment] = useState({});
+  const [newDepartment, setNewDepartment] = useState(new Departement("", ""));
   const classes = useStyles();
 
   useEffect(() => {
-    // Fetch employees data
+    // Fetch departments data
     const fetchDepartements = async () => {
       try {
         const response = await axios.get(
           "http://127.0.0.1:8000/api/departement/departements/"
         );
-        console.log(response.data);
-        setDepartements(response.data);
+        const formattedDepartments = response.data.map((dept) => new Departement(dept.id, dept.nom));
+        setDepartements(formattedDepartments);
       } catch (error) {
         console.error("Error fetching departments:", error);
       }
     };
 
     fetchDepartements();
-  },[refresh]);
-
+  }, [refresh]);
 
   const handleView = (id) => {
     // Logic for viewing the department
