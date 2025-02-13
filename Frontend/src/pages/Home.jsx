@@ -17,12 +17,15 @@ import {
   Select,
   FormControl,
   InputLabel,
+  IconButton,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -85,33 +88,37 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Fetch employees data
-    const fetchEmployees = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/employe/employes/"
-        );
-        const formattedEmployees = response.data.map((emp) => ({
+        const [employeesResponse, departmentsResponse, servicesResponse] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/employe/employes/"),
+          axios.get("http://127.0.0.1:8000/api/departement/departements/"),
+          axios.get("http://127.0.0.1:8000/api/service/services/")
+        ]);
+  
+        const formattedEmployees = employeesResponse.data.map((emp) => ({
           id: emp.matricule,
           ...emp,
           departement: emp.departement ? emp.departement.nom : "N/A",
           service: emp.service ? emp.service.nom : "N/A",
         }));
+  
         setEmployees(formattedEmployees);
+        setDepartments(departmentsResponse.data);
+        setServices(servicesResponse.data);
       } catch (error) {
-        console.error("Error fetching employees:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
     // Fetch departments data
-    const fetchDepartments = async () => {
+    const handleDelete = async (matricule) => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/departement/departements/"
-        );
-        setDepartments(response.data);
+        await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
+        console.log("Deleted employé with matricule:", matricule);
+        setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
       } catch (error) {
-        console.error("Error fetching departments:", error);
+        console.error("Error deleting employé:", error);
       }
     };
 
@@ -131,6 +138,16 @@ export default function Home() {
     fetchDepartments();
     fetchServices();
   }, []);
+
+  const handleDelete = async (matricule) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
+      console.log("Deleted employé with matricule:", matricule);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting employé:", error);
+    }
+  };
 
   const handleAddEmployee = async () => {
     try {
@@ -194,6 +211,10 @@ export default function Home() {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleView = (id) => {
+    console.log("View employé with matricule:", id);
+  };
+
   const columns = [
     { field: "matricule", headerName: "Matricule", width: 150 },
     { field: "nom", headerName: "Nom", width: 150 },
@@ -202,6 +223,21 @@ export default function Home() {
     { field: "role", headerName: "Role", width: 150 },
     { field: "departement", headerName: "Département", width: 150 },
     { field: "service", headerName: "Service", width: 150 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: (params) => (
+        <>
+          <IconButton onClick={() => handleView(params.row.id)}>
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    },
   ];
 
   return (
@@ -528,7 +564,7 @@ export default function Home() {
       <DataGrid
         rows={employees}
         columns={columns}
-        pageSize={5}
+        pageSize={6}
         checkboxSelection
       />
 
