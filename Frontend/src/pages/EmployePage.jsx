@@ -73,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Home() {
+export default function EmployePage() {
   const [employees, setEmployees] = useState([]);
   const [open, setOpen] = useState(false);
   const [departments, setDepartments] = useState([]);

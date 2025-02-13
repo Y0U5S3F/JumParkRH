@@ -77,12 +77,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const MENU_GROUPS = [
   {
     subheader: null,
-    items: [{ text: 'Dashboard', icon: <Dashboard color="primary" />, path: '/dashboard' }],
+    items: [{ text: 'Dashboard', icon: <Dashboard color="primary" />, path: '/' }],
   },
   {
     subheader: 'Employee Management',
     items: [
-      { text: 'Personnel', icon: <People color="secondary" />, path: '/personnel' },
+      { text: 'Personnel', icon: <People color="secondary" />, path: '/employe' },
       { text: 'Departement', icon: <Apartment color="secondary" />, path: '/departement' },
       { text: 'Service', icon: <Business color="secondary" />, path: '/service' },
     ],

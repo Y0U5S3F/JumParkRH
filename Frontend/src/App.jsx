@@ -2,12 +2,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material"; // Import MUI ThemeProvider
 import darkTheme from "./theme/Theme"; // Import the dark theme
 import Login from "./pages/Login";
-import Home from "./pages/Home";
+import EmployePage from "./pages/EmployePage";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Department from "./pages/Department";
 import Service from "./pages/Service";
+import Dashboard from "./pages/Dashboard";
 
 function Logout() {
   localStorage.clear();
@@ -25,7 +26,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={< Dashboard/>} />
+            <Route path="/employe" element={< EmployePage/>} />
             <Route path="/departement" element={<Department />} />
             <Route path="/service" element={<Service />} />
           </Route>
