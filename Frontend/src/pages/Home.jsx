@@ -107,15 +107,16 @@ export default function Home() {
     };
 
     // Fetch departments data
-  const handleDelete = async (matricule) => {
-    try {
-      await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
-      console.log("Deleted employé with matricule:", matricule);
-      setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
-    } catch (error) {
-      console.error("Error deleting employé:", error);
-    }
-  };
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/departement/departements/"
+        );
+        setDepartments(response.data);
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
 
     // Fetch services data
     const fetchServices = async () => {
@@ -138,7 +139,7 @@ export default function Home() {
     try {
       await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
       console.log("Deleted employé with matricule:", matricule);
-      window.location.reload();
+      setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
     } catch (error) {
       console.error("Error deleting employé:", error);
     }
