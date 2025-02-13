@@ -88,39 +88,34 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    // Fetch employees data
+    const fetchEmployees = async () => {
       try {
-        const [employeesResponse, departmentsResponse, servicesResponse] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/employe/employes/"),
-          axios.get("http://127.0.0.1:8000/api/departement/departements/"),
-          axios.get("http://127.0.0.1:8000/api/service/services/")
-        ]);
-  
-        const formattedEmployees = employeesResponse.data.map((emp) => ({
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/employe/employes/"
+        );
+        const formattedEmployees = response.data.map((emp) => ({
           id: emp.matricule,
           ...emp,
           departement: emp.departement ? emp.departement.nom : "N/A",
           service: emp.service ? emp.service.nom : "N/A",
         }));
-  
         setEmployees(formattedEmployees);
-        setDepartments(departmentsResponse.data);
-        setServices(servicesResponse.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching employees:", error);
       }
     };
 
     // Fetch departments data
-    const handleDelete = async (matricule) => {
-      try {
-        await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
-        console.log("Deleted employé with matricule:", matricule);
-        setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
-      } catch (error) {
-        console.error("Error deleting employé:", error);
-      }
-    };
+  const handleDelete = async (matricule) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/employe/employes/${matricule}/`);
+      console.log("Deleted employé with matricule:", matricule);
+      setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
+    } catch (error) {
+      console.error("Error deleting employé:", error);
+    }
+  };
 
     // Fetch services data
     const fetchServices = async () => {
