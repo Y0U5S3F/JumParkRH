@@ -1,0 +1,151 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { DataGrid } from "@mui/x-data-grid";
+import {
+  Container,
+  TextField,
+  Button,
+  Box,
+  Modal,
+  Typography,
+  Alert,
+  Snackbar,
+  IconButton,
+} from "@mui/material";
+import { makeStyles } from "@mui/styles";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+const useStyles = makeStyles((theme) => ({
+  container: { padding: "20px", display: "flex", flexDirection: "column" },
+  topBar: {
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginBottom: "10px",
+  },
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 600,
+    backgroundColor: "white",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: 24,
+  },
+}));
+
+export default function ServicePage() {
+  const [services, setServices] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [newService, setNewService] = useState({ nom: "", description: "" });
+  const [snackbar, setSnackbar] = useState({ open: false, severity: "", message: "" });
+  const classes = useStyles();
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/service/services/");
+        setServices(response.data);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewService((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/service/services/${id}/`);
+      setServices((prev) => prev.filter((service) => service.id !== id));
+    } catch (error) {
+      console.error("Error deleting service:", error);
+    }
+  };
+
+  const handleAddService = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/service/services/", newService);
+      if (response.status === 201) {
+        setSnackbar({ open: true, severity: "success", message: "Service added successfully!" });
+        setServices((prev) => [...prev, response.data]);
+        setOpen(false);
+        setNewService({ nom: "", description: "" });
+      }
+    } catch (error) {
+      console.error("Error adding service:", error);
+      setSnackbar({ open: true, severity: "error", message: "Error adding service." });
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "nom", headerName: "Nom", width: 200 },
+    { field: "description", headerName: "Description", width: 300 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 100,
+      renderCell: (params) => (
+        <>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <Container className={classes.container}>
+      <Box className={classes.topBar}>
+        <Button variant="contained" onClick={() => setOpen(true)}>
+          Ajouter Service
+        </Button>
+      </Box>
+
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Ajouter un Service
+          </Typography>
+          <TextField
+            label="Nom"
+            name="nom"
+            value={newService.nom}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Description"
+            name="description"
+            value={newService.description}
+            onChange={handleInputChange}
+            fullWidth
+            margin="normal"
+          />
+          <Button variant="contained" onClick={handleAddService} fullWidth>
+            Ajouter
+          </Button>
+        </Box>
+      </Modal>
+
+      <DataGrid rows={services} columns={columns} pageSize={5} autoHeight />
+      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
+      </Snackbar>
+    </Container>
+  );
+}
