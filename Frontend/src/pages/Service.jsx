@@ -14,6 +14,42 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginBottom: "10px",
   },
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    height: 150,
+    backgroundColor: "black",
+    boxShadow: 24,
+    padding: "20px",
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  contentContainer: {
+    flex: 1,
+    overflowY: "auto",
+    paddingRight: "10px", // Prevents content from touching the scrollbar
+    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    "&::-webkit-scrollbar": {
+      display: "none", // Hides scrollbar in Chrome/Safari
+    },
+  },
+  formContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    marginTop: "10px",
+  },
+  alertContainer: {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    zIndex: 1000,
+  },
 }));
 
 export default function Service() {
@@ -70,9 +106,9 @@ export default function Service() {
     fetchServices();
   }, []);
   
-  const handleView = (id) => {
-    console.log("View service with id:", id);
-  };
+  const handleView = (service) => {
+    setSelectedService(service);
+    setOpenViewModal(true);  };
 
   const handleDelete = async (id) => {
     try {
@@ -94,7 +130,7 @@ export default function Service() {
       width: 100,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleView(params.row.id)}>
+          <IconButton onClick={() => handleView(params.row)}>
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
@@ -122,17 +158,17 @@ export default function Service() {
           {selectedService && (
             <Box className={classes.contentContainer}>
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={4}>
                   <Typography variant="subtitle1">
                     <strong>ID:</strong> {selectedService.id}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={4}>
                   <Typography variant="subtitle1">
                     <strong>Nom:</strong> {selectedService.nom}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={4}>
                   <Typography variant="subtitle1">
                     <strong>Département:</strong> {selectedService.departement}
                   </Typography>
