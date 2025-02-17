@@ -180,6 +180,26 @@ export default function EmployePage() {
       setOpen(false);
       setNewEmployee(
         new Employe(
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
         )
       );
     } catch (error) {
@@ -214,8 +234,8 @@ export default function EmployePage() {
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
-          </IconButton>
+        <EditIcon /> {/* Add Edit icon */}
+      </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>

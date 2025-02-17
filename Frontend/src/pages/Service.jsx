@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { Container, Button, Box, IconButton } from "@mui/material";
-import { makeStyles } from "@mui/styles";
+import {Container,Button,Box,IconButton,Modal,Typography,Divider,Grid} from "@mui/material";import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Departement from "../models/departement";
@@ -21,7 +20,9 @@ export default function Service() {
   const [departements, setDepartements] = useState([]);
   const [services, setServices] = useState([]);
   const [open, setOpen] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
   const [newDepartment, setNewDepartment] = useState(new Departement("", ""));
+  const [selectedService, setSelectedService] = useState(null);
   const classes = useStyles();
   
   useEffect(() => {
@@ -111,6 +112,37 @@ export default function Service() {
           Ajouter Service
         </Button>
       </Box>
+
+      <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Détails du Service
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          {selectedService && (
+            <Box className={classes.contentContainer}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1">
+                    <strong>ID:</strong> {selectedService.id}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1">
+                    <strong>Nom:</strong> {selectedService.nom}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1">
+                    <strong>Département:</strong> {selectedService.departement}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </Box>
+      </Modal>
+
       <DataGrid
         rows={services}
         columns={columns}
