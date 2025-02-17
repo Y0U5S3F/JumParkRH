@@ -12,7 +12,10 @@ class Emploi(models.Model):
         ('dimanche', 'Dimanche'),
     ]
 
-    employe = models.ForeignKey(Employe, on_delete=models.CASCADE, verbose_name="Employe", related_name="emplois")
+    employe = models.ForeignKey(
+        Employe, on_delete=models.CASCADE, verbose_name="Employe", 
+        related_name="emplois", db_index=True
+    )
     heure_depart = models.TimeField()
     heure_arrivee = models.TimeField()
     pause_debut = models.TimeField()
