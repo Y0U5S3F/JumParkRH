@@ -30,8 +30,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from '@mui/icons-material/Edit';
-
+import EditIcon from "@mui/icons-material/Edit";
+import { fetchEmployes, deleteEmployee, addEmployee } from "../service/EmployeService";
+import { fetchDepartements } from "../service/DepartementService";
+import { fetchServices } from "../service/ServiceService";
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
@@ -79,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EmployePage() {
-  
   const [employees, setEmployees] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -95,30 +96,9 @@ export default function EmployePage() {
     severity: "",
     message: "",
   });
-
   const classes = useStyles();
   const [newEmployee, setNewEmployee] = useState(
     new Employe(
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
     )
   );
   const handleInputChange = (e) => {
@@ -130,22 +110,16 @@ export default function EmployePage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [employeesRes, departmentsRes, servicesRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/employe/employes/"),
-          axios.get("http://127.0.0.1:8000/api/departement/departements/"),
-          axios.get("http://127.0.0.1:8000/api/service/services/"),
-        ]);
+        const [employeesData, departmentsData, servicesData] =
+          await Promise.all([
+            fetchEmployes(),
+            fetchDepartements(),
+            fetchServices(),
+          ]);
 
-        const formattedEmployees = employeesRes.data.map((emp) => ({
-          id: emp.matricule,
-          ...emp,
-          departement: emp.departement ? emp.departement.nom : "N/A",
-          service: emp.service ? emp.service.nom : "N/A",
-        }));
-
-        setEmployees(formattedEmployees);
-        setDepartments(departmentsRes.data);
-        setServices(servicesRes.data);
+        setEmployees(employeesData);
+        setDepartments(departmentsData);
+        setServices(servicesData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -158,25 +132,19 @@ export default function EmployePage() {
 
   const handleDelete = async (matricule) => {
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/employe/employes/${matricule}/`
-      );
-      console.log("Deleted employé with matricule:", matricule);
-      setEmployees((prev) =>
-        prev.filter((employee) => employee.matricule !== matricule)
-      );
+      await deleteEmployee(matricule); // Call the service
+      setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
     } catch (error) {
-      console.error("Error deleting employé:", error);
+      console.error("Error deleting employee:", error);
     }
   };
 
   const handleAddEmployee = async () => {
     try {
       if (!newEmployee.departement_id || !newEmployee.service_id) {
-        console.error("Departement and Service fields are required.");
+        setSnackbar({ open: true, severity: "error", message: "Department and Service fields are required." });
         return;
       }
-
       const employeeToSend = new Employe(
         newEmployee.matricule,
         newEmployee.nom,
@@ -200,66 +168,22 @@ export default function EmployePage() {
         newEmployee.compte_bancaire,
         newEmployee.rib_bancaire
       );
-
-      console.log("Sending employee data:", employeeToSend);
-
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/employe/employes/",
-        employeeToSend
-      );
-
-      console.log("Response from server:", response);
+      const response = await addEmployee(employeeToSend); // Call the service
 
       if (response.status === 201) {
-        setSnackbar({
-          open: true,
-          severity: "success",
-          message: "Employee added successfully!",
-        });
+
+        setSnackbar({ open: true, severity: "success", message: "Employee added successfully!" });
       } else {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "Failed to add employee.",
-        });
+        setSnackbar({ open: true, severity: "error", message: "Failed to add employee." });
       }
 
       setOpen(false);
       setNewEmployee(
         new Employe(
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
         )
       );
     } catch (error) {
-      console.error("Error adding employee:", error);
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "Error adding employee.",
-      });
-
-      if (error.response) {
-        console.error("Server response:", error.response.data);
-      }
+      setSnackbar({ open: true, severity: "error", message: "Error adding employee." });
     }
   };
 
@@ -285,13 +209,13 @@ export default function EmployePage() {
       headerName: "Actions",
       flex: 1, // Ensures actions don't shrink too much
       renderCell: (params) => (
-        <div style={{ display: "flex",}}>
+        <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleView(params.row)}>
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-        <EditIcon /> {/* Add Edit icon */}
-      </IconButton>
+            <EditIcon /> {/* Add Edit icon */}
+          </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
