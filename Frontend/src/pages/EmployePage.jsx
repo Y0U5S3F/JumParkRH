@@ -226,28 +226,7 @@ export default function EmployePage() {
 
       setOpen(false);
       setNewEmployee(
-        new Employe(
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
-        )
+        new Employe("","","","","","","","","","","","","","","","","","","","")
       );
     } catch (error) {
       console.error("Error adding employee:", error);
@@ -290,7 +269,7 @@ export default function EmployePage() {
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-        <EditIcon /> {/* Add Edit icon */}
+        <EditIcon /> {}
       </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
