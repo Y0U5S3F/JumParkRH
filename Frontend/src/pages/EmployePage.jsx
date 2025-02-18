@@ -168,7 +168,8 @@ export default function EmployePage() {
         newEmployee.compte_bancaire,
         newEmployee.rib_bancaire
       );
-      const response = await addEmployee(employeeToSend); // Call the service
+      const response = await addEmployee(employeeToSend);
+      console.log(employeeToSend) // Call the service
 
       if (response.status === 201) {
 
