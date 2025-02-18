@@ -5,7 +5,11 @@ import {
   Container,
   Button,
   Box,
-  IconButton
+  IconButton,
+  Modal,
+  Typography,
+  Divider,
+  Grid
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -19,6 +23,42 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-end",
     alignItems: "center",
     marginBottom: "10px",
+  },
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    height: 150,
+    backgroundColor: "black",
+    boxShadow: 24,
+    padding: "20px",
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  contentContainer: {
+    flex: 1,
+    overflowY: "auto",
+    paddingRight: "10px", // Prevents content from touching the scrollbar
+    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    "&::-webkit-scrollbar": {
+      display: "none", // Hides scrollbar in Chrome/Safari
+    },
+  },
+  formContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    marginTop: "10px",
+  },
+  alertContainer: {
+    position: "fixed",
+    bottom: "20px",
+    right: "20px",
+    zIndex: 1000,
   }
 }));
 
@@ -27,6 +67,8 @@ export default function Department() {
   const [open, setOpen] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [newDepartment, setNewDepartment] = useState(new Departement("", ""));
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [selectedDepartement, setSelectedDepartement] = useState(null);
   const classes = useStyles();
 
   useEffect(() => {
@@ -46,9 +88,9 @@ export default function Department() {
     fetchDepartements();
   }, [refresh]);
 
-  const handleView = (id) => {
-    // Logic for viewing the department
-    console.log("View department with id:", id);
+  const handleView = (departement) => {
+    setSelectedDepartement(departement);
+    setOpenViewModal(true);
   };
   
   const handleDelete = async (id) => {
@@ -70,7 +112,7 @@ export default function Department() {
       width: 100,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleView(params.row.id)}>
+          <IconButton onClick={() => handleView(params.row)}>
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
@@ -89,12 +131,38 @@ export default function Department() {
         </Button>
       </Box>
 
+      <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Détails du Departement
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          {selectedDepartement && (
+            <Box className={classes.contentContainer}>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>ID:</strong> {selectedDepartement.id}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>Nom:</strong> {selectedDepartement.nom}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </Box>
+      </Modal>
+
       <DataGrid
         rows={departements}
         columns={columns}
         pageSize={5}
         disableSelectionOnClick
         checkboxSelection={false}
+        getRowId={(row) => row.id}
       />
     </Container>
   );

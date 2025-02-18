@@ -4,7 +4,7 @@ from service.models import Service
 from service.serializers import ServiceSerializer
 
 class ServiceListCreateView(generics.ListCreateAPIView):
-    queryset = Service.objects.all()
+    queryset = Service.objects.all().order_by('id')
     serializer_class = ServiceSerializer
 
 class ServiceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
