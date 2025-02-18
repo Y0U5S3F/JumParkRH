@@ -9,6 +9,7 @@ import Layout from "./components/Layout";
 import Department from "./pages/Department";
 import Service from "./pages/Service";
 import Dashboard from "./pages/Dashboard";
+import Planning from "./pages/Planning";
 
 function Logout() {
   localStorage.clear();
@@ -27,6 +28,7 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={< Dashboard/>} />
+            <Route path="/planning" element={< Planning/>} />
             <Route path="/employe" element={< EmployePage/>} />
             <Route path="/departement" element={<Department />} />
             <Route path="/service" element={<Service />} />
