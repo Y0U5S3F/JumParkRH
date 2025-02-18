@@ -31,7 +31,12 @@ import dayjs from "dayjs";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { fetchEmployes, deleteEmployee, addEmployee } from "../service/EmployeService";
+import {
+  fetchEmployes,
+  deleteEmployee,
+  addEmployee,
+  updateEmployee,
+} from "../service/EmployeService";
 import { fetchDepartements } from "../service/DepartementService";
 import { fetchServices } from "../service/ServiceService";
 const useStyles = makeStyles((theme) => ({
@@ -84,9 +89,10 @@ export default function EmployePage() {
   const [employees, setEmployees] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(new Employe());
   const [departments, setDepartments] = useState([]);
   const [services, setServices] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
@@ -96,14 +102,19 @@ export default function EmployePage() {
     severity: "",
     message: "",
   });
+  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+
   const classes = useStyles();
-  const [newEmployee, setNewEmployee] = useState(
-    new Employe(
-    )
-  );
+  const [newEmployee, setNewEmployee] = useState(new Employe());
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleInputModifyChange = (e) => {
+    const { name, value } = e.target;
+    setEditEmployee((prev) => ({ ...prev, [name]: value }));
+    console.log(editEmployee);
   };
 
   useEffect(() => {
@@ -128,12 +139,14 @@ export default function EmployePage() {
     };
 
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const handleDelete = async (matricule) => {
     try {
       await deleteEmployee(matricule); // Call the service
-      setEmployees((prev) => prev.filter((employee) => employee.matricule !== matricule));
+      setEmployees((prev) =>
+        prev.filter((employee) => employee.matricule !== matricule)
+      );
     } catch (error) {
       console.error("Error deleting employee:", error);
     }
@@ -142,7 +155,11 @@ export default function EmployePage() {
   const handleAddEmployee = async () => {
     try {
       if (!newEmployee.departement_id || !newEmployee.service_id) {
-        setSnackbar({ open: true, severity: "error", message: "Department and Service fields are required." });
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "Department and Service fields are required.",
+        });
         return;
       }
       const employeeToSend = new Employe(
@@ -169,13 +186,20 @@ export default function EmployePage() {
         newEmployee.rib_bancaire
       );
       const response = await addEmployee(employeeToSend);
-      console.log(employeeToSend) // Call the service
+      console.log(employeeToSend); // Call the service
 
       if (response.status === 201) {
-
-        setSnackbar({ open: true, severity: "success", message: "Employee added successfully!" });
+        setSnackbar({
+          open: true,
+          severity: "success",
+          message: "Employee added successfully!",
+        });
       } else {
-        setSnackbar({ open: true, severity: "error", message: "Failed to add employee." });
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "Failed to add employee.",
+        });
       }
 
       setOpen(false);
@@ -204,7 +228,36 @@ export default function EmployePage() {
         )
       );
     } catch (error) {
-      setSnackbar({ open: true, severity: "error", message: "Error adding employee." });
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Error adding employee.",
+      });
+    }
+  };
+
+  const handleUpdateEmployee = async (e) => {
+    e.preventDefault();
+    try {
+      await updateEmployee(editEmployee.matricule, editEmployee);
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Employé mis à jour avec succès!",
+      });
+      setEmployees((prev) =>
+        prev.map((emp) =>
+          emp.matricule === editEmployee.matricule ? editEmployee : emp
+        )
+      );
+      setOpenEditModal(false);
+      setRefresh((prev) => prev + 1);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        severity: { error },
+        message: "Échec de la mise à jour de l'employé.",
+      });
     }
   };
 
@@ -215,6 +268,31 @@ export default function EmployePage() {
   const handleView = (employee) => {
     setSelectedEmployee(employee);
     setOpenViewModal(true);
+  };
+
+  const handleEdit = (employee) => {
+    // Find the department ID based on the department name
+    const department = departments.find(
+      (dept) => dept.nom === employee.departement
+    );
+    const service = services.find((srv) => srv.nom === employee.service);
+
+    // Create a new employee object with updated departement_id and service_id
+    const updatedEmployee = {
+      ...employee,
+      departement_id: department ? department.id : "", // Set department ID
+      service_id: service ? service.id : "", // Set service ID
+    };
+
+    // Remove the departement and service fields
+    delete updatedEmployee.departement;
+    delete updatedEmployee.service;
+
+    // Set the new employee data with the IDs
+    setEditEmployee(updatedEmployee);
+
+    console.log(updatedEmployee); // For debugging
+    setOpenEditModal(true); // Open the edit modal
   };
 
   const columns = [
@@ -235,8 +313,8 @@ export default function EmployePage() {
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-        <EditIcon /> {/* Add Edit icon */}
-      </IconButton>
+            <EditIcon /> {/* Add Edit icon */}
+          </IconButton>
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
@@ -257,6 +335,7 @@ export default function EmployePage() {
         </Button>
       </Box>
 
+      {/* View Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
@@ -401,7 +480,7 @@ export default function EmployePage() {
           )}
         </Box>
       </Modal>
-
+      {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
@@ -762,16 +841,383 @@ export default function EmployePage() {
         </Box>
       </Modal>
 
+      {/* Edit Modal */}
+      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Veuillez modifier les coordonnées de vos personnels
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box className={classes.contentContainer}>
+            <Typography variant="body1" gutterBottom>
+              Informations personnelles
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Matricule"
+                  type="search"
+                  variant="outlined"
+                  name="matricule"
+                  value={editEmployee.matricule}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nom"
+                  type="search"
+                  variant="outlined"
+                  name="nom"
+                  value={editEmployee.nom}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Prenom"
+                  type="search"
+                  name="prenom"
+                  value={editEmployee.prenom}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Email"
+                  type="search"
+                  variant="outlined"
+                  name="email"
+                  value={editEmployee.email}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    label="Date de naissance"
+                    value={
+                      editEmployee.date_de_naissance
+                        ? dayjs(editEmployee.date_de_naissance)
+                        : null
+                    }
+                    onChange={(date) =>
+                      handleInputModifyChange({
+                        target: {
+                          name: "date_de_naissance",
+                          value: date?.format("YYYY-MM-DD"),
+                        },
+                      })
+                    }
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Lieu de naissance"
+                  type="search"
+                  name="lieu_de_naissance"
+                  value={editEmployee.lieu_de_naissance}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nationalité"
+                  type="search"
+                  name="nationalite"
+                  value={editEmployee.nationalite}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Genre légal</InputLabel>
+                  <Select
+                    label="Genre légal"
+                    value={editEmployee.genre_legal}
+                    onChange={handleInputModifyChange}
+                    name="genre_legal"
+                  >
+                    <MenuItem value="Homme">Homme</MenuItem>
+                    <MenuItem value="Femme">Femme</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Situation familiale</InputLabel>
+                  <Select
+                    label="Situation familiale"
+                    value={editEmployee.situation_familiale}
+                    onChange={handleInputModifyChange}
+                    name="situation_familiale"
+                  >
+                    <MenuItem value="Celibataire">Célibataire</MenuItem>
+                    <MenuItem value="Marie">Marié(e)</MenuItem>
+                    <MenuItem value="Divorce">Divorcé(e)</MenuItem>
+                    <MenuItem value="Veuf">Veuf(ve)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="CIN"
+                  name="CIN"
+                  value={editEmployee.CIN}
+                  onChange={handleInputModifyChange}
+                  inputProps={{ maxLength: 8 }}
+                />
+              </Grid>
+            </Grid>
+            <Typography
+              variant="body1"
+              color="white"
+              sx={{ pt: 2 }}
+              gutterBottom
+            >
+              Informations personnelles
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numero de telephone"
+                  type="search"
+                  name="num_telephone"
+                  value={editEmployee.num_telephone}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Adresse"
+                  type="search"
+                  name="adresse"
+                  value={editEmployee.adresse}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Ville"
+                  type="search"
+                  name="ville"
+                  value={editEmployee.ville}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Code postal"
+                  type="search"
+                  name="code_postal"
+                  value={editEmployee.code_postal}
+                  onChange={handleInputModifyChange}
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <Typography
+              sx={{ mt: 2 }}
+              variant="body1"
+              color="white"
+              gutterBottom
+            >
+              Contact d&apos;urgence
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Nom du Contact d'Urgence"
+                  name="nom_urgence"
+                  value={editEmployee.nom_urgence}
+                  onChange={handleInputModifyChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numéro de Téléphone d'Urgence"
+                  name="num_telephone_urgence"
+                  value={editEmployee.num_telephone_urgence}
+                  onChange={handleInputModifyChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+            <Typography
+              sx={{ mt: 2 }}
+              variant="body1"
+              color="white"
+              gutterBottom
+            >
+              Position
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Role</InputLabel>
+                  <Select
+                    label="Role"
+                    value={editEmployee.role}
+                    onChange={handleInputModifyChange}
+                    name="role"
+                  >
+                    <MenuItem value="Admin">Admin</MenuItem>
+                    <MenuItem value="Manager">Manager</MenuItem>
+                    <MenuItem value="Employe">Employé</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+  <FormControl fullWidth variant="outlined">
+    <InputLabel>Département</InputLabel>
+    <Select
+      label="Département"
+      name="departement_id"
+      value={editEmployee.departement_id}
+      onChange={handleInputModifyChange}
+    >
+      {departments.map((dept) => (
+        <MenuItem key={dept.id} value={dept.id}>
+          {dept.nom}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Grid>
+<Grid item xs={4}>
+  <FormControl fullWidth variant="outlined">
+    <InputLabel>Service</InputLabel>
+    <Select
+      label="Service"
+      name="service_id"
+      value={editEmployee.service_id}
+      onChange={handleInputModifyChange}
+    >
+      {services
+        .filter(
+          (service) =>
+            service.departement === editEmployee.departement_id
+        )
+        .map((service) => (
+          <MenuItem key={service.id} value={service.id}>
+            {service.nom}
+          </MenuItem>
+        ))}
+    </Select>
+  </FormControl>
+</Grid>
+            </Grid>
+            <Typography
+              sx={{ mt: 2 }}
+              variant="body1"
+              color="white"
+              gutterBottom
+            >
+              Information Banquaire
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Compte bancaire"
+                  name="compte_bancaire"
+                  value={editEmployee.compte_bancaire}
+                  onChange={handleInputModifyChange}
+                  type="search"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="RIB bancaire"
+                  name="rib_bancaire"
+                  type="search"
+                  variant="outlined"
+                  value={editEmployee.rib_bancaire}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          <Box mt={3} display="flex" justifyContent="space-between">
+            <Button
+              variant="outlined"
+              onClick={() => setEditEmployee(new Employe())}
+            >
+              Réinitialiser
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateEmployee}
+            >
+              Enregistrer
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
       <DataGrid
         apiRef={apiRef}
         rows={employees}
         columns={columns}
-        onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
         loading={loading}
         disableMultipleRowSelection={true}
         autosizeOptions={autosizeOptions}
+        pagination
+        pageSizeOptions={[10, 25, 100]}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 10, page: 0 },
+          },
+        }}
       />
 
       <Snackbar

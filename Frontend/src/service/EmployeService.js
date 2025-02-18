@@ -38,6 +38,17 @@ export const addEmployee = async (employeeData) => {
   }
 };
 
+// ✅ Update an existing employee by matricule
+export const updateEmployee = async (matricule, updatedData) => {
+  try {
+    const response = await axios.put(`${EMPLOYEE_API_URL}${matricule}/`, updatedData);
+    return response;
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    throw error;
+  }
+};
+
 
 
 // // Get all employee
