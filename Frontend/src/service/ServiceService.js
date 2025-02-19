@@ -11,3 +11,25 @@ export const fetchServices = async () => {
       throw error;
     }
   };
+
+  export const addService = async (serviceData) => {
+    try {
+      const response = await axios.post(SERVICE_API_URL, serviceData);
+      return response.data;
+    } catch (error) {
+      console.error("Error adding service:", error);
+      throw error;
+    }
+  };
+
+  export const updateService = async (serviceId, updatedService) => {
+    try {
+      const response = await axios.put(`${SERVICE_API_URL}${serviceId}/`, updatedService);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating service:", error);
+      throw error;
+    }
+  };
+  
+  

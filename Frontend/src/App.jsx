@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Department from "./pages/Department";
-import Service from "./pages/Service";
+import ServicePage from "./pages/ServicePage";
 import Dashboard from "./pages/Dashboard";
 import Planning from "./pages/Planning";
 
@@ -30,7 +30,7 @@ function App() {
             <Route path="/" element={< Dashboard/>} />
             <Route path="/employe" element={< EmployePage/>} />
             <Route path="/departement" element={<Department />} />
-            <Route path="/service" element={<Service />} />
+            <Route path="/service" element={<ServicePage />} />
             <Route path="/planning" element={< Planning/>} />
           </Route>
           <Route path="/login" element={<Login />} />

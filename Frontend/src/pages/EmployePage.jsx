@@ -323,10 +323,6 @@ export default function EmployePage() {
     },
   ];
 
-  const autosizeOptions = {
-    expand,
-  };
-
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
@@ -1109,44 +1105,44 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-  <FormControl fullWidth variant="outlined">
-    <InputLabel>Département</InputLabel>
-    <Select
-      label="Département"
-      name="departement_id"
-      value={editEmployee.departement_id}
-      onChange={handleInputModifyChange}
-    >
-      {departments.map((dept) => (
-        <MenuItem key={dept.id} value={dept.id}>
-          {dept.nom}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</Grid>
-<Grid item xs={4}>
-  <FormControl fullWidth variant="outlined">
-    <InputLabel>Service</InputLabel>
-    <Select
-      label="Service"
-      name="service_id"
-      value={editEmployee.service_id}
-      onChange={handleInputModifyChange}
-    >
-      {services
-        .filter(
-          (service) =>
-            service.departement === editEmployee.departement_id
-        )
-        .map((service) => (
-          <MenuItem key={service.id} value={service.id}>
-            {service.nom}
-          </MenuItem>
-        ))}
-    </Select>
-  </FormControl>
-</Grid>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Département</InputLabel>
+                  <Select
+                    label="Département"
+                    name="departement_id"
+                    value={editEmployee.departement_id}
+                    onChange={handleInputModifyChange}
+                  >
+                    {departments.map((dept) => (
+                      <MenuItem key={dept.id} value={dept.id}>
+                        {dept.nom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Service</InputLabel>
+                  <Select
+                    label="Service"
+                    name="service_id"
+                    value={editEmployee.service_id}
+                    onChange={handleInputModifyChange}
+                  >
+                    {services
+                      .filter(
+                        (service) =>
+                          service.departement === editEmployee.departement_id
+                      )
+                      .map((service) => (
+                        <MenuItem key={service.id} value={service.id}>
+                          {service.nom}
+                        </MenuItem>
+                      ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
             <Typography
               sx={{ mt: 2 }}
@@ -1210,7 +1206,7 @@ export default function EmployePage() {
         disableRowSelectionOnClick={true}
         loading={loading}
         disableMultipleRowSelection={true}
-        autosizeOptions={autosizeOptions}
+        autosizeOptions={expand}
         pagination
         pageSizeOptions={[10, 25, 100]}
         initialState={{

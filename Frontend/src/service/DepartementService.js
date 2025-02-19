@@ -13,3 +13,13 @@ export const fetchDepartements = async () => {
     }
   };
   
+  export const updateDepartement = async (id, departementData) => {
+    try {
+      const response = await axios.put(`${DEPARTMENT_API_URL}${id}/`, departementData);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating department:", error);
+      throw error;
+    }
+  };
+  
