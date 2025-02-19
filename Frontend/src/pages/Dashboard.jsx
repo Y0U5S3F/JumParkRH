@@ -1,47 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { Scheduler } from "@bitnoi.se/react-scheduler";
+import React from "react";
+import { Box, Typography } from "@mui/material";
 
-export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]); // Ensure it's always an array
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    // Simulating API call with timeout
-    setTimeout(() => {
-      setData([
-        {
-          id: 1,
-          start: new Date(), // Start time (Date object or ISO string)
-          end: new Date(new Date().getTime() + 60 * 60 * 1000), // End time
-          title: "Meeting", // Title of the event
-        },
-      ]);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
-
+const Dashboard = () => {
   return (
-    <div>
-      <h2>Scheduler</h2>
-      <Scheduler
-        isLoading={isLoading}
-        data={Array.isArray(data) ? data : []} // Ensure data is always an array
-        onItemClick={(clickedItem) => console.log(clickedItem)}
-        onFilterData={() => {
-          // Handle filtering logic
-        }}
-        onClearFilterData={() => {
-          // Handle clearing filters
-        }}
-        config={{
-          filterButtonState: 0,
-          zoom: 0,
-          lang: "en",
-          maxRecordsPerPage: 20,
-        }}
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+    >
+      <Typography variant="h4" color="textSecondary" gutterBottom>
+        Dashboard
+      </Typography>
+      
+      {/* Display Image */}
+      <img
+        src="https://cdn.discordapp.com/attachments/1339526219456184385/1341701507921215519/Screenshot_2025-02-19_at_10.22.34_AM.png?ex=67b6f467&is=67b5a2e7&hm=325f69b4a67c941bbe2d15b4db4ff164adba967064a2a1186c105edb710659a7&"
+        alt="Dashboard image"
+        style={{ width: "75%", aspectRatio: "1.5" }}
       />
-    </div>
+    </Box>
   );
-}
+};
+
+export default Dashboard;
