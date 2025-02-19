@@ -148,7 +148,7 @@ const mockedSchedulerData = [
 
 export default function Planning() {
   return (
-    <div>
+    <div className="relative w-full"> 
       <h1>
         <Scheduler 
         isLoading={true}
@@ -156,7 +156,11 @@ export default function Planning() {
         onItemClick={(clickedItem) => console.log("clickedItem")}
         onTileClick={(clickedTile) => console.log("clickedTile")}
         config={
-          {zoom: 1, maxRecordsPerPage: 4 , filterButtonState: false}
+          { zoom: 1,
+            maxRecordsPerPage: 4,
+            filterButtonState: false,
+            defaultTheme: "dark",
+          }
         }
         />
       </h1>
