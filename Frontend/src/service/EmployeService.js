@@ -28,6 +28,21 @@ export const deleteEmployee = async (matricule) => {
   }
 };
 
+export const fetchMinimalEmployes = async () => {
+  try {
+    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/`);
+    return response.data.map((emp) => ({
+      matricule: emp.matricule,
+      nom: emp.nom,
+      prenom: emp.prenom,
+    }));
+  } catch (error) {
+    console.error("Error fetching minimal employee data:", error);
+    throw error;
+  }
+};
+
+
 export const addEmployee = async (employeeData) => {
   try {
     const response = await axios.post(EMPLOYEE_API_URL, employeeData);
@@ -48,6 +63,18 @@ export const updateEmployee = async (matricule, updatedData) => {
     throw error;
   }
 };
+
+export const fetchEmployeeMinimalByMatricule = async (matricule) => {
+  try {
+    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/${matricule}/`);
+    return response.data; // Expected to return { nom: "John", prenom: "Doe" }
+  } catch (error) {
+    console.error(`Error fetching employee by matricule ${matricule}:`, error);
+    return { nom: "N/A", prenom: "N/A" }; // Default values in case of error
+  }
+};
+
+
 
 
 
