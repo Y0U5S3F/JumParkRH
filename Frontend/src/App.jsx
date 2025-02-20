@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Department from "./pages/Department";
 import ServicePage from "./pages/ServicePage";
+import DemandeCongePage from "./pages/DemandeCongePage";
 import Dashboard from "./pages/Dashboard";
 import Planning from "./pages/Planning";
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/departement" element={<Department />} />
             <Route path="/service" element={<ServicePage />} />
             <Route path="/planning" element={< Planning/>} />
+            <Route path="/demande-conge" element={< DemandeCongePage/>} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
