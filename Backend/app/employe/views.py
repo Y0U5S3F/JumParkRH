@@ -42,3 +42,8 @@ class EmployeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 class EmployeMinimalListView(generics.ListAPIView):
     queryset = Employe.objects.all()
     serializer_class = EmployeMinimalSerializer
+
+class EmployeMinimalDetailView(generics.RetrieveAPIView):
+    queryset = Employe.objects.all()
+    serializer_class = EmployeMinimalSerializer
+    lookup_field = 'matricule'
