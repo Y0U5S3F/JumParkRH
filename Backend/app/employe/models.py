@@ -1,7 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from service.models import Service
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.apps import apps
 from departement.models import Departement
+from label.models import Label
+from service.models import Service
+
+
 
 class EmployeManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
