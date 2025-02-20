@@ -89,7 +89,7 @@ export default function DemandeCongePage() {
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const [loading, setLoading] = useState(true);
   const [newConge, setNewConge] = useState(new Conge());
-
+    console.log("New Congé:", newConge);
   const classes = useStyles();
 
   useEffect(() => {
