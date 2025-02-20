@@ -30,3 +30,8 @@ class EmployeSerializer(serializers.ModelSerializer):
             'rib_bancaire', 'departement', 'service', 'departement_id', 'service_id', 'created_at',
             'is_active', 'is_staff', 'is_superuser'
         ]
+
+class EmployeMinimalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employe
+        fields = ['matricule', 'nom', 'prenom']

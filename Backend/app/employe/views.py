@@ -3,7 +3,7 @@ from django.core.serializers import serialize
 from rest_framework import generics
 from django_filters.rest_framework import DjangoFilterBackend
 from employe.models import Employe
-from employe.serializers import EmployeSerializer
+from employe.serializers import EmployeSerializer, EmployeMinimalSerializer
 from employe.filters import EmployeFilter
 
 class EmployeListCreateView(generics.ListCreateAPIView):
@@ -37,4 +37,13 @@ class EmployeListCreateView(generics.ListCreateAPIView):
 class EmployeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Employe.objects.all()
     serializer_class = EmployeSerializer
+    lookup_field = 'matricule'
+
+class EmployeMinimalListView(generics.ListAPIView):
+    queryset = Employe.objects.all()
+    serializer_class = EmployeMinimalSerializer
+
+class EmployeMinimalDetailView(generics.RetrieveAPIView):
+    queryset = Employe.objects.all()
+    serializer_class = EmployeMinimalSerializer
     lookup_field = 'matricule'

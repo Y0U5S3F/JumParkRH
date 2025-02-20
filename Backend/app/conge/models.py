@@ -3,11 +3,11 @@ from employe.models import Employe
 
 class Conge(models.Model):
     TYPE_CONGE_CHOICES = [
-        ('conge payé', 'Congé Payé'),
+        ('conge paye', 'Congé Payé'),
         ('conge sans solde', 'Congé Sans Solde'),
         ('conge maladie', 'Congé Maladie'),
-        ('conge maternité', 'Congé Maternité'),
-        ('conge paternité', 'Congé Paternité'),
+        ('conge maternite', 'Congé Maternité'),
+        ('conge paternite', 'Congé Paternité'),
         ('conge exceptionnel', 'Congé Exceptionnel'),
         ('conge annuel', 'Congé Annuel'),
     ]

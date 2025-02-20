@@ -1,6 +1,7 @@
 import { Scheduler } from "@bitnoi.se/react-scheduler";
 import "@bitnoi.se/react-scheduler/dist/style.css";
 import dayjs from "dayjs";
+<<<<<<< HEAD
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
@@ -63,6 +64,64 @@ const useStyles = makeStyles((theme) => ({
       zIndex: 1000,
     }
   }));
+
+  const mockedSchedulerData = [
+    {
+      id: "070ac5b5-8369-4cd2-8ba2-0a209130cc60",
+      label: {
+        icon: "https://picsum.photos/24",
+        title: "Joe Doe",
+        subtitle: "Frontend Developer"
+      },
+      data: [
+        {
+          id: "8b71a8a5-33dd-4fc8-9caa-b4a584ba3762",
+          startDate: new Date("2025-02-19T08:31:24.272Z"),
+          endDate: new Date("2025-02-20T16:31:24.272Z"),
+          occupancy: 3600,
+          title: "Project A",
+          subtitle: "Subtitle A",
+          description: "array indexing Salad West Account",
+          bgColor: "rgb(254,165,177)"
+        }]
+    }
+  ];
+  
+
+
+export default function Planning() {
+    const [open, setOpen] = useState(false);
+    const [refresh, setRefresh] = useState(false);
+    const classes = useStyles();
+  return (
+       <div 
+       style={{
+        position: 'relative',
+        height: '100vh',
+        width: '100%',
+        overflow: 'hidden',
+        margin: 0,
+        padding: 0,
+      }}> 
+        <h1>
+          <Scheduler 
+          isLoading={true}
+          data={mockedSchedulerData} 
+          onItemClick={(clickedItem) => console.log("clickedItem")}
+          onTileClick={(clickedTile) => console.log("clickedTile")}
+          config={
+            { zoom: 1,
+              maxRecordsPerPage: 4,
+              filterButtonState: false,
+              defaultTheme: "dark", 
+            } 
+          }
+          />
+        </h1>
+      </div>
+    
+=======
+import { useState, useCallback } from "react";
 
 const mockedSchedulerData = [
   {
@@ -208,35 +267,20 @@ const mockedSchedulerData = [
 
 
 export default function Planning() {
-    const [open, setOpen] = useState(false);
-    const [refresh, setRefresh] = useState(false);
-    const classes = useStyles();
   return (
-       <div 
-       style={{
-        position: 'relative',
-        height: '100vh',
-        width: '100%',
-        overflow: 'hidden',
-        margin: 0,
-        padding: 0,
-      }}> 
-        <h1>
-          <Scheduler 
-          isLoading={true}
-          data={mockedSchedulerData} 
-          onItemClick={(clickedItem) => console.log("clickedItem")}
-          onTileClick={(clickedTile) => console.log("clickedTile")}
-          config={
-            { zoom: 1,
-              maxRecordsPerPage: 4,
-              filterButtonState: false,
-              defaultTheme: "dark", 
-            } 
-          }
-          />
-        </h1>
-      </div>
-    
+    <div>
+      <h1>
+        <Scheduler 
+        isLoading={true}
+        data={mockedSchedulerData} 
+        onItemClick={(clickedItem) => console.log("clickedItem")}
+        onTileClick={(clickedTile) => console.log("clickedTile")}
+        config={
+          {zoom: 1, maxRecordsPerPage: 4 , filterButtonState: false}
+        }
+        />
+      </h1>
+    </div>
+>>>>>>> c921bad02067034bd4c55a4a47fcf5a0f91428a2
   );
 }
