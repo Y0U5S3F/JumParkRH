@@ -62,6 +62,9 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  schedulerDayCell: {
+    width: "150px !important",
+  },
 }));
 
 export default function Planning() {
