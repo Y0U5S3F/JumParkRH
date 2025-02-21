@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import  { useEffect, useState } from "react";
 import Employe from "../models/employe";
 import {
   DataGrid,
@@ -103,9 +102,9 @@ export default function EmployePage() {
     message: "",
   });
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
-
   const classes = useStyles();
   const [newEmployee, setNewEmployee] = useState(new Employe());
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee((prev) => ({ ...prev, [name]: value }));

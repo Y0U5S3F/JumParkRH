@@ -9,7 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { addConge } from "../service/CongeService";
+import { addConge, updateConge } from "../service/CongeService";
 import {
   Container,
   TextField,
@@ -87,9 +87,12 @@ const useStyles = makeStyles((theme) => ({
 export default function DemandeCongePage() {
   const [employees, setEmployees] = useState([]);
   const [conges, setConges] = useState([]);
+  const [editConge, setEditConge] = useState(new Conge());
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchEditTerm, setSearchEditTerm] = useState("");
   const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -159,17 +162,67 @@ export default function DemandeCongePage() {
       });
     }
   };
-  
 
-  const handleEdit = (service) => {
-    console.log("Edit Service:", service);
+  const handleEdit = (conge) => {
+    setEditConge(conge);
+    setOpenEdit(true);
+    console.log("Edit COnge:", conge);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setNewConge((prev) => ({ ...prev, [name]: value }));
     console.log(newConge);
+  };
+
+  const handleUpdateConge = async () => {
+    try {
+      if (
+        !editConge.employe ||
+        !editConge.start_date ||
+        !editConge.end_date ||
+        !editConge.status
+      ) {
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "All fields are required.",
+        });
+        return;
+      }
+
+      const congeToUpdate = {
+        employe: editConge.employe,
+        start_date: editConge.start_date,
+        end_date: editConge.end_date,
+        type_conge: editConge.type_conge,
+        status: editConge.status,
+        notes: editConge.notes,
+      };
+
+      await updateConge(editConge.id, congeToUpdate);
+
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Congé updated successfully!",
+      });
+
+      setOpenEdit(false);
+      setRefresh((prev) => prev + 1); // Trigger re-fetch
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Error updating congé.",
+      });
+    }
+  };
+
+  const handleInputModifyChange = (e) => {
+    const { name, value } = e.target;
+    setEditConge((prev) => ({ ...prev, [name]: value }));
+    console.log(editConge);
   };
   const handleAddConge = async () => {
     try {
@@ -259,10 +312,11 @@ export default function DemandeCongePage() {
     <Container className={classes.container}>
       <Box className={classes.topBar}>
         <Button variant="contained" onClick={() => setOpen(true)}>
-          Ajouter Service
+          Ajouter Conge
         </Button>
       </Box>
 
+      {/* Add Conge */}
       <Modal
         open={open}
         onClose={() => {
@@ -403,6 +457,157 @@ export default function DemandeCongePage() {
               variant="contained"
               color="primary"
               onClick={handleAddConge}
+            >
+              Enregistrer
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* Update Conge */}
+      <Modal
+        open={openEdit}
+        onClose={() => {
+          setOpenEdit(false);
+          setNewConge(new Conge());
+          setSearchEditTerm("");
+        }}
+      >
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Veuillez saisir les informations du congé
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box className={classes.contentContainer}>
+            <Typography variant="body1" gutterBottom>
+              Informations sur le congé
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Autocomplete
+                  options={employees}
+                  getOptionLabel={(option) =>
+                    `${option.nom} ${option.prenom} (${option.matricule})`
+                  }
+                  value={
+                    employees.find(
+                      (emp) => emp.matricule === editConge.employe
+                    ) || null
+                  }
+                  onChange={(event, newValue) => {
+                    setEditConge((prev) => ({
+                      ...prev,
+                      employe: newValue ? newValue.matricule : "",
+                    }));
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Employé" />
+                  )}
+                  isOptionEqualToValue={(option, value) =>
+                    option.matricule === value.matricule
+                  }
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Type de congé</InputLabel>
+                  <Select
+                    label="Type de congé"
+                    value={editConge.type_conge}
+                    onChange={handleInputModifyChange}
+                    name="type_conge"
+                  >
+                    <MenuItem value="conge paye">Congé Payé</MenuItem>
+                    <MenuItem value="conge sans solde">
+                      Congé Sans Solde
+                    </MenuItem>
+                    <MenuItem value="conge maladie">Congé Maladie</MenuItem>
+                    <MenuItem value="conge maternite">Congé Maternité</MenuItem>
+                    <MenuItem value="conge paternite">Congé Paternité</MenuItem>
+                    <MenuItem value="conge exceptionnel">
+                      Congé Exceptionnel
+                    </MenuItem>
+                    <MenuItem value="conge annuel">Congé Annuel</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    label="Date de début"
+                    value={
+                      editConge.start_date ? dayjs(editConge.start_date) : null
+                    }
+                    onChange={(date) =>
+                      handleInputModifyChange({
+                        target: {
+                          name: "start_date",
+                          value: date?.format("YYYY-MM-DD"),
+                        },
+                      })
+                    }
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={4}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    sx={{ width: "100%" }}
+                    label="Date de fin"
+                    value={
+                      editConge.end_date ? dayjs(editConge.end_date) : null
+                    }
+                    onChange={(date) =>
+                      handleInputModifyChange({
+                        target: {
+                          name: "end_date",
+                          value: date?.format("YYYY-MM-DD"),
+                        },
+                      })
+                    }
+                  />
+                </LocalizationProvider>
+              </Grid>
+              <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Statut</InputLabel>
+                  <Select
+                    label="Statut"
+                    value={editConge.status}
+                    onChange={handleInputModifyChange}
+                    name="status"
+                  >
+                    <MenuItem value="en cours">En Cours</MenuItem>
+                    <MenuItem value="accepte">Accepté</MenuItem>
+                    <MenuItem value="refuse">Refusé</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Notes"
+                  type="text"
+                  variant="outlined"
+                  name="notes"
+                  value={editConge.notes}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                  multiline
+                  rows={2}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          <Box mt={3} display="flex" justifyContent="space-between">
+            <Button variant="outlined" onClick={() => setNewConge(new Conge())}>
+              Réinitialiser
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateConge}
             >
               Enregistrer
             </Button>
