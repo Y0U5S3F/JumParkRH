@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'attendance',
     'conge',
     'departement',
-    'emploi',
     'employe',
     'jourferie',
     'salaire',

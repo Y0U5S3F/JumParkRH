@@ -1,5 +1,5 @@
-import { Scheduler } from "@bitnoi.se/react-scheduler";
-import "@bitnoi.se/react-scheduler/dist/style.css";
+import { Scheduler } from "@y0u5s3f/custom-react-scheduler";
+import "@y0u5s3f/custom-react-scheduler/dist/style.css";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import Emploi from "../models/emploi";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
