@@ -50,11 +50,12 @@ INSTALLED_APPS = [
     'attendance',
     'conge',
     'departement',
-    'emploi',
     'employe',
     'jourferie',
     'salaire',
-    'service',  
+    'service',
+    'label',
+    'typeconge',
 ]
 
 MIDDLEWARE = [
