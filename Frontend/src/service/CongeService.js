@@ -1,12 +1,25 @@
 import axios from "axios";
-
+import {fetchEmployeeMinimalByMatricule} from "./EmployeService";
 const CONGE_API_URL = "http://127.0.0.1:8000/api/conge/conges/";
 
-// Fetch all congés
+// Fetch all congés with employee names
 export const fetchConges = async () => {
   try {
     const response = await axios.get(CONGE_API_URL);
-    return response.data;
+    const conges = response.data;
+
+    // Fetch employee names for each congé
+    const congesWithNames = await Promise.all(
+      conges.map(async (conge) => {
+        const employee = await fetchEmployeeMinimalByMatricule(conge.employe); // Assuming `employe` contains the matricule
+        return {
+          ...conge,
+          employe_name: `${employee.nom} ${employee.prenom}`,
+        };
+      })
+    );
+
+    return congesWithNames;
   } catch (error) {
     console.error("Error fetching congés:", error);
     throw error;
