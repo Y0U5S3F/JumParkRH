@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'salaire',
     'service',
     'label',
+    'typeconge',
 ]
 
 MIDDLEWARE = [
