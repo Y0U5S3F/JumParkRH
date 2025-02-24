@@ -91,16 +91,14 @@ const MENU_GROUPS = [
     subheader: 'Attendance & Leave',
     items: [
       { text: 'Planning', icon: <Event color="secondary" />, path: '/planning' },
-      { text: 'Pointage', icon: <AccessTime color="secondary" />, path: '/pointage' },
       { text: 'Demande Congé', icon: <RequestPage color="secondary" />, path: '/demande-conge' },
-      { text: 'Absences', icon: <AssignmentInd color="secondary" />, path: '/absences' },
+      { text: 'Absences', icon: <AssignmentInd color="secondary" />, path: '/absence' },
     ],
   },
   {
     subheader: 'Payroll & Administration',
     items: [
       { text: 'Fiche de Paie', icon: <Payments color="secondary" />, path: '/fiche-de-paie' },
-      { text: 'Type Absence', icon: <Category color="secondary" />, path: '/type-absence' },
       { text: 'Type Congé', icon: <Category color="secondary" />, path: '/type-conge' },
     ],
   },

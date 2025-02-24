@@ -8,9 +8,12 @@ import NotFound from "./pages/NotFound";
 import Layout from "./components/Layout";
 import Department from "./pages/Department";
 import ServicePage from "./pages/ServicePage";
+import AbsencePage from "./pages/AbsencePage";
 import DemandeCongePage from "./pages/DemandeCongePage";
 import Dashboard from "./pages/Dashboard";
+import AppareilPage from "./pages/AppareilPage";
 import Planning from "./pages/Planning";
+import TypeCongePage from "./pages/TypeCongePage";
 
 function Logout() {
   localStorage.clear();
@@ -35,6 +38,9 @@ function App() {
             <Route path="/service" element={<ServicePage />} />
             <Route path="/planning" element={< Planning/>} />
             <Route path="/demande-conge" element={< DemandeCongePage/>} />
+            <Route path="/appareil" element={< AppareilPage/>} />
+            <Route path="/absence" element={< AbsencePage/>} />
+            <Route path="/type-conge" element={< TypeCongePage/>} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
