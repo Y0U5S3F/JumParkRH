@@ -10,7 +10,7 @@ class Conge(models.Model):
     ]
 
     employe = models.ForeignKey(Employe, on_delete=models.PROTECT, related_name="conges", verbose_name="Employé")
-    type_conge = models.ForeignKey(TypeConge, on_delete=models.PROTECT, related_name="conges", verbose_name="Type de Congé")
+    typeconge = models.ForeignKey(TypeConge, on_delete=models.PROTECT, related_name="conges", verbose_name="Type de Congé")
     start_date = models.DateField(null=False, blank=False, verbose_name="Date de Début")
     end_date = models.DateField(null=False, blank=False, verbose_name="Date de Fin")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, verbose_name="Statut")
@@ -22,4 +22,4 @@ class Conge(models.Model):
         verbose_name_plural = "Congés"
 
     def __str__(self):
-        return f"{self.employe} - {self.type_conge} ({self.start_date} → {self.end_date})"
+        return f"{self.employe} - {self.typeconge} ({self.start_date} → {self.end_date})"
