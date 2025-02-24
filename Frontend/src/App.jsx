@@ -10,6 +10,7 @@ import Department from "./pages/Department";
 import ServicePage from "./pages/ServicePage";
 import DemandeCongePage from "./pages/DemandeCongePage";
 import Dashboard from "./pages/Dashboard";
+import AppareilPage from "./pages/AppareilPage";
 import Planning from "./pages/Planning";
 
 function Logout() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/service" element={<ServicePage />} />
             <Route path="/planning" element={< Planning/>} />
             <Route path="/demande-conge" element={< DemandeCongePage/>} />
+            <Route path="/appareil" element={< AppareilPage/>} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
