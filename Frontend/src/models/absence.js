@@ -1,11 +1,11 @@
 class Absence {
-    constructor(id, nom, date, raison, certifie, employe_id) {
+    constructor(id, nom, date, raison, certifie, employe) {
       this.id = id;
       this.nom = nom;
       this.date = date;
       this.raison = raison;
       this.certifie = certifie;
-      this.employe_id = employe_id;
+      this.employe = employe;
     }
   }
   

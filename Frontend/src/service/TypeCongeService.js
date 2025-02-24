@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const TYPE_CONGE_API_URL = "http://127.0.0.1:8000/api/typeconge/typeconges/";
+const TYPE_CONGE_API_URL = "http://127.0.0.1:8000/api/typeconge/typeconge/";
 
 // Fetch all types of leave
 export const fetchTypeConges = async () => {
@@ -28,7 +28,7 @@ export const fetchTypeCongeById = async (typeCongeId) => {
 export const addTypeConge = async (typeCongeData) => {
   try {
     const response = await axios.post(TYPE_CONGE_API_URL, typeCongeData);
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error adding type of leave:", error);
     throw error;

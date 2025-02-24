@@ -12,9 +12,6 @@ import {
   IconButton,
   Modal,
   FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Typography,
   Snackbar,
   Alert,
@@ -25,12 +22,15 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Checkbox,
+  FormControlLabel,
+  Autocomplete,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { fetchAbsences, addAbsence, updateAbsence, deleteAbsence } from "../service/AbsenceService";
+import { fetchMinimalEmployes } from "../service/EmployeService";
 import Absence from "../models/absence";
 
 const useStyles = makeStyles((theme) => ({
@@ -89,7 +89,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function AbsencePage() {
   const [absences, setAbsences] = useState([]);
-  const [editAbsence, setEditAbsence] = useState(new Absence("", "", "", "", "", ""));
+  const [employees, setEmployees] = useState([]);
+  const [editAbsence, setEditAbsence] = useState(new Absence("", "", "", "", false, ""));
   const [openEditModal, setOpenEditModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -103,7 +104,8 @@ export default function AbsencePage() {
   });
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const [loading, setLoading] = useState(true);
-  const [newAbsence, setNewAbsence] = useState(new Absence("", "", "", "", "", ""));
+  const [newAbsence, setNewAbsence] = useState(new Absence("", "", "", "", false, ""));
+  const [searchTerm, setSearchTerm] = useState("");
 
   const classes = useStyles();
 
@@ -112,20 +114,23 @@ export default function AbsencePage() {
       setLoading(true);
       try {
         const absencesData = await fetchAbsences();
+        const employeesData = await fetchMinimalEmployes();
         
         // Format data for DataGrid
         const formattedAbsences = absencesData.map((absence) => ({
           id: absence.id, // Ensure each row has a unique id
           nom: absence.nom,
-          date: new Date(absence.date).toLocaleDateString(),
+          date: absence.date,
           raison: absence.raison,
           certifie: absence.certifie ? "Certifié" : "Non Certifié",
-          employe_id: absence.employe_id,
+          employe_name: employeesData.find(emp => emp.matricule === absence.employe)?.nom + " " + employeesData.find(emp => emp.matricule === absence.employe)?.prenom || "N/A",
+          employe: absence.employe,
         }));
 
         setAbsences(formattedAbsences);
+        setEmployees(employeesData);
       } catch (error) {
-        console.error("Error fetching absences:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -171,7 +176,7 @@ export default function AbsencePage() {
         date: newAbsence.date,
         raison: newAbsence.raison,
         certifie: newAbsence.certifie,
-        employe_id: newAbsence.employe_id,
+        employe: newAbsence.employe,
       };
       console.log("Sending data:", absenceToSend);
       const response = await addAbsence(absenceToSend);
@@ -196,7 +201,16 @@ export default function AbsencePage() {
   const handleUpdateAbsence = async (e) => {
     e.preventDefault();
     try {
-      await updateAbsence(editAbsence.id, editAbsence);
+      const absenceToSend = {
+        id: editAbsence.id,
+        nom: editAbsence.nom,
+        date: editAbsence.date,
+        raison: editAbsence.raison,
+        certifie: editAbsence.certifie,
+        employe: editAbsence.employe,
+      }
+      console.log(absenceToSend)
+      await updateAbsence(absenceToSend.id, absenceToSend);
       setSnackbar({
         open: true,
         severity: "success",
@@ -224,9 +238,22 @@ export default function AbsencePage() {
     console.log(newAbsence);
   };
 
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setNewAbsence((prev) => ({ ...prev, [name]: checked }));
+    console.log(newAbsence);
+  };
+
   const handleInputModifyChange = (e) => {
     const { name, value } = e.target;
     setEditAbsence((prev) => ({ ...prev, [name]: value }));
+    console.log(editAbsence);
+  };
+
+  const handleCheckboxModifyChange = (e) => {
+    const { name, checked } = e.target;
+    setEditAbsence((prev) => ({ ...prev, [name]: checked }));
+    console.log(editAbsence);
   };
 
   const columns = [
@@ -246,7 +273,7 @@ export default function AbsencePage() {
         </span>
       ),
     },
-    { field: "employe_id", headerName: "Employé ID", flex: 1 },
+    { field: "employe_name", headerName: "Employé", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
@@ -328,29 +355,38 @@ export default function AbsencePage() {
                 />
               </Grid>
               <Grid item xs={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Certifié</InputLabel>
-                  <Select
-                    label="Certifié"
-                    name="certifie"
-                    value={newAbsence.certifie}
-                    onChange={handleChange}
-                  >
-                    <MenuItem value={true}>Certifié</MenuItem>
-                    <MenuItem value={false}>Non Certifié</MenuItem>
-                  </Select>
-                </FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={newAbsence.certifie}
+                      onChange={handleCheckboxChange}
+                      name="certifie"
+                      color="primary"
+                    />
+                  }
+                  label="Certifié"
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Employé ID"
-                  type="search"
-                  variant="outlined"
-                  name="employe_id"
-                  value={newAbsence.employe_id}
-                  onChange={handleChange}
-                  fullWidth
+                <Autocomplete
+                  options={employees}
+                  getOptionLabel={(option) => `${option.nom} ${option.prenom} (${option.matricule})`}
+                  onInputChange={(event, value) => setSearchTerm(value)}
+                  onChange={(event, newValue) => {
+                    handleChange({
+                      target: {
+                        name: "employe",
+                        value: newValue?.matricule || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Employé"
+                      variant="outlined"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -358,7 +394,7 @@ export default function AbsencePage() {
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              onClick={() => setNewAbsence(new Absence("", "", "", "", "", ""))}
+              onClick={() => setNewAbsence(new Absence("", "", "", "", false, ""))}
             >
               Réinitialiser
             </Button>
@@ -426,29 +462,38 @@ export default function AbsencePage() {
                 />
               </Grid>
               <Grid item xs={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Certifié</InputLabel>
-                  <Select
-                    label="Certifié"
-                    name="certifie"
-                    value={editAbsence.certifie}
-                    onChange={handleInputModifyChange}
-                  >
-                    <MenuItem value={true}>Certifié</MenuItem>
-                    <MenuItem value={false}>Non Certifié</MenuItem>
-                  </Select>
-                </FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={editAbsence.certifie}
+                      onChange={handleCheckboxModifyChange}
+                      name="certifie"
+                      color="primary"
+                    />
+                  }
+                  label="Certifié"
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Employé ID"
-                  type="search"
-                  variant="outlined"
-                  name="employe_id"
-                  value={editAbsence.employe_id}
-                  onChange={handleInputModifyChange}
-                  fullWidth
+                <Autocomplete
+                  options={employees}
+                  getOptionLabel={(option) => `${option.nom} ${option.prenom} (${option.matricule})`}
+                  value={employees.find((emp) => emp.matricule === editAbsence.employe) || null}
+                  onChange={(event, newValue) => {
+                    handleInputModifyChange({
+                      target: {
+                        name: "employe",
+                        value: newValue?.matricule || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Employé"
+                      variant="outlined"
+                    />
+                  )}
                 />
               </Grid>
             </Grid>
@@ -456,7 +501,7 @@ export default function AbsencePage() {
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              onClick={() => setEditAbsence(new Absence("", "", "", "", "", ""))}
+              onClick={() => setEditAbsence(new Absence("", "", "", "", false, ""))}
             >
               Réinitialiser
             </Button>
