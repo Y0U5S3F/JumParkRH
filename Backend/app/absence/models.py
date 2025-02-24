@@ -3,8 +3,8 @@ from employe.models import Employe
 
 class Absence(models.Model):
     nom = models.CharField(max_length=100, unique=True)
-    date = models.DateField(null=True, blank=True, verbose_name="Date de Naissance")
-    raison = models.CharField(max_length=255, null=True, blank=True, verbose_name="Adresse")
+    date = models.DateField(null=True, blank=True, verbose_name="Date d'Absence")
+    raison = models.CharField(max_length=255, null=True, blank=True, verbose_name="Raison")
     certifie = models.BooleanField(default=False, verbose_name="Certifié")
 
     employe = models.ForeignKey(
