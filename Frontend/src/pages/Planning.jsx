@@ -2,7 +2,6 @@ import { Scheduler } from "@y0u5s3f/custom-react-scheduler";
 import "@y0u5s3f/custom-react-scheduler/dist/style.css";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import {
   Container,
@@ -16,6 +15,7 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Emploi from "../models/emploi";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -69,36 +69,89 @@ const useStyles = makeStyles((theme) => ({
 export default function Planning() {
   const [schedulerData, setSchedulerData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [refresh, setRefresh] = useState(false);
   const classes = useStyles();
 
   useEffect(() => {
     const fetchLabels = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/label/labels/");
-        const data = response.data;
-        
-        // Transform the data into the format expected by the Scheduler
-        const transformedData = data.map((item) => ({
-          id: item.id,
-          label: {
-            title: item.title,
-            subtitle: item.subtitle,
-          },
-          data: item.data, // Use the full data array from the API
-        }));
-  
-        setSchedulerData(transformedData);
+        const response = await fetch("http://127.0.0.1:8000/api/label/labels/?stream=true");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let done = false;
+        let buffer = "";
+
+        while (!done) {
+          const { value, done: doneReading } = await reader.read();
+          done = doneReading;
+          if (value) {
+            buffer += decoder.decode(value, { stream: !done });
+            let lines = buffer.split("\n");
+            buffer = lines.pop();
+            lines.forEach((line) => {
+              if (line.trim()) {
+                const item = JSON.parse(line);
+                const transformedEvents = item.data.map(event => {
+                  const startValue = event.start_date || event.startDate;
+                  const endValue = event.end_date || event.endDate;
+                  return {
+                    ...event,
+                    start: dayjs(startValue).toDate(),
+                    end: dayjs(endValue).toDate(),
+                  };
+                });
+                const transformedItem = {
+                  id: item.id,
+                  label: {
+                    title: item.title,
+                    subtitle: item.subtitle,
+                  },
+                  data: transformedEvents,
+                };
+                setSchedulerData(prev => {
+                  if (prev.find(existing => existing.id === transformedItem.id)) {
+                    return prev;
+                  }
+                  return [...prev, transformedItem];
+                });
+              }
+            });
+          }
+        }
+        if (buffer.trim()) {
+          const item = JSON.parse(buffer);
+          const transformedEvents = item.data.map(event => {
+            const startValue = event.startDate || event.startDate;
+            const endValue = event.endDate || event.endDate;
+            return {
+              ...event,
+              start: dayjs(startValue).toDate(),
+              end: dayjs(endValue).toDate(),
+            };
+          });
+          const transformedItem = {
+            id: item.id,
+            label: {
+              title: item.title,
+              subtitle: item.subtitle,
+            },
+            data: transformedEvents,
+          };
+          setSchedulerData(prev => {
+            if (prev.find(existing => existing.id === transformedItem.id)) {
+              return prev;
+            }
+            return [...prev, transformedItem];
+          });
+        }
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data", error);
         setIsLoading(false);
       }
     };
-  
+
     fetchLabels();
-  }, []); // Runs only once when the component mounts
+  }, []);
 
   return (
     <div 
@@ -108,7 +161,7 @@ export default function Planning() {
         width: '100%',
         overflow: 'hidden',
         margin: 0,
-        padding: 0,
+        padding: 0, 
       }}
     > 
       <h1>
@@ -119,10 +172,11 @@ export default function Planning() {
           onTileClick={(clickedTile) => console.log("clickedTile", clickedTile)}
           config={{
             zoom: 1,
-            maxRecordsPerPage: 13,
+            maxRecordsPerPage: 14,
             maxRecordsPerTile: 3,
             filterButtonState: false,
-            defaultTheme: "dark", 
+            defaultTheme: "dark",
+            initialDate: new Date(2025, 1, 19)
           }}
         />
       </h1>

@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import LabelListView, LabelDataCreateView
+from .views import LabelListCreateView, LabelDataCreateView, LabelDataRetrieveUpdateDestroyView
 
 urlpatterns = [
-    path('labels/', LabelListView.as_view(), name='label-list'),
-    path('labels/<str:matricule>/', LabelDataCreateView.as_view(), name='label-data-create'),
+    path('labels/', LabelListCreateView.as_view(), name='label-list-create'),
+    path('labels/create/<str:matricule>/', LabelDataCreateView.as_view(), name='label-data-create'),
+    path('labels/<uuid:id>/', LabelDataRetrieveUpdateDestroyView.as_view(), name='label-data-detail'),
 ]
