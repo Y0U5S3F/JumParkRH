@@ -40,8 +40,6 @@ class LabelListCreateView(generics.ListCreateAPIView):
                         "startDate": data_entry.startDate.isoformat(),
                         "endDate": data_entry.endDate.isoformat(),
                         "occupancy": data_entry.occupancy,
-                        "title": data_entry.title,
-                        "subtitle": data_entry.subtitle,
                         "description": data_entry.description,
                         "bg_color": data_entry.bg_color,
                         "startPause": data_entry.startPause.isoformat(),

@@ -70,6 +70,9 @@ export default function Planning() {
   const [schedulerData, setSchedulerData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const classes = useStyles();
+  const [selectedTile, setSelectedTile] = useState(null);
+  const [open, setOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchLabels = async () => {
@@ -93,12 +96,24 @@ export default function Planning() {
                 const transformedEvents = item.data.map(event => {
                   const startValue = event.start_date || event.startDate;
                   const endValue = event.end_date || event.endDate;
+                  const startPauseValue = event.startPause;
+                  const endPauseValue = event.endPause;
+                
                   return {
                     ...event,
                     start: dayjs(startValue).toDate(),
                     end: dayjs(endValue).toDate(),
+                
+                    // Auto-generate title: "HH:mm - HH:mm"
+                    title: `${dayjs(startValue).format("HH:mm")} - ${dayjs(endValue).format("HH:mm")}`,
+                
+                    // Auto-generate description: "HH:mm - HH:mm" or "No Pause Recorded"
+                    description: startPauseValue && endPauseValue
+                      ? `${dayjs(startPauseValue).format("HH:mm")} - ${dayjs(endPauseValue).format("HH:mm")}`
+                      : "No Pause Recorded",
                   };
                 });
+                
                 const transformedItem = {
                   id: item.id,
                   label: {
@@ -169,7 +184,11 @@ export default function Planning() {
           isLoading={isLoading}
           data={schedulerData} 
           onItemClick={(clickedItem) => console.log("clickedItem", clickedItem)}
-          onTileClick={(clickedTile) => console.log("clickedTile", clickedTile)}
+          onTileClick={(clickedTile) => {
+            console.log("clickedTile", clickedTile);
+            setSelectedTile(clickedTile);
+            setOpen(true);  
+          }}
           config={{
             zoom: 1,
             maxRecordsPerPage: 14,
@@ -180,6 +199,31 @@ export default function Planning() {
           }}
         />
       </h1>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="tile-details-modal"
+        aria-describedby="tile-details-description"
+      >
+        <Box className={classes.modalStyle}>
+          <Typography variant="body2">
+            <strong>Start Date:</strong> {dayjs(selectedTile?.startDate).format("HH:mm")}
+          </Typography>
+          <Typography variant="body2">
+            <strong>End Date:</strong> {dayjs(selectedTile?.endDate).format("HH:mm")}
+          </Typography>
+          <Divider />
+          <Typography variant="body2">
+            <strong>Start Pause:</strong> {selectedTile?.startPause ? dayjs(selectedTile.startPause).format("HH:mm") : "N/A"}
+          </Typography>
+          <Typography variant="body2">
+            <strong>End Pause:</strong> {selectedTile?.endPause ? dayjs(selectedTile.endPause).format("HH:mm") : "N/A"}
+          </Typography>
+          <Button onClick={() => setOpen(false)} variant="contained" color="primary">
+            Close
+          </Button>
+        </Box>
+      </Modal>
     </div>
   );
 }
