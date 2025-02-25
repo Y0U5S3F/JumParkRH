@@ -37,6 +37,7 @@ import { fetchMinimalEmployes } from "../service/EmployeService";
 import Service from "../models/service";
 import { fetchConges, deleteConge } from "../service/CongeService";
 import Conge from "../models/conge";
+import { fetchTypeConges } from "../service/TypeCongeService";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -94,6 +95,7 @@ export default function DemandeCongePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchEditTerm, setSearchEditTerm] = useState("");
   const apiRef = useGridApiRef();
+  const [typeConges, setTypeConges] = useState([]);
   const [snackbar, setSnackbar] = useState({
     open: false,
     severity: "",
@@ -106,33 +108,37 @@ export default function DemandeCongePage() {
   const classes = useStyles();
 
   useEffect(() => {
-    const loadConges = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await fetchConges(); // ✅ Use the updated function
-        console.log("Congés with employee names:", data);
-        setConges(data);
+        const [congesData, employeesData, typeCongesData] = await Promise.all([
+          fetchConges(),
+          fetchMinimalEmployes(),
+          fetchTypeConges(),
+        ]);
+  
+        setConges(congesData);
+        setEmployees(employeesData);
+        setTypeConges(typeCongesData);
+  
+        console.log("Congés:", congesData);
+        console.log("Employés:", employeesData);
+        console.log("Types de Congé:", typeCongesData);
       } catch (error) {
+        console.error("Erreur lors du chargement des données:", error);
         setSnackbar({
           open: true,
-          severity: `${error}`,
-          message: "Erreur lors du chargement des congés.",
+          severity: "error",
+          message: "Erreur lors du chargement des données.",
         });
       } finally {
         setLoading(false);
       }
     };
-    const loadEmployees = async () => {
-      try {
-        const data = await fetchMinimalEmployes();
-        setEmployees(data);
-      } catch (error) {
-        console.error("Erreur lors du chargement des employés:", error);
-      }
-    };
-    loadEmployees();
-    loadConges();
+  
+    fetchData();
   }, [refresh]);
+  
 
   const filteredEmployees = employees.filter((emp) =>
     [emp.nom, emp.prenom, emp.matricule].some((field) =>
@@ -164,9 +170,13 @@ export default function DemandeCongePage() {
   };
 
   const handleEdit = (conge) => {
-    setEditConge(conge);
+    const typeConge = typeConges.find(type => type.nom === conge.typeConge_nom);
+    setEditConge({
+      ...conge,
+      typeconge: typeConge ? typeConge.id : "",
+    });
     setOpenEdit(true);
-    console.log("Edit COnge:", conge);
+    console.log("Edit Conge:", conge);
   };
 
   const handleInputChange = (e) => {
@@ -190,24 +200,25 @@ export default function DemandeCongePage() {
         });
         return;
       }
-
+  
       const congeToUpdate = {
+        
         employe: editConge.employe,
         start_date: editConge.start_date,
         end_date: editConge.end_date,
-        type_conge: editConge.type_conge,
+        typeconge: editConge.typeconge,
         status: editConge.status,
         notes: editConge.notes,
       };
-
+  
       await updateConge(editConge.id, congeToUpdate);
-
+  
       setSnackbar({
         open: true,
         severity: "success",
         message: "Congé updated successfully!",
       });
-
+  
       setOpenEdit(false);
       setRefresh((prev) => prev + 1); // Trigger re-fetch
     } catch (error) {
@@ -225,9 +236,10 @@ export default function DemandeCongePage() {
     console.log(editConge);
   };
   const handleAddConge = async () => {
+    console.log(newConge); // Debugging
     try {
       if (
-        !newConge.matricule ||
+        !newConge.employe ||
         !newConge.start_date ||
         !newConge.end_date ||
         !newConge.status
@@ -239,12 +251,12 @@ export default function DemandeCongePage() {
         });
         return;
       }
-
+      console.log(newConge); // Debugging
       const congeToSend = {
-        employe: newConge.matricule,
+        employe: newConge.employe,
         start_date: newConge.start_date,
         end_date: newConge.end_date,
-        type_conge: newConge.type_conge,
+        typeconge: newConge.typeconge,
         status: newConge.status,
         notes: newConge.notes, // Default status
       };
@@ -286,7 +298,7 @@ export default function DemandeCongePage() {
   const columns = [
     { field: "id", headerName: "ID", flex: 1 },
     { field: "employe_name", headerName: "Employé", flex: 1 }, // ✅ Display full name
-    { field: "type_conge", headerName: "Type de Congé", flex: 1 },
+    { field: "typeConge_nom", headerName: "Type de Congé", flex: 1 }, // Display type_conge.nom
     { field: "start_date", headerName: "Date Début", flex: 1 },
     { field: "end_date", headerName: "Date Fin", flex: 1 },
     { field: "status", headerName: "Statut", flex: 1 },
@@ -346,7 +358,7 @@ export default function DemandeCongePage() {
                   onChange={(event, newValue) => {
                     handleInputChange({
                       target: {
-                        name: "matricule",
+                        name: "employe",
                         value: newValue?.matricule || "",
                       },
                     });
@@ -365,24 +377,19 @@ export default function DemandeCongePage() {
                   <InputLabel>Type de congé</InputLabel>
                   <Select
                     label="Type de congé"
-                    value={newConge.type_conge}
+                    value={newConge.typeconge}
                     onChange={handleInputChange}
-                    name="type_conge"
+                    name="typeconge"
                   >
-                    <MenuItem value="conge paye">Congé Payé</MenuItem>
-                    <MenuItem value="conge sans solde">
-                      Congé Sans Solde
-                    </MenuItem>
-                    <MenuItem value="conge maladie">Congé Maladie</MenuItem>
-                    <MenuItem value="conge maternite">Congé Maternité</MenuItem>
-                    <MenuItem value="conge paternite">Congé Paternité</MenuItem>
-                    <MenuItem value="conge exceptionnel">
-                      Congé Exceptionnel
-                    </MenuItem>
-                    <MenuItem value="conge annuel">Congé Annuel</MenuItem>
+                    {typeConges.map((type) => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.nom}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
+
               <Grid item xs={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -463,7 +470,6 @@ export default function DemandeCongePage() {
           </Box>
         </Box>
       </Modal>
-
       {/* Update Conge */}
       <Modal
         open={openEdit}
@@ -514,21 +520,15 @@ export default function DemandeCongePage() {
                   <InputLabel>Type de congé</InputLabel>
                   <Select
                     label="Type de congé"
-                    value={editConge.type_conge}
-                    onChange={handleInputModifyChange}
-                    name="type_conge"
+                    value={editConge.typeconge}
+                    onChange={handleInputChange}
+                    name="typeconge"
                   >
-                    <MenuItem value="conge paye">Congé Payé</MenuItem>
-                    <MenuItem value="conge sans solde">
-                      Congé Sans Solde
-                    </MenuItem>
-                    <MenuItem value="conge maladie">Congé Maladie</MenuItem>
-                    <MenuItem value="conge maternite">Congé Maternité</MenuItem>
-                    <MenuItem value="conge paternite">Congé Paternité</MenuItem>
-                    <MenuItem value="conge exceptionnel">
-                      Congé Exceptionnel
-                    </MenuItem>
-                    <MenuItem value="conge annuel">Congé Annuel</MenuItem>
+                    {typeConges.map((type) => (
+                      <MenuItem key={type.id} value={type.id}>
+                        {type.nom}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>

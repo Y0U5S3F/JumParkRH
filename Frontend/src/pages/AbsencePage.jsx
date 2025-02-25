@@ -140,7 +140,10 @@ export default function AbsencePage() {
   }, [refresh]);
 
   const handleEdit = (absence) => {
-    setEditAbsence(absence);
+    setEditAbsence({
+      ...absence,
+      certifie: absence.certifie === "Certifié",
+    });
     setOpenEditModal(true);
   };
 
