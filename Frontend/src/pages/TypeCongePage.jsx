@@ -158,7 +158,7 @@ export default function TypeCongePage() {
 
       // Send POST request
       const response = await addTypeConge(typeCongeToSend);
-
+    console.log(response.status);
       if (response.status === 201) {
         setSnackbar({
           open: true,
