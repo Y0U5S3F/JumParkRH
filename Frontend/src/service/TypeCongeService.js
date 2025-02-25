@@ -13,6 +13,7 @@ export const fetchTypeConges = async () => {
   }
 };
 
+
 // Fetch a single type of leave by ID
 export const fetchTypeCongeById = async (typeCongeId) => {
   try {

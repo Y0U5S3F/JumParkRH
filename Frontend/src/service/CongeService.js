@@ -1,5 +1,6 @@
 import axios from "axios";
 import {fetchEmployeeMinimalByMatricule} from "./EmployeService";
+import { fetchTypeCongeById } from "./TypeCongeService";
 const CONGE_API_URL = "http://127.0.0.1:8000/api/conge/conges/";
 
 // Fetch all congés with employee names
@@ -8,23 +9,27 @@ export const fetchConges = async () => {
     const response = await axios.get(CONGE_API_URL);
     const conges = response.data;
 
-    // Fetch employee names for each congé
-    const congesWithNames = await Promise.all(
+    // Fetch employee names and typeConge names for each congé
+    const congesWithDetails = await Promise.all(
       conges.map(async (conge) => {
-        const employee = await fetchEmployeeMinimalByMatricule(conge.employe); // Assuming `employe` contains the matricule
+        const employee = await fetchEmployeeMinimalByMatricule(conge.employe); // Fetch employee details
+        const typeConge = await fetchTypeCongeById(conge.typeconge); // Fetch typeConge name
+        
         return {
           ...conge,
           employe_name: `${employee.nom} ${employee.prenom}`,
+          typeConge_nom: typeConge.nom,
         };
       })
     );
 
-    return congesWithNames;
+    return congesWithDetails;
   } catch (error) {
     console.error("Error fetching congés:", error);
     throw error;
   }
 };
+
 
 // Add a new congé
 export const addConge = async (congeData) => {
