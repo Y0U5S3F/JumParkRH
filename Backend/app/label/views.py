@@ -39,11 +39,9 @@ class LabelListCreateView(generics.ListCreateAPIView):
                         "id": str(data_entry.id),
                         "startDate": data_entry.startDate.isoformat(),
                         "endDate": data_entry.endDate.isoformat(),
-                        "occupancy": data_entry.occupancy,
-                        "description": data_entry.description,
-                        "bg_color": data_entry.bg_color,
                         "startPause": data_entry.startPause.isoformat(),
                         "endPause": data_entry.endPause.isoformat(),
+                        "status": data_entry.status.isoformat(),
                     })
 
                 yield f"{json.dumps(label_data)}\n"  # Convert to JSON and add newline for streaming
