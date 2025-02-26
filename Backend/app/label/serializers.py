@@ -8,10 +8,9 @@ class LabelDataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LabelSerializer(serializers.ModelSerializer):
-    employe = serializers.CharField(source='employe.matricule')  # Assuming 'matricule' is the field on Employe
-    service = serializers.IntegerField(source='service.id')  # Assuming 'id' is the field on Service
+    employe = serializers.CharField(source='employe.matricule')
+    service = serializers.IntegerField(source='service.id')
 
-    # Add nested data for LabelData
     data = LabelDataSerializer(many=True, read_only=True)
 
     class Meta:
