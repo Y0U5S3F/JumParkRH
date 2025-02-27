@@ -18,6 +18,8 @@ class Label(models.Model):
     )
     title = models.CharField(max_length=255)
     subtitle = models.CharField(max_length=255)
+    zkteco_id = models.PositiveIntegerField(unique=True, null=True, blank=True, verbose_name="ZKTeco ID")
+
 
     def save(self, *args, **kwargs):
         if self.employe:

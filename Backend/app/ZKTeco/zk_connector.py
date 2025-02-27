@@ -1,4 +1,5 @@
 from zk import ZK
+from random import randint
 from datetime import datetime
 from label.models import Label, LabelData
 from employe.models import Employe
@@ -16,15 +17,12 @@ def fetch_attendance():
         for log in logs:
             print(f"User: {log.user_id}, Time: {log.timestamp}, Status: {log.status}")
 
-            # Match attendance to the corresponding employee
             try:
                 employe = Employe.objects.get(pk=log.user_id)
                 label = Label.objects.get(employe=employe)
 
-                # Determine attendance status
                 status = map_zk_status(log.status)
 
-                # Handle pause logic
                 if status == "en pause":
                     label_data = LabelData.objects.filter(label=label, status="present").last()
                     if label_data:
@@ -32,7 +30,6 @@ def fetch_attendance():
                         label_data.status = "en pause"
                         label_data.save()
 
-                # Create or update LabelData
                 LabelData.objects.create(
                     label=label,
                     startDate=log.timestamp,
@@ -52,8 +49,18 @@ def fetch_attendance():
 
 def map_zk_status(status):
     status_mapping = {
-        0: "present",      # Check-in
-        1: "en pause",     # Break
-        2: "fin de service" # Check-out
+        0: "present",
+        1: "en pause",
+        2: "fin de service"
     }
     return status_mapping.get(status, "anomalie")
+
+def assign_zkteco_ids():
+    for employe in Employe.objects.filter(zkteco_id__isnull=True):
+        while True:
+            new_id = randint(1000, 9999)
+            if not Employe.objects.filter(zkteco_id=new_id).exists():
+                employe.zkteco_id = new_id
+                employe.save()
+                print(f"Assigned ZKTeco ID {new_id} to {employe.nom}")
+                break

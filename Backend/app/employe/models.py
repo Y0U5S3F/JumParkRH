@@ -131,3 +131,10 @@ class Employe(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=['departement']),
             models.Index(fields=['service']),
         ]
+
+zkteco_id = models.PositiveIntegerField(
+    unique=True, 
+    null=True, 
+    blank=True, 
+    verbose_name="ZKTeco User ID"
+)
