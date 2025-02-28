@@ -1,4 +1,3 @@
-# label/models.py
 import uuid
 from django.db import models
 
@@ -29,10 +28,25 @@ class Label(models.Model):
         verbose_name_plural = "Labels"
         unique_together = ('employe',)
 
+
 class LabelData(models.Model):
+    STATUS_CHOICES = [
+        ("present", "Présent"),
+        ("en pause", "En Pause"),
+        ("en conge", "En Congé"),
+        ("absent", "Absent"),
+        ("fin de service", "Fin de Service"),
+        ("anomalie", "Anomalie"),
+        ("jour ferie", "Jour Férié"),
+    ]
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.ForeignKey(Label, related_name="data", on_delete=models.CASCADE)
     startDate = models.DateTimeField()
     endDate = models.DateTimeField()
     startPause = models.DateTimeField()
     endPause = models.DateTimeField()
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES)
+
+    def __str__(self):
+        return f"{self.label.title} ({self.get_status_display()})"
