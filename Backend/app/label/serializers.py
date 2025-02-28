@@ -9,11 +9,9 @@ class LabelDataSerializer(serializers.ModelSerializer):
 
 class LabelSerializer(serializers.ModelSerializer):
     employe = serializers.CharField(source='employe.matricule')
-    service = serializers.IntegerField(source='service.id')
-
+    uid = serializers.IntegerField(source='employe.uid')
     data = LabelDataSerializer(many=True, read_only=True)
 
     class Meta:
         model = Label
         fields = ['id', 'employe', 'uid', 'data']
-
