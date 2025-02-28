@@ -25,7 +25,7 @@ class EmployeSerializer(serializers.ModelSerializer):
         model = Employe
         fields = [
             'matricule', 'nom', 'prenom', 'email', 'role', 'date_de_naissance', 'lieu_de_naissance',
-            'nationalite', 'genre_legal', 'situation_familiale', 'CIN', 'num_telephone', 'adresse',
+            'nationalite', 'genre_legal', 'situation_familiale', 'CIN', 'num_telephone', 'uid', 'adresse',
             'ville', 'code_postal', 'nom_urgence', 'num_telephone_urgence', 'compte_bancaire',
             'rib_bancaire', 'departement', 'service', 'departement_id', 'service_id', 'created_at',
             'is_active', 'is_staff', 'is_superuser'
