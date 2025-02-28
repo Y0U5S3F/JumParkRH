@@ -93,6 +93,7 @@ const MENU_GROUPS = [
       { text: 'Planning', icon: <Event color="secondary" />, path: '/planning' },
       { text: 'Demande Congé', icon: <RequestPage color="secondary" />, path: '/demande-conge' },
       { text: 'Absences', icon: <AssignmentInd color="secondary" />, path: '/absence' },
+      { text: 'Jour Ferie', icon: <AssignmentInd color="secondary" />, path: '/jour-ferie' }
     ],
   },
   {
