@@ -37,16 +37,15 @@ class LabelListCreateView(generics.ListCreateAPIView):
                 for data_entry in label.data.all():
                     label_data["data"].append({
                         "id": str(data_entry.id),
-                        "startDate": data_entry.startDate.isoformat(),
-                        "endDate": data_entry.endDate.isoformat(),
-                        "startPause": data_entry.startPause.isoformat(),
-                        "endPause": data_entry.endPause.isoformat(),
-                        # Use get_status_display() if you want the human-readable text, otherwise just data_entry.status
+                        "startDate": data_entry.startDate.isoformat() if data_entry.startDate else None,
+                        "endDate": data_entry.endDate.isoformat() if data_entry.endDate else None,
+                        "startPause": data_entry.startPause.isoformat() if data_entry.startPause else None,
+                        "endPause": data_entry.endPause.isoformat() if data_entry.endPause else None,
                         "status": data_entry.get_status_display(),
                     })
         
                 yield f"{json.dumps(label_data)}\n"
-
+   
 
         response = StreamingHttpResponse(data_stream(), content_type="application/json")
         response["Cache-Control"] = "no-cache"
@@ -62,10 +61,10 @@ class LabelDataCreateView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         # Get the employee_uid from the URL parameters
-        employee_uid = self.kwargs.get('employee_uid')
+        employe_uid = self.kwargs.get('employee_uid')
 
         # Fetch the latest Label for the given employee using employee_uid
-        label = Label.objects.filter(employe__uid=employee_uid).order_by('-id').first()
+        label = Label.objects.filter(employe__uid=employe_uid).order_by('-id').first()
 
         if not label:
             return Response({"detail": "Label not found for the given employee UID."},
@@ -87,4 +86,3 @@ class LabelDataRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = LabelData.objects.all()
     serializer_class = LabelDataSerializer
     lookup_field = "id"
-

@@ -20,6 +20,7 @@
     "@y0u5s3f/custom-react-scheduler": "^0.3.0",
     "axios": "^1.7.9",
     "dayjs": "^1.11.13",
+    "dayjs-plugin-utc": "^0.1.2",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
     "react-big-scheduler": "^0.2.7",
