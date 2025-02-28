@@ -44,11 +44,11 @@ class LabelData(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.ForeignKey(Label, related_name="data", on_delete=models.CASCADE)
-    startDate = models.DateTimeField()
-    endDate = models.DateTimeField()
-    startPause = models.DateTimeField()
-    endPause = models.DateTimeField()
-    status = models.CharField(max_length=30, choices=STATUS_CHOICES);
+    startDate = models.DateTimeField(null=True, blank=True)
+    endDate = models.DateTimeField(null=True, blank=True)
+    startPause = models.DateTimeField(null=True, blank=True)
+    endPause = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES)
 
     def __str__(self):
         return f"{self.label.title} - {self.status} ({self.startDate})"
