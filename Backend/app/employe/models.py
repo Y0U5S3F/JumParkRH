@@ -62,6 +62,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     situation_familiale = models.CharField(max_length=20, choices=SITUATION_CHOICES, null=False, blank=False, verbose_name="Situation Familiale")
     CIN = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="CIN", db_index=True)
     num_telephone = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="Numéro de Téléphone", db_index=True)
+    uid = models.PositiveIntegerField(unique=True, null=True, blank=True, verbose_name="UID")
 
     # Address Information
     adresse = models.TextField(null=True, blank=True, verbose_name="Adresse")
@@ -131,3 +132,10 @@ class Employe(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=['departement']),
             models.Index(fields=['service']),
         ]
+
+zkteco_id = models.PositiveIntegerField(
+    unique=True, 
+    null=True, 
+    blank=True, 
+    verbose_name="ZKTeco User ID"
+)

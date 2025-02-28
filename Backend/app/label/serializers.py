@@ -15,4 +15,5 @@ class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Label
-        fields = ['id', 'employe', 'service', 'data']
+        fields = ['id', 'employe', 'uid', 'data']
+
