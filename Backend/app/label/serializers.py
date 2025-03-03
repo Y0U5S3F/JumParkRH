@@ -30,6 +30,10 @@ class LabelDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = LabelData
         fields = '__all__'
+        extra_kwargs = {
+            'label': {'required': False},
+            'status': {'required': False},
+            }
 
 class LabelSerializer(serializers.ModelSerializer):
     employe = serializers.CharField(source='employe.matricule')

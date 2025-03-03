@@ -1,133 +1,201 @@
-import json
+import csv
 import os
-from datetime import datetime
+import requests
+from zk import ZK
 
-# File to store attendance sessions
-LOG_FILE = "attendance_logs.json"
+# Constants
+DEVICE_IP = '41.224.5.17'
+DEVICE_PORT = 4370
+MARKER_FILE = 'logs.csv'
 
-def load_sessions():
-    """Load existing attendance sessions from the JSON file."""
-    if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "r") as f:
+def read_last_uid(filename):
+    """Read the last processed UID from the marker file."""
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            first_line = f.readline().strip()
             try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return []
-    return []
+                return int(first_line)
+            except ValueError:
+                print("Invalid UID in marker file. Defaulting to 0.")
+                return 0
+    return 0
 
-def save_sessions(sessions):
-    """Save the sessions list back to the JSON file."""
-    with open(LOG_FILE, "w") as f:
-        json.dump(sessions, f, indent=4)
-
-def process_attendance_event(uid, punch, event_time):
-    """
-    Processes an attendance event for a given UID.
-    
-    Parameters:
-        uid (int): The employee UID.
-        punch (int): 0 for checkin, 1 for checkout.
-        event_time (datetime): The time of the event.
-        
-    Behavior:
-      - If there is no previous session for this UID, creates a new one.
-      - If the last session’s punch is different from the new event in the proper order 
-        (checkin then checkout), it updates that session.
-      - If the new event is the same as the last recorded event, it creates a new session.
-    """
-    sessions = load_sessions()
-    new_event_iso = event_time.isoformat()
-
-    # Find the latest session for this uid
-    uid_sessions = [s for s in sessions if s.get("uid") == uid]
-    if uid_sessions:
-        # Sort by startDate (if present); if startDate is None, use endDate
-        uid_sessions.sort(key=lambda s: s.get("startDate") or s.get("endDate") or "", reverse=True)
-        last_session = uid_sessions[0]
-        last_punch = last_session.get("lastPunch")
-    else:
-        last_session = None
-        last_punch = None
-
-    # Decide what to do based on last event and current event:
-    #   0 = checkin, 1 = checkout
-    if last_session:
-        if last_punch == 0 and punch == 1:
-            # Expected: checkin followed by checkout. If the current session doesn't have endDate, update it.
-            if last_session.get("endDate") is None:
-                last_session["endDate"] = new_event_iso
-                last_session["lastPunch"] = punch
-                print(f"[Update] UID {uid}: Checkin at {last_session['startDate']} updated with checkout at {new_event_iso}.")
-            else:
-                # If endDate is already set, then it is an anomaly: create a new session for checkout.
-                new_session = {
-                    "uid": uid,
-                    "startDate": None,
-                    "endDate": new_event_iso,
-                    "lastPunch": punch
-                }
-                sessions.append(new_session)
-                print(f"[Anomaly] UID {uid}: Duplicate checkout received. New session created with checkout at {new_event_iso}.")
+def update_last_uid(filename, uid):
+    """Update the marker file with the new last processed UID while preserving log entries."""
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+        if lines:
+            lines[0] = str(uid) + "\n"
         else:
-            # For all other cases, create a new session.
-            if punch == 0:
-                # New checkin event.
-                new_session = {
-                    "uid": uid,
-                    "startDate": new_event_iso,
-                    "endDate": None,
-                    "lastPunch": punch
-                }
-                sessions.append(new_session)
-                print(f"[New] UID {uid}: New checkin at {new_event_iso} (previous event was checkin or checkout).")
-            elif punch == 1:
-                # New checkout event.
-                new_session = {
-                    "uid": uid,
-                    "startDate": None,
-                    "endDate": new_event_iso,
-                    "lastPunch": punch
-                }
-                sessions.append(new_session)
-                print(f"[New] UID {uid}: New checkout at {new_event_iso} (previous event was checkin or checkout).")
+            lines = [str(uid) + "\n"]
+        with open(filename, 'w') as f:
+            f.writelines(lines)
     else:
-        # No existing session for this uid, so create a new session based on punch.
-        if punch == 0:
-            new_session = {
-                "uid": uid,
-                "startDate": new_event_iso,
-                "endDate": None,
-                "lastPunch": punch
-            }
-            sessions.append(new_session)
-            print(f"[New] UID {uid}: First checkin at {new_event_iso}.")
-        elif punch == 1:
-            new_session = {
-                "uid": uid,
-                "startDate": None,
-                "endDate": new_event_iso,
-                "lastPunch": punch
-            }
-            sessions.append(new_session)
-            print(f"[New] UID {uid}: First checkout at {new_event_iso}.")
-    
-    save_sessions(sessions)
+        with open(filename, 'w') as f:
+            f.write(str(uid) + "\n")
 
-# --- Example simulation of incoming events ---
+def append_log_entry(user_id, returned_id, filename):
+    """Append a new check‑in record (user_id, returned_data_id) to the logfile."""
+    with open(filename, 'a', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([user_id, returned_id])
+
+def get_first_open_data_id_for_user(user_id, filename):
+    """
+    Retrieve the data_id associated with the first open record for the given user_id 
+    from the logfile. Assumes the first line is a marker and subsequent lines are
+    formatted as: user_id, returned_data_id.
+    """
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+        # Skip the marker (first line) and return the first matching record.
+        for row in rows[1:]:
+            if row and row[0] == str(user_id):
+                return row[1]
+    return None
+
+def remove_first_log_entry(user_id, filename):
+    """
+    Remove the first log entry for the given user_id from the logfile.
+    This way, if a user has multiple open check‑ins, only the oldest one is removed.
+    """
+    if not os.path.exists(filename):
+        return
+    with open(filename, 'r', newline='') as f:
+        reader = csv.reader(f)
+        rows = list(reader)
+    if not rows:
+        return
+    new_rows = [rows[0]]  # preserve the marker line
+    removed = False
+    for row in rows[1:]:
+        if not removed and row and row[0] == str(user_id):
+            removed = True
+            continue
+        new_rows.append(row)
+    with open(filename, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(new_rows)
+
+def process_punch(punch):
+    """Return a string representation for the punch value."""
+    match punch:
+        case 0: return "Check-In"
+        case 1: return "Check-Out"
+        case 4: return "Break Start"
+        case 5: return "Break End"
+        case _: return "Unknown"
+
+def send_label_data(user_id, start_date, end_date, start_pause, end_pause, status):
+    """
+    For a check‑in (punch 0), send the initial POST request.
+    The fields end_date, start_pause, and end_pause can be None.
+    """
+    url = f"http://127.0.0.1:8000/api/label/labels/auto/{user_id}/"
+    payload = {
+       "startDate": start_date,
+       "endDate": end_date,
+       "startPause": start_pause,
+       "endPause": end_pause,
+       "status": status
+    }
+    return requests.post(url, json=payload)
+
+def update_record(data_id, field, value):
+    """
+    Update a single field of the record with the given data_id via a PUT request.
+    """
+    url = f"http://127.0.0.1:8000/api/label/labels/data/{data_id}/"
+    payload = { field: value }
+    return requests.put(url, json=payload)
+
+def process_log(log):
+    """
+    Process a single log entry based on its punch value.
+    Each entry is handled immediately.
+    """
+    uid, user_id, punch, timestamp, event = log
+
+    if punch == 0:
+        # Check-In: send initial data (with null fields) and append the returned record id.
+        start_date_str = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
+        response = send_label_data(user_id, start_date_str, None, None, None, "present")
+        if response.status_code == 201:
+            returned_id = response.json().get("id")
+            append_log_entry(user_id, returned_id, MARKER_FILE)
+            print(f"Check-In processed for user {user_id}.")
+        else:
+            print(f"Error processing Check-In for user {user_id}: {response.text}")
+
+    elif punch == 4:
+        # Break Start: update the 'endPause' field for the open record.
+        pause_end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
+        data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
+        if data_id:
+            response = update_record(data_id, "endPause", pause_end_date)
+            if response.status_code == 200:
+                print(f"Break Start processed for user {user_id}: updated endPause.")
+            else:
+                print(f"Error updating endPause for user {user_id}: {response.text}")
+        else:
+            print(f"No open log entry found for user {user_id} for Break Start event.")
+
+    elif punch == 5:
+        # Break End: update the 'startPause' field for the open record.
+        pause_start_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
+        data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
+        if data_id:
+            response = update_record(data_id, "startPause", pause_start_date)
+            if response.status_code == 200:
+                print(f"Break End processed for user {user_id}: updated startPause.")
+            else:
+                print(f"Error updating startPause for user {user_id}: {response.text}")
+        else:
+            print(f"No open log entry found for user {user_id} for Break End event.")
+
+    elif punch == 1:
+        # Check-Out: update the 'endDate' field on the first open record and remove that entry.
+        end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
+        data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
+        if data_id:
+            response = update_record(data_id, "endDate", end_date)
+            if response.status_code == 200:
+                print(f"Check-Out processed for user {user_id}: updated endDate.")
+                # Remove only the first matching open record.
+                remove_first_log_entry(user_id, MARKER_FILE)
+            else:
+                print(f"Error updating endDate for user {user_id}: {response.text}")
+        else:
+            print(f"No open log entry found for user {user_id} for Check-Out event.")
+
+def main():
+    zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
+    conn = None
+    try:
+        conn = zk.connect()
+        print(f"Connected to {DEVICE_IP}:{DEVICE_PORT}")
+        attendance_logs = conn.get_attendance()
+        last_uid = read_last_uid(MARKER_FILE)
+        print(f"Last processed UID: {last_uid}")
+
+        # Process each new log entry as it comes in.
+        for log in attendance_logs:
+            if log.uid > last_uid:
+                event = process_punch(log.punch)
+                log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
+                process_log(log_entry)
+                # Update the marker file immediately after processing each log.
+                update_last_uid(MARKER_FILE, log.uid)
+        print("All logs processed.")
+    except Exception as e:
+        print("Error:", e)
+    finally:
+        if conn:
+            conn.disconnect()
+            print("Disconnected from the device.")
+
 if __name__ == "__main__":
-    # Example events list (simulate events coming from the ZKTeco machine)
-    example_events = [
-        {"uid": 10, "punch": 0, "timestamp": "2025-02-28T08:00:00"},
-        {"uid": 10, "punch": 1, "timestamp": "2025-02-28T12:00:00"},
-        {"uid": 10, "punch": 0, "timestamp": "2025-02-28T13:00:00"},
-        {"uid": 10, "punch": 1, "timestamp": "2025-02-28T17:00:00"},
-        {"uid": 20, "punch": 0, "timestamp": "2025-02-28T09:00:00"},
-        {"uid": 20, "punch": 0, "timestamp": "2025-02-28T09:30:00"},  # Duplicate checkin → new session
-        {"uid": 20, "punch": 1, "timestamp": "2025-02-28T18:00:00"},
-    ]
-    
-    for event in example_events:
-        uid = event["uid"]
-        punch = event["punch"]
-        event_time = datetime.fromisoformat(event["timestamp"])
-        process_attendance_event(uid, punch, event_time)
+    main()
