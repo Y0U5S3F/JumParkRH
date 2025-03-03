@@ -27,7 +27,7 @@ export const fetchLabelById = async (labelId) => {
 // Add a new label with matricule
 export const addLabel = async (matricule, labelData) => {
   try {
-    const response = await axios.post(`${LABEL_DATA_API_URL}create/${matricule}/`, labelData);
+    const response = await axios.post(`${LABEL_DATA_API_URL}${matricule}/`, labelData);
     return response.data;
   } catch (error) {
     console.error("Error adding label:", error);
@@ -38,7 +38,7 @@ export const addLabel = async (matricule, labelData) => {
 // Update an existing label
 export const updateLabel = async (labelId, updatedLabel) => {
   try {
-    const response = await axios.put(`${LABEL_DATA_API_URL}${labelId}/`, updatedLabel);
+    const response = await axios.put(`http://127.0.0.1:8000/api/label/labels/data/${labelId}/`, updatedLabel);
     return response.data;
   } catch (error) {
     console.error("Error updating label:", error);

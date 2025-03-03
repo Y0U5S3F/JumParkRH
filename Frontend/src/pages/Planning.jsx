@@ -9,6 +9,8 @@ import {
   Modal,
   Typography,
   Divider,
+  Snackbar,
+  Select, MenuItem, FormControl, InputLabel,
   Grid,
   TextField,
   Autocomplete,
@@ -18,7 +20,7 @@ import utc from "dayjs-plugin-utc";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo"; // Import DemoContainer
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import { addLabel } from "../service/LabelDataService"; // Import the addLabel service
@@ -95,6 +97,12 @@ export default function Planning() {
     new LabelData("", "", "", "", "", "", "")
   ); // State for new presence
   const [searchTerm, setSearchTerm] = useState("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    severity: "",
+    message: "",
+  });
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const fetchLabels = async () => {
@@ -251,6 +259,7 @@ export default function Planning() {
     setNewPresence((prev) => ({ ...prev, [name]: value }));
     console.log(newPresence);
   };
+  
 
   const handleAddPresence = async () => {
     try {
@@ -315,132 +324,148 @@ export default function Planning() {
             }}
           />
 
-<Modal
-  open={open}
-  onClose={() => setOpen(false)}
->
-  <Box className={classes.modalStyle}>
-    {/* Form Inputs for the selected tile */}
-    <Typography variant="h6" gutterBottom>
-      Veuillez modifier les coordonnées de la présence
-    </Typography>
-    <Divider sx={{ mb: 2 }} />
-    <Box className={classes.contentContainer}>
-      <Typography variant="body1" gutterBottom>
-        Informations de la présence
-      </Typography>
-      <Divider sx={{ mb: 2 }} />
-      <Grid container spacing={2}>
-        {/* Example for start and end date inputs */}
-        <Grid item xs={4}>
-          <DateTimePicker
-            label="Start Date"
-            sx={{ width: "100%" }}
-            value={
-              selectedTile?.startDate
-                ? dayjs(selectedTile.startDate).subtract(1, 'hour') // Adjust for time zone
-                : null
-            }
-            onChange={(newValue) =>
-              setSelectedTile((prev) => ({
-                ...prev,
-                startDate: newValue,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} fullWidth />}
-          />
-        </Grid>
+          {/* Update Presence Modal */}
+          <Modal open={open} onClose={() => setOpen(false)}>
+            <Box className={classes.modalStyle}>
+              {/* Form Inputs for the selected tile */}
+              <Typography variant="h6" gutterBottom>
+                Veuillez modifier les coordonnées de la présence
+              </Typography>
+              <Divider sx={{ mb: 2 }} />
+              <Box className={classes.contentContainer}>
+                <Typography variant="body1" gutterBottom>
+                  Informations de la présence
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <Grid container spacing={2}>
+                  {/* Example for start and end date inputs */}
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      label="Start Date"
+                      sx={{ width: "100%" }}
+                      ampm={false}
+                      value={
+                        selectedTile?.startDate
+                          ? dayjs(selectedTile.startDate).subtract(1, "hour") // Adjust for time zone
+                          : null
+                      }
+                      onChange={(newValue) =>{
+                        setSelectedTile((prev) => ({
+                          ...prev,
+                          startDate: newValue,
+                        }));
+                        console.log(selectedTile);
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  </Grid>
 
-        <Grid item xs={4}>
-          <DateTimePicker
-            label="End Date"
-            sx={{ width: "100%" }}
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      label="End Date"
+                      sx={{ width: "100%" }}
+                      ampm={false}
+                      value={
+                        selectedTile?.endDate
+                          ? dayjs(selectedTile.endDate).subtract(1, "hour") // Adjust for time zone
+                          : null
+                      }
+                      onChange={(newValue) =>{
+                        setSelectedTile((prev) => ({
+                          ...prev,
+                          endDate: newValue,
+                        }));
+                        console.log(selectedTile);
 
-            value={
-              selectedTile?.endDate
-                ? dayjs(selectedTile.endDate).subtract(1, 'hour') // Adjust for time zone
-                : null
-            }
-            onChange={(newValue) =>
-              setSelectedTile((prev) => ({
-                ...prev,
-                endDate: newValue,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} fullWidth />}
-          />
-        </Grid>
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  </Grid>
 
-        {/* Example for pause start and end */}
-        <Grid item xs={4}>
-          <DateTimePicker
-            label="Start Pause"
-            sx={{ width: "100%" }}
+                  {/* Example for pause start and end */}
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      label="Start Pause"
+                      sx={{ width: "100%" }}
+                      ampm={false}
+                      value={
+                        selectedTile?.startPause
+                          ? dayjs(selectedTile.startPause).subtract(1, "hour")
+                          : null
+                      }
+                      onChange={(newValue) =>{
+                        setSelectedTile((prev) => ({
+                          ...prev,
+                          startPause: newValue,
+                        }));
+                        console.log(selectedTile);
 
-            value={
-              selectedTile?.startPause
-                ? dayjs(selectedTile.startPause).subtract(1, 'hour')
-                : null
-            }
-            onChange={(newValue) =>
-              setSelectedTile((prev) => ({
-                ...prev,
-                startPause: newValue,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} fullWidth />}
-          />
-        </Grid>
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  </Grid>
 
-        <Grid item xs={4}>
-          <DateTimePicker
-            label="End Pause"
-            sx={{ width: "100%" }}
+                  <Grid item xs={4}>
+                    <DateTimePicker
+                      label="End Pause"
+                      sx={{ width: "100%" }}
+                      ampm={false}
+                      value={
+                        selectedTile?.endPause
+                          ? dayjs(selectedTile.endPause).subtract(1, "hour")
+                          : null
+                      }
+                      onChange={(newValue) =>{
+                        setSelectedTile((prev) => ({
+                          ...prev,
+                          endPause: newValue,
+                        }));
+                        console.log(selectedTile);
 
-            value={
-              selectedTile?.endPause
-                ? dayjs(selectedTile.endPause).subtract(1, 'hour')
-                : null
-            }
-            onChange={(newValue) =>
-              setSelectedTile((prev) => ({
-                ...prev,
-                endPause: newValue,
-              }))
-            }
-            renderInput={(params) => <TextField {...params} fullWidth />}
-          />
-        </Grid>
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  </Grid>
 
-        {/* Status and Label */}
-        <Grid item xs={4}>
-          <Autocomplete
-            value={selectedTile?.status || ""}
-            onChange={(event, newValue) =>
-              setSelectedTile((prev) => ({
-                ...prev,
-                status: newValue,
-              }))
-            }
-            options={["Présent", "En pause", "En congé", "Absent", "Autre"]}
-            renderInput={(params) => <TextField {...params} label="Status" />}
-          />
-        </Grid>
-
-        
-      </Grid>
-    </Box>
-    <Box className={classes.topBar}>
-      <Button
-        variant="contained"
-        onClick={handleAddPresence}
-      >
-        Enregistrer
-      </Button>
-    </Box>
-  </Box>
-</Modal>
-
+                  {/* Status and Label */}
+                  <Grid item xs={4}>
+                    <Autocomplete
+                      value={selectedTile?.status || ""}
+                      onChange={(event, newValue) =>
+                        setSelectedTile((prev) => ({
+                          ...prev,
+                          status: newValue,
+                        }))
+                      }
+                      options={[
+                        "Présent",
+                        "En pause",
+                        "En congé",
+                        "Absent",
+                        "Autre",
+                      ]}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Status" />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+              <Box className={classes.topBar}>
+                <Button variant="contained" onClick={handleAddPresence}>
+                  Enregistrer
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
 
           {/* Add Presence Modal */}
           <Modal
@@ -458,6 +483,25 @@ export default function Planning() {
                 </Typography>
                 <Divider sx={{ mb: 2 }} />
                 <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel>Statut</InputLabel>
+                      <Select
+                        label="Statut"
+                        value={newPresence.status}
+                        onChange={(e) =>
+                          handlePresenceChange({
+                            target: { name: "status", value: e.target.value },
+                          })
+                        }
+                        name="status"
+                      >
+                        <MenuItem value="present">Présent</MenuItem>
+                        <MenuItem value="en pause">En pause</MenuItem>
+                        <MenuItem value="fin de service">Fin de service</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Grid>
                   <Grid item xs={4}>
                     <Autocomplete
                       options={employees}
@@ -485,8 +529,9 @@ export default function Planning() {
                   <Grid item xs={4}>
                     <DateTimePicker
                       label="Start Date"
-                      value={dayjs(newPresence.startDate)}
+                      value={dayjs.utc(newPresence.startDate)}
                       sx={{ width: "100%" }}
+                      ampm={false}
                       onChange={(newValue) => {
                         // Format the start date before sending it to the backend
                         const formattedDate = newValue.format(
@@ -508,8 +553,9 @@ export default function Planning() {
                   <Grid item xs={4}>
                     <DateTimePicker
                       label="End Date"
-                      value={dayjs(newPresence.endDate)}
+                      value={dayjs.utc(newPresence.endDate)}
                       sx={{ width: "100%" }}
+                      ampm={false}
                       onChange={(newValue) => {
                         // Format the end date before sending it to the backend
                         const formattedDate = newValue.format(
@@ -531,7 +577,8 @@ export default function Planning() {
                   <Grid item xs={4}>
                     <DateTimePicker
                       label="Start Pause"
-                      value={dayjs(newPresence.startPause)}
+                      value={dayjs.utc(newPresence.startPause)}
+                      ampm={false}
                       sx={{ width: "100%" }}
                       onChange={(newValue) => {
                         // Format the start pause date before sending it to the backend
@@ -554,7 +601,8 @@ export default function Planning() {
                   <Grid item xs={4}>
                     <DateTimePicker
                       label="End Pause"
-                      value={dayjs(newPresence.endPause)}
+                      ampm={false}
+                      value={dayjs.utc(newPresence.endPause)}
                       sx={{ width: "100%" }}
                       onChange={(newValue) => {
                         // Format the end pause date before sending it to the backend
@@ -578,9 +626,7 @@ export default function Planning() {
               <Box mt={3} display="flex" justifyContent="space-between">
                 <Button
                   variant="outlined"
-                  onClick={() =>
-                    setNewPresence(new LabelData("", "", "", "", "", "", ""))
-                  }
+                  onClick={() => setNewPresence(new LabelData())}
                 >
                   Réinitialiser
                 </Button>

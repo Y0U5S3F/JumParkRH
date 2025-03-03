@@ -86,3 +86,32 @@ class LabelDataRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = LabelData.objects.all()
     serializer_class = LabelDataSerializer
     lookup_field = "id"
+
+class LabelDataCreateManualView(generics.CreateAPIView):
+    queryset = LabelData.objects.all()
+    serializer_class = LabelDataSerializer
+
+    def create(self, request, *args, **kwargs):
+        # Get the matricule from the URL parameters
+        matricule = self.kwargs.get('matricule')
+        
+        # Fetch the latest Label for the given matricule
+        label = Label.objects.filter(employe=matricule).order_by('-id').first()
+
+        if not label:
+            return Response(
+                {"detail": "Label not found for the given matricule."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Prepare data for LabelData creation
+        data = request.data.copy()
+        data['label'] = label.id
+        data['matricule'] = matricule  # Include the matricule in the data
+
+        # Serialize and save the new LabelData instance
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
