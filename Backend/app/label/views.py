@@ -60,32 +60,32 @@ class LabelDataCreateView(generics.CreateAPIView):
     serializer_class = LabelDataSerializer
 
     def create(self, request, *args, **kwargs):
-        # Get the employee_uid from the URL parameters
-        employe_uid = self.kwargs.get('employee_uid')
-
-        # Fetch the latest Label for the given employee using employee_uid
-        label = Label.objects.filter(employe__uid=employe_uid).order_by('-id').first()
-
+        employe_uid = self.kwargs.get('employe_uid')
+        if employe_uid is None:
+            return Response({"detail": "Employee UID not provided in URL."}, status=status.HTTP_400_BAD_REQUEST)
+        if not isinstance(employe_uid, int):
+            try:
+                employe_uid = int(employe_uid)
+            except (TypeError, ValueError):
+                return Response({"detail": "Invalid employee UID."}, status=status.HTTP_400_BAD_REQUEST)
+        label = Label.objects.filter(uid=employe_uid).order_by('-id').first()
         if not label:
-            return Response({"detail": "Label not found for the given employee UID."},
-                            status=status.HTTP_404_NOT_FOUND)
-
-        # Add the label ID to the request data
+            return Response({"detail": "Label not found for the given employee UID."}, status=status.HTTP_404_NOT_FOUND)
         data = request.data.copy()
-        data['label'] = label.id  
-
-        # Serialize and save the new LabelData
+        data['label'] = label.id
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    
 class LabelDataRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = LabelData.objects.all()
     serializer_class = LabelDataSerializer
     lookup_field = "id"
+
+    def update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return super().update(request, *args, **kwargs)
 
 class LabelDataCreateManualView(generics.CreateAPIView):
     queryset = LabelData.objects.all()
