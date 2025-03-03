@@ -9,7 +9,7 @@ def create_label_for_employe(sender, instance, created, **kwargs):
         LabelModel = apps.get_model('label', 'Label')
         LabelModel.objects.create(
             employe=instance,
-            service=instance.service,
+            uid=instance.uid,
             title=f"{instance.nom} {instance.prenom}",
-            subtitle=instance.service.nom
+            subtitle = f"UID: {instance.uid}"
         )
