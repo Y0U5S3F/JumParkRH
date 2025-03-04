@@ -31,9 +31,11 @@ def update_last_uid(filename, uid):
             lines = [str(uid) + "\n"]
         with open(filename, 'w') as f:
             f.writelines(lines)
+        print(f"Updated last processed UID to {uid} in {filename}")
     else:
         with open(filename, 'w') as f:
             f.write(str(uid) + "\n")
+        print(f"Created {filename} and set last processed UID to {uid}")
 
 def append_log_entry(user_id, returned_id, filename):
     """Append a new check‑in record (user_id, returned_data_id) to the logfile."""
@@ -120,56 +122,78 @@ def process_log(log):
     uid, user_id, punch, timestamp, event = log
 
     if punch == 0:
-        # Check-In: send initial data (with null fields) and append the returned record id.
+        # Check if the user already has an open check‑in.
+        existing_data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         start_date_str = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
-        response = send_label_data(user_id, start_date_str, None, None, None, "present")
+        status = "present" if not existing_data_id else "anomalie"
+        response = send_label_data(user_id, start_date_str, None, None, None, status)
+        
         if response.status_code == 201:
             returned_id = response.json().get("id")
+            if existing_data_id:
+                # Replace the old log ID with the new one
+                remove_first_log_entry(user_id, MARKER_FILE)
+                print(f"User {user_id} already had an open check‑in (record ID: {existing_data_id}). Replacing with new record ID: {returned_id}.")
             append_log_entry(user_id, returned_id, MARKER_FILE)
-            print(f"Check-In processed for user {user_id}.")
+            print(f"Check‑In processed for user {user_id} with status '{status}'.")
         else:
-            print(f"Error processing Check-In for user {user_id}: {response.text}")
+            print(f"Error processing Check‑In for user {user_id}: {response.text}")
 
     elif punch == 4:
-        # Break Start: update the 'endPause' field for the open record.
+        # Break Start: update the 'endPause' field and 'status' to 'present' for the open record.
         pause_end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
             response = update_record(data_id, "endPause", pause_end_date)
             if response.status_code == 200:
-                print(f"Break Start processed for user {user_id}: updated endPause.")
+                # Update the status to "present"
+                response = update_record(data_id, "status", "present")
+                if response.status_code == 200:
+                    print(f"Break Start processed for user {user_id}: updated endPause and status to 'present'.")
+                else:
+                    print(f"Error updating status for user {user_id}: {response.text}")
             else:
                 print(f"Error updating endPause for user {user_id}: {response.text}")
         else:
             print(f"No open log entry found for user {user_id} for Break Start event.")
 
     elif punch == 5:
-        # Break End: update the 'startPause' field for the open record.
+        # Break End: update the 'startPause' field and 'status' to 'en pause' for the open record.
         pause_start_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
             response = update_record(data_id, "startPause", pause_start_date)
             if response.status_code == 200:
-                print(f"Break End processed for user {user_id}: updated startPause.")
+                # Update the status to "en pause"
+                response = update_record(data_id, "status", "en pause")
+                if response.status_code == 200:
+                    print(f"Break End processed for user {user_id}: updated startPause and status to 'en pause'.")
+                else:
+                    print(f"Error updating status for user {user_id}: {response.text}")
             else:
                 print(f"Error updating startPause for user {user_id}: {response.text}")
         else:
             print(f"No open log entry found for user {user_id} for Break End event.")
 
     elif punch == 1:
-        # Check-Out: update the 'endDate' field on the first open record and remove that entry.
+        # Check‑Out: update the 'endDate' and 'status' fields on the first open record and remove that entry.
         end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
             response = update_record(data_id, "endDate", end_date)
             if response.status_code == 200:
-                print(f"Check-Out processed for user {user_id}: updated endDate.")
-                # Remove only the first matching open record.
-                remove_first_log_entry(user_id, MARKER_FILE)
+                # Update the status to "fin de service"
+                response = update_record(data_id, "status", "fin de service")
+                if response.status_code == 200:
+                    print(f"Check‑Out processed for user {user_id}: updated endDate and status to 'fin de service'.")
+                    # Remove only the first matching open record.
+                    remove_first_log_entry(user_id, MARKER_FILE)
+                else:
+                    print(f"Error updating status for user {user_id}: {response.text}")
             else:
                 print(f"Error updating endDate for user {user_id}: {response.text}")
         else:
-            print(f"No open log entry found for user {user_id} for Check-Out event.")
+            print(f"No open log entry found for user {user_id} for Check‑Out event.")
 
 def main():
     zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
