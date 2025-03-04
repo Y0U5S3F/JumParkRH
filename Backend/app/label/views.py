@@ -37,12 +37,13 @@ class LabelListCreateView(generics.ListCreateAPIView):
                 for data_entry in label.data.all():
                     label_data["data"].append({
                         "id": str(data_entry.id),
-                        "startDate": data_entry.startDate.isoformat() if data_entry.startDate else None,
-                        "endDate": data_entry.endDate.isoformat() if data_entry.endDate else None,
-                        "startPause": data_entry.startPause.isoformat() if data_entry.startPause else None,
-                        "endPause": data_entry.endPause.isoformat() if data_entry.endPause else None,
+                        "startDate": data_entry.startDate.replace(tzinfo=None).isoformat() if data_entry.startDate else None,
+                        "endDate": data_entry.endDate.replace(tzinfo=None).isoformat() if data_entry.endDate else None,
+                        "startPause": data_entry.startPause.replace(tzinfo=None).isoformat() if data_entry.startPause else None,
+                        "endPause": data_entry.endPause.replace(tzinfo=None).isoformat() if data_entry.endPause else None,
                         "status": data_entry.get_status_display(),
                     })
+
         
                 yield f"{json.dumps(label_data)}\n"
    
