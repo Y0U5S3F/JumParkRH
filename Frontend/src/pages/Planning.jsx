@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Scheduler } from "@y0u5s3f/custom-react-scheduler";
 import "@y0u5s3f/custom-react-scheduler/dist/style.css";
 import dayjs from "dayjs";
+import styled from "styled-components";
+
+// Create a styled container for the Scheduler
+const StyledSchedulerFrame = styled.div`
+  height: 100vh; // Adjust the height as needed
+  width: 100%;
+  overflow: auto;
+  position: relative; // Ensure the container is positioned relative
+`;
 
 export default function SimpleCalendar() {
   const [schedulerData, setSchedulerData] = useState([]);
@@ -20,19 +29,21 @@ export default function SimpleCalendar() {
           const transformEvent = (event) => {
             const formatDate = (dateString) =>
               dateString ? dayjs(dateString).format("YYYY-MM-DDTHH:mm:ss") : null;
+            const formatTime = (timeString) =>
+              timeString ? dayjs(timeString).format("HH:mm") : null;
             return {
               ...event,
               startDate: formatDate(event.startDate),
               endDate: formatDate(event.endDate),
               title: dayjs(event.startDate).format("HH:mm"),
               subtitle: dayjs(event.endDate).format("HH:mm"),
-              description: (event.pauseIn || event.pauseOut)
-              ? `${event.pauseIn ? event.pauseIn : ""}${(event.pauseIn && event.pauseOut) ? "-" : ""}${event.pauseOut ? event.pauseOut : ""}`
-              : "pas de pause",
+              description: (event.startPause || event.endPause)
+                ? `${event.startPause ? formatTime(event.startPause) : ""}${(event.startPause && event.endPause) ? " - " : ""}${event.endPause ? formatTime(event.endPause) : ""}`
+                : "pas de pause",
               bg_color: event.bg_color || "#4CAF50",
             };
           };
-
+        
           return {
             id: item.id,
             label: { title: item.title, subtitle: item.subtitle },
@@ -51,8 +62,14 @@ export default function SimpleCalendar() {
               try {
                 const item = JSON.parse(line);
                 const transformedItem = transformItem(item);
-                // Append the new item to schedulerData
-                setSchedulerData(prevData => [...prevData, transformedItem]);
+                // Append the new item to schedulerData if it doesn't already exist
+                setSchedulerData(prevData => {
+                  const existingItem = prevData.find(data => data.id === transformedItem.id);
+                  if (!existingItem) {
+                    return [...prevData, transformedItem];
+                  }
+                  return prevData;
+                });
               } catch (e) {
                 console.error("Error parsing JSON:", e);
               }
@@ -64,7 +81,13 @@ export default function SimpleCalendar() {
           try {
             const item = JSON.parse(buffer);
             const transformedItem = transformItem(item);
-            setSchedulerData(prevData => [...prevData, transformedItem]);
+            setSchedulerData(prevData => {
+              const existingItem = prevData.find(data => data.id === transformedItem.id);
+              if (!existingItem) {
+                return [...prevData, transformedItem];
+              }
+              return prevData;
+            });
           } catch (e) {
             console.error("Error parsing final JSON:", e);
           }
@@ -79,7 +102,7 @@ export default function SimpleCalendar() {
   }, []);
 
   return (
-    <div style={{ height: "100vh", width: "100%" }}>
+    <StyledSchedulerFrame>
       <Scheduler
         isLoading={isLoading}
         data={schedulerData}
@@ -87,13 +110,12 @@ export default function SimpleCalendar() {
         onTileClick={(tile) => console.log("Tile clicked:", tile)}
         config={{
           zoom: 1,
-          maxRecordsPerPage: 14,
+          maxRecordsPerPage: 13,
           maxRecordsPerTile: 3,
           filterButtonState: false,
           defaultTheme: "dark",
-          initialDate: new Date(), // Starts on today's date
         }}
       />
-    </div>
+    </StyledSchedulerFrame>
   );
 }
