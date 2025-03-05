@@ -259,7 +259,6 @@ export default function Planning() {
     setNewPresence((prev) => ({ ...prev, [name]: value }));
     console.log(newPresence);
   };
-  
 
   const handleAddPresence = async () => {
     try {

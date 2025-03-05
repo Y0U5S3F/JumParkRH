@@ -47,11 +47,12 @@ export const updateLabel = async (labelId, updatedLabel) => {
 };
 
 // Delete a label
-export const deleteLabel = async (labelId) => {
+export const deleteLabel = async (labelId, updatedLabel) => {
   try {
-    await axios.delete(`${LABEL_DATA_API_URL}${labelId}/`);
+    const response = await axios.delete(`http://127.0.0.1:8000/api/label/labels/data/${labelId}/`, updatedLabel);
+    return response.data;
   } catch (error) {
-    console.error("Error deleting label:", error);
+    console.error("Error updating label:", error);
     throw error;
   }
 };
