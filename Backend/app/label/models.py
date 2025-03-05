@@ -33,13 +33,13 @@ class Label(models.Model):
 
 class LabelData(models.Model):
     STATUS_CHOICES = [
-        ("present", "Présent"),
+        ("present", "Present"),
         ("en pause", "En Pause"),
-        ("en conge", "En Congé"),
+        ("en conge", "En Conge"),
         ("absent", "Absent"),
         ("fin de service", "Fin de Service"),
         ("anomalie", "Anomalie"),
-        ("jour ferie", "Jour Férié"),
+        ("jour ferie", "Jour Ferie"),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
