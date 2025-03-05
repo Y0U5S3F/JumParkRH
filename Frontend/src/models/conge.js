@@ -1,10 +1,10 @@
 class Conge {
-  constructor(id = null, employe_id = null, type_conge = "", start_date = "", end_date = "", status = "", notes = "") {
+  constructor(id = null, employe_id = null, type_conge = "", startDate = "", endDate = "", status = "", notes = "") {
     this.id = id;
     this.employe = employe_id;
     this.typeconge = type_conge;
-    this.start_date = start_date;
-    this.end_date = end_date;
+    this.startDate = startDate;
+    this.endDate = endDate;
     this.status = status;
     this.notes = notes;
   }

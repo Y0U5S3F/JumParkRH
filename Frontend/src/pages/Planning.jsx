@@ -326,7 +326,7 @@ export default function SimpleCalendar() {
       <Box className={classes.topBar}>
         <Typography variant="h5">Calendar</Typography>
         <Button variant="contained" onClick={() => setOpenPresenceModal(true)}>
-          Ajouter Jour Férié
+          Ajouter une Présence
         </Button>
       </Box>
       <Box sx={{ border: "1px solid black", borderRadius: "20px" }}>

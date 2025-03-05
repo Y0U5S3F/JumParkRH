@@ -189,8 +189,8 @@ export default function DemandeCongePage() {
     try {
       if (
         !editConge.employe ||
-        !editConge.start_date ||
-        !editConge.end_date ||
+        !editConge.startDate ||
+        !editConge.endDate ||
         !editConge.status
       ) {
         setSnackbar({
@@ -204,8 +204,8 @@ export default function DemandeCongePage() {
       const congeToUpdate = {
         
         employe: editConge.employe,
-        startDate: editConge.start_date,
-        endDate: editConge.end_date,
+        startDate: editConge.startDate,
+        endDate: editConge.endDate,
         typeconge: editConge.typeconge,
         status: editConge.status,
         notes: editConge.notes,
@@ -241,8 +241,8 @@ export default function DemandeCongePage() {
     // Ensure all required fields are provided
     if (
       !newConge.employe ||
-      !newConge.start_date ||
-      !newConge.end_date ||
+      !newConge.startDate ||
+      !newConge.endDate ||
       !newConge.status
     ) {
       setSnackbar({
@@ -255,8 +255,8 @@ export default function DemandeCongePage() {
     console.log(newConge); // Debugging
     const congeToSend = {
       employe: newConge.employe,
-      startDate: newConge.start_date,
-      endDate: newConge.end_date,
+      startDate: newConge.startDate,
+      endDate: newConge.endDate,
       typeconge: newConge.typeconge,
       status: newConge.status, // Use "accepte" here when applicable
       notes: newConge.notes,
@@ -283,8 +283,8 @@ export default function DemandeCongePage() {
     // Reset newConge with consistent key names
     setNewConge({
       employe: "",
-      start_date: "",
-      end_date: "",
+      startDate: "",
+      endDate: "",
       typeconge: "",
       status: "en cours",
       notes: ""
@@ -303,8 +303,8 @@ export default function DemandeCongePage() {
     { field: "id", headerName: "ID", flex: 1 },
     { field: "employe_name", headerName: "Employé", flex: 1 }, // ✅ Display full name
     { field: "typeConge_nom", headerName: "Type de Congé", flex: 1 }, // Display type_conge.nom
-    { field: "start_date", headerName: "Date Début", flex: 1 },
-    { field: "end_date", headerName: "Date Fin", flex: 1 },
+    { field: "startDate", headerName: "Date Début", flex: 1 },
+    { field: "endDate", headerName: "Date Fin", flex: 1 },
     { field: "status", headerName: "Statut", flex: 1 },
     { field: "notes", headerName: "Notes", flex: 1 },
     {
@@ -400,12 +400,12 @@ export default function DemandeCongePage() {
                     sx={{ width: "100%" }}
                     label="Date de début"
                     value={
-                      newConge.start_date ? dayjs(newConge.start_date) : null
+                      newConge.startDate ? dayjs(newConge.startDate) : null
                     }
                     onChange={(date) =>
                       handleInputChange({
                         target: {
-                          name: "start_date",
+                          name: "startDate",
                           value: date?.format("YYYY-MM-DD"),
                         },
                       })
@@ -418,11 +418,11 @@ export default function DemandeCongePage() {
                   <DatePicker
                     sx={{ width: "100%" }}
                     label="Date de fin"
-                    value={newConge.end_date ? dayjs(newConge.end_date) : null}
+                    value={newConge.endDate ? dayjs(newConge.endDate) : null}
                     onChange={(date) =>
                       handleInputChange({
                         target: {
-                          name: "end_date",
+                          name: "endDate",
                           value: date?.format("YYYY-MM-DD"),
                         },
                       })
@@ -542,12 +542,12 @@ export default function DemandeCongePage() {
                     sx={{ width: "100%" }}
                     label="Date de début"
                     value={
-                      editConge.start_date ? dayjs(editConge.start_date) : null
+                      editConge.startDate ? dayjs(editConge.startDate) : null
                     }
                     onChange={(date) =>
                       handleInputModifyChange({
                         target: {
-                          name: "start_date",
+                          name: "startDate",
                           value: date?.format("YYYY-MM-DD"),
                         },
                       })
@@ -561,12 +561,12 @@ export default function DemandeCongePage() {
                     sx={{ width: "100%" }}
                     label="Date de fin"
                     value={
-                      editConge.end_date ? dayjs(editConge.end_date) : null
+                      editConge.endDate ? dayjs(editConge.endDate) : null
                     }
                     onChange={(date) =>
                       handleInputModifyChange({
                         target: {
-                          name: "end_date",
+                          name: "endDate",
                           value: date?.format("YYYY-MM-DD"),
                         },
                       })
