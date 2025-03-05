@@ -732,10 +732,16 @@
     "@react-spring/shared" "~9.7.5"
     "@react-spring/types" "~9.7.5"
 
-"@rollup/rollup-darwin-x64@4.34.8":
+"@rollup/rollup-linux-x64-gnu@4.34.8":
   version "4.34.8"
-  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-x64/-/rollup-darwin-x64-4.34.8.tgz"
-  integrity sha512-qIP/elwR/tq/dYRx3lgwK31jkZvMiD6qUtOycLhTzCvrjbZ3LjQnEM9rNhSGpbLXVJYQ3rq39A6Re0h9tU2ynw==
+  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.34.8.tgz"
+  integrity sha512-8y7ED8gjxITUltTUEJLQdgpbPh1sUQ0kMTmufRF/Ns5tI9TNMNlhWtmPKKHCU0SilX+3MJkZ0zERYYGIVBYHIA==
+
+"@rollup/rollup-linux-x64-musl@4.34.8":
+  version "4.34.8"
+
+  resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.34.8.tgz"
+  integrity sha512-SCXcP0ZpGFIe7Ge+McxY5zKxiEI5ra+GT3QRxL0pMMtxPfpyLAKleZODi1zdRHkz5/BhueUrYtYVgubqe9JBNQ==
 
 "@types/babel__core@^7.20.5":
   version "7.20.5"
@@ -2014,7 +2020,7 @@ fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
-
+  
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"

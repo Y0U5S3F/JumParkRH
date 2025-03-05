@@ -172,6 +172,7 @@ export default function EmployePage() {
         newEmployee.genre,
         newEmployee.situation_familiale,
         newEmployee.cin,
+        newEmployee.uid,
         newEmployee.telephone,
         newEmployee.adresse,
         newEmployee.ville,
@@ -181,6 +182,8 @@ export default function EmployePage() {
         newEmployee.role,
         newEmployee.departement_id,
         newEmployee.service_id,
+        newEmployee.salaire_base,
+        newEmployee.cnss,
         newEmployee.compte_bancaire,
         newEmployee.rib_bancaire
       );
@@ -204,6 +207,9 @@ export default function EmployePage() {
       setOpen(false);
       setNewEmployee(
         new Employe(
+          "",
+          "",
+          "",
           "",
           "",
           "",
@@ -397,6 +403,11 @@ export default function EmployePage() {
                     <strong>CIN:</strong> {selectedEmployee.CIN}
                   </Typography>
                 </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="subtitle1">
+                    <strong>ID de Pointage:</strong> {selectedEmployee.uid}
+                  </Typography>
+                </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body1" color="white" gutterBottom>
@@ -428,6 +439,7 @@ export default function EmployePage() {
                   </Typography>
                 </Grid>
               </Grid>
+              
               <Box sx={{ mt: 2 }}>
                 <Typography variant="body1" color="white" gutterBottom>
                   Contact D'urgence
@@ -468,6 +480,35 @@ export default function EmployePage() {
                 <Grid item xs={4}>
                   <Typography variant="subtitle1">
                     <strong>Service:</strong> {selectedEmployee.service}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body1" color="white" gutterBottom>
+                  Informations Banquaire
+                </Typography>
+              </Box>
+              <Divider sx={{ mb: 2 }} />
+
+              <Grid container sx={{}} spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>Salaire de base:</strong> {selectedEmployee.salaire_base}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>Numero CNSS:</strong> {selectedEmployee.cnss}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>Compte Bancaire:</strong> {selectedEmployee.compte_bancaire}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1">
+                    <strong>RIB Bancaire:</strong> {selectedEmployee.rib_bancaire}
                   </Typography>
                 </Grid>
               </Grid>
@@ -618,6 +659,17 @@ export default function EmployePage() {
                   label="CIN"
                   name="cin"
                   value={newEmployee.cin}
+                  onChange={handleInputChange}
+                  inputProps={{ maxLength: 8 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="ID de Pointage"
+                  name="uid"
+                  value={newEmployee.uid}
                   onChange={handleInputChange}
                   inputProps={{ maxLength: 8 }}
                 />
@@ -792,6 +844,30 @@ export default function EmployePage() {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
+            <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Salaire de base"
+                  name="salaire_base"
+                  type="search"
+                  variant="outlined"
+                  value={newEmployee.salaire_base}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numero CNSS"
+                  name="cnss"
+                  type="search"
+                  variant="outlined"
+                  value={newEmployee.cnss}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
               <Grid item xs={4}>
                 <TextField
                   id="outlined-search"
@@ -983,6 +1059,17 @@ export default function EmployePage() {
                   inputProps={{ maxLength: 8 }}
                 />
               </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  label="ID de Pointage"
+                  name="uid"
+                  value={editEmployee.uid}
+                  onChange={handleInputModifyChange}
+                  inputProps={{ maxLength: 8 }}
+                />
+              </Grid>
             </Grid>
             <Typography
               variant="body1"
@@ -1153,6 +1240,30 @@ export default function EmployePage() {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
+            <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Salaire de base"
+                  name="salaire_base"
+                  type="search"
+                  variant="outlined"
+                  value={editEmployee.salaire_base}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Numero CNSS"
+                  name="cnss"
+                  type="search"
+                  variant="outlined"
+                  value={editEmployee.cnss}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
               <Grid item xs={4}>
                 <TextField
                   id="outlined-search"

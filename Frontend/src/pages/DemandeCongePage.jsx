@@ -204,8 +204,8 @@ export default function DemandeCongePage() {
       const congeToUpdate = {
         
         employe: editConge.employe,
-        start_date: editConge.start_date,
-        end_date: editConge.end_date,
+        startDate: editConge.start_date,
+        endDate: editConge.end_date,
         typeconge: editConge.typeconge,
         status: editConge.status,
         notes: editConge.notes,
@@ -236,64 +236,68 @@ export default function DemandeCongePage() {
     console.log(editConge);
   };
   const handleAddConge = async () => {
-    console.log(newConge); // Debugging
-    try {
-      if (
-        !newConge.employe ||
-        !newConge.start_date ||
-        !newConge.end_date ||
-        !newConge.status
-      ) {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "All fields are required.",
-        });
-        return;
-      }
-      console.log(newConge); // Debugging
-      const congeToSend = {
-        employe: newConge.employe,
-        start_date: newConge.start_date,
-        end_date: newConge.end_date,
-        typeconge: newConge.typeconge,
-        status: newConge.status,
-        notes: newConge.notes, // Default status
-      };
-
-      const response = await addConge(congeToSend);
-      console.log(congeToSend); // Debugging
-
-      if (response) {
-        setSnackbar({
-          open: true,
-          severity: "success",
-          message: "Congé added successfully!",
-        });
-      } else {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "Failed to add congé.",
-        });
-      }
-
-      setOpen(false);
-      setNewConge({
-        matricule: "",
-        date_debut: "",
-        date_fin: "",
-        type: "",
-        statut: "En attente",
-      });
-    } catch (error) {
+  console.log(newConge); // Debugging
+  try {
+    // Ensure all required fields are provided
+    if (
+      !newConge.employe ||
+      !newConge.start_date ||
+      !newConge.end_date ||
+      !newConge.status
+    ) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: "Error adding congé.",
+        message: "All fields are required.",
+      });
+      return;
+    }
+    console.log(newConge); // Debugging
+    const congeToSend = {
+      employe: newConge.employe,
+      startDate: newConge.start_date,
+      endDate: newConge.end_date,
+      typeconge: newConge.typeconge,
+      status: newConge.status, // Use "accepte" here when applicable
+      notes: newConge.notes,
+    };
+
+    const response = await addConge(congeToSend);
+    console.log(congeToSend); // Debugging
+
+    if (response) {
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Congé added successfully!",
+      });
+    } else {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Failed to add congé.",
       });
     }
-  };
+
+    setOpen(false);
+    // Reset newConge with consistent key names
+    setNewConge({
+      employe: "",
+      start_date: "",
+      end_date: "",
+      typeconge: "",
+      status: "en cours",
+      notes: ""
+    });
+  } catch (error) {
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Error adding conge.",
+    });
+  }
+};
+
 
   const columns = [
     { field: "id", headerName: "ID", flex: 1 },
