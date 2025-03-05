@@ -74,6 +74,8 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     num_telephone_urgence = models.CharField(max_length=20, null=False, blank=False, verbose_name="Numéro de Téléphone d'Urgence")
 
     # Banking Information
+    salaire_base = models.DecimalField(max_digits=15, decimal_places=5, null=False, blank=False, verbose_name="Salaire de Base")
+    CNSS = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="CNSS")
     compte_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="Compte Bancaire")
     rib_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="RIB Bancaire")
 
