@@ -4,9 +4,7 @@ import requests
 from zk import ZK
 
 # Constants
-DEVICE_IP = '41.224.5.17'
-DEVICE_PORT = 4370
-MARKER_FILE = 'logs.csv'
+DEVICE_API_URL = "http://127.0.0.1:8000/api/appareil/appareils/"
 
 def read_last_uid(filename):
     """Read the last processed UID from the marker file."""
@@ -114,7 +112,7 @@ def update_record(data_id, field, value):
     payload = { field: value }
     return requests.put(url, json=payload)
 
-def process_log(log):
+def process_log(log, MARKER_FILE):
     """
     Process a single log entry based on its punch value.
     Each entry is handled immediately.
@@ -126,8 +124,18 @@ def process_log(log):
         existing_data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         start_date_str = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         status = "present" if not existing_data_id else "anomalie"
+
+        if existing_data_id:
+            # Update the endDate of the existing log to the same day at 23:59
+            end_date_str = timestamp.strftime("%Y-%m-%dT23:59:00")
+            update_response = update_record(existing_data_id, "endDate", end_date_str)
+            if update_response.status_code == 200:
+                print(f"Updated endDate of existing record ID {existing_data_id} to {end_date_str}.")
+            else:
+                print(f"Error updating endDate for existing record ID {existing_data_id}: {update_response.text}")
+
         response = send_label_data(user_id, start_date_str, None, None, None, status)
-        
+
         if response.status_code == 201:
             returned_id = response.json().get("id")
             if existing_data_id:
@@ -195,31 +203,45 @@ def process_log(log):
         else:
             print(f"No open log entry found for user {user_id} for Check‑Out event.")
 
-def main():
-    zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
-    conn = None
-    try:
-        conn = zk.connect()
-        print(f"Connected to {DEVICE_IP}:{DEVICE_PORT}")
-        attendance_logs = conn.get_attendance()
-        last_uid = read_last_uid(MARKER_FILE)
-        print(f"Last processed UID: {last_uid}")
+def fetch_devices():
+    """Fetch device details from the backend API."""
+    response = requests.get(DEVICE_API_URL)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error fetching devices: {response.text}")
+        return []
 
-        # Process each new log entry as it comes in.
-        for log in attendance_logs:
-            if log.uid > last_uid:
-                event = process_punch(log.punch)
-                log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
-                process_log(log_entry)
-                # Update the marker file immediately after processing each log.
-                update_last_uid(MARKER_FILE, log.uid)
-        print("All logs processed.")
-    except Exception as e:
-        print("Error:", e)
-    finally:
-        if conn:
-            conn.disconnect()
-            print("Disconnected from the device.")
+def main():
+    devices = fetch_devices()
+    for device in devices:
+        DEVICE_IP = device['ip']
+        DEVICE_PORT = device['port']
+        marker_file = f"logs_{DEVICE_IP.replace('.', '_')}.csv"
+        zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
+        conn = None
+        try:
+            conn = zk.connect()
+            print(f"Connected to {DEVICE_IP}:{DEVICE_PORT}")
+            attendance_logs = conn.get_attendance()
+            last_uid = read_last_uid(marker_file)
+            print(f"Last processed UID: {last_uid}")
+
+            # Process each new log entry as it comes in.
+            for log in attendance_logs:
+                if log.uid > last_uid:
+                    event = process_punch(log.punch)
+                    log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
+                    process_log(log_entry, marker_file)
+                    # Update the marker file immediately after processing each log.
+                    update_last_uid(marker_file, log.uid)
+            print("All logs processed.")
+        except Exception as e:
+            print("Error:", e)
+        finally:
+            if conn:
+                conn.disconnect()
+                print("Disconnected from the device.")
 
 if __name__ == "__main__":
     main()
