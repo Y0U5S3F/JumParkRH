@@ -3,9 +3,10 @@ import { styled, useTheme } from '@mui/material/styles';
 import { Box, CssBaseline, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import { useNavigate } from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 
 // Icons
-import { ChevronLeft, ChevronRight, Dashboard, People, Apartment, Business, Event, AccessTime, RequestPage, AssignmentInd, Payments, Category, Devices } from '@mui/icons-material';
+import { ChevronLeft, ChevronRight, Dashboard, People, Apartment, Business, Event, RequestPage, AssignmentInd, Payments, Category, Devices } from '@mui/icons-material';
 
 // Assets
 import gymParkLogo from '../../public/logos/gympark.svg';
@@ -36,13 +37,19 @@ const closedMixin = (theme) => ({
 });
 
 // Styled Components
+// Styled Components
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: theme.spacing(1, 2),
   ...theme.mixins.toolbar,
+  position: 'sticky', // Ensures it's sticky
+  top: 0, // Keeps it at the top
+  backgroundColor: theme.palette.background.paper,
+  zIndex: 1100, // Ensure it's on top of everything else
 }));
+
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -72,11 +79,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   })
 );
 
-
 // Menu Configuration
 const MENU_GROUPS = [
   {
-    subheader: null,
     items: [{ text: 'Dashboard', icon: <Dashboard color="primary" />, path: '/' }],
   },
   {
@@ -114,6 +119,10 @@ export default function Navbar() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+
 
   // Toggle Drawer Open/Close
   const handleToggleDrawer = () => setIsOpen((prev) => !prev);
@@ -132,20 +141,48 @@ export default function Navbar() {
           </IconButton>
         </DrawerHeader>
 
-        <Divider />
-
         {/* Menu Items */}
         {MENU_GROUPS.map((group, index) => (
           <List key={index} subheader={isOpen && group.subheader ? <ListSubheader>{group.subheader}</ListSubheader> : null}>
             {group.items.map(({ text, icon, path }) => (
-              <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+              <ListItem
+              key={text}
+              disablePadding
+              sx={{
+                display: 'block',
+                marginBottom: '5px',
+                backgroundColor: theme.palette.background.paper,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'block',
+                  marginBottom : '5px',
+                  marginLeft: '5px', // Add margin left
+                  marginRight: '5px', // Add margin right
+                  borderRadius: '10px', // Border radius for all items
+                  backgroundColor: isActive(path) ? theme.palette.action.selected : 'transparent', // Background color for active item
+                  '&:hover':{
+                    backgroundColor: theme.palette.action.selected,
+                    marginLeft: '5px',
+                    marginRight: '5px'
+                  },
+                  } // Border radius for the active item
+                }
+              >
                 <ListItemButton onClick={() => navigate(path)}>
-                  <ListItemIcon>{icon}</ListItemIcon>
+                  <ListItemIcon
+                    
+                  >
+                    {icon}
+                  </ListItemIcon>
                   <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
                 </ListItemButton>
-              </ListItem>
+              </Box>
+            </ListItem>
+            
             ))}
-            {!isOpen && <Divider />}
+
           </List>
         ))}
       </Drawer>
