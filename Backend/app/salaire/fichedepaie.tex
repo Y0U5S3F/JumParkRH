@@ -1,0 +1,86 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage[frenchb]{babel}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\geometry{margin=2cm}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{JUMP PARK}}
+\rhead{\textbf{Bulletin de Paie}}
+\cfoot{\thepage}
+
+
+\begin{document}
+\noindent
+RUE ISMAIL IBN ABI MOUHAJER
+
+
+\noindent
+\textbf{C.N.S.S :} {0065113672} \hfill \textbf{Mois de :} {{ mois }} \hfill \textbf{Année :} {{ annee }}\\[0.5cm]
+
+
+\noindent
+\noindent
+\textbf{Nom et Prénom :} {{ nom }}\\[0.2cm]
+\textbf{Sit-Familiale :} {{ situationFamiliale }}\\[0.2cm]
+\textbf{Numéro CNSS :} {{ cnss }} \hfill \textbf{Matricule :} {{ matricule }}\\[0.2cm]
+\textbf{Date d'Embauche :} {{ createdAt }} \hfill 
+\textbf{Cat/Ech :} (M) \hfill 
+\textbf{Salaire de Base :} {{ salaireContrat }}\\[0.2cm]
+\textbf{Fonction :} {{ serviceNom }} \hfill 
+\textbf{Sit.Recrutement :} Contractuel\\[0.2cm]
+\textbf{Affectation :} {{ departementNom }} \hfill 
+\textbf{RIB :} {{ ribBancaire }}\\[0.2cm]
+\textbf{J/H Total :} {{ jourTotal }} \hfill
+\textbf{Jr Férier :} {{ jourFerie }} \hfill
+\textbf{Congé Payé :} {{ jourConge }}\\[0.2cm]
+\textbf{Jr Absence :} {{ jourAbcense }} \hfill
+\textbf{Solde Congé :} {{ soldeConge }}
+
+
+
+\noindent
+\\[0.5cm]
+\renewcommand{\arraystretch}{1.25} 
+\resizebox{\textwidth}{!}{
+\begin{tabular}{|c|l|r|r|r|}
+\hline
+\textbf{\large Code Ind.} & \textbf{\large Désignation} & \textbf{\large Nb. J/H} & \textbf{\large Montant (+)} & \textbf{\large Montant (-)} \\[0.25cm]
+\hline
+\large 1 & \large Salaire de Base & \large {{nbJourBase}} & \large {{salaireBase}} & \\
+\large 7 & \large Prime de Présence & \large {{nbJourTotal}} & \large {{primePresence}} & \\
+\large 8 & \large Prime de Transport & \large {{nbJourTotal}} & \large {{primeTransport}} & \\
+ & & & \textbf{\large {-----------------}} & \\
+ & \textbf{\large SALAIRE BRUT} &  & \large {{salaireBrut}} & \\
+\large 151 & \large Retenue CNSS & \large 9.68 &  & \large {{retenueCNSS}} \\
+ & & & \textbf{\large {-----------------}} & \\
+ & \textbf{\large SALAIRE IMPOSABLE} &  & \large {{salaireImposable}} & \\
+\large 230 & \large Appoint $+$ &  & \large {{appointPlus}} & \\
+\large 250 & \large Acompte &  &  & \large {{acompte}} \\
+\large 251 & \large Impot/Rev. &  &  & \large {{impoRev}} \\
+\large 255 & \large Appoint - &  &  & \large {{appointMoins}} \\
+\large 265 & \large Contribution sociale de solidarité &  &  & \large {{CSS}} \\[7.5cm]
+\hline
+\end{tabular}
+
+
+}
+\\[0.5cm]
+
+
+
+
+
+\noindent
+\textbf{SALAIRE NET :}  \textbf{ {{salaireNet}} } \hfill \textbf{Mode de Paiement :} \textbf{ {{modePaiment}} }\\[1cm]
+
+\begin{flushright}
+    \textbf{Signature :} \rule{5cm}{0.5pt}
+\end{flushright}
+
+\end{document}
