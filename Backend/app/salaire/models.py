@@ -14,3 +14,5 @@ class Salaire(models.Model):
 
     def __str__(self):
         return f"{self.employe_id} - {self.month} - {self.status}"
+
+
