@@ -29,7 +29,7 @@ import LabelData from "../models/labelData"; // Import the LabelData model
 dayjs.extend(utc);
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
+  container: { padding: "20px", display: "flex", flexDirection: "column" , width:"100%"},
   topBar: {
     display: "flex",
     justifyContent: "flex-end",

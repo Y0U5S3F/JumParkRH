@@ -3,7 +3,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { Box, CssBaseline, Divider, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import { useNavigate } from 'react-router-dom';
-import {useLocation} from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // Icons
 import { ChevronLeft, ChevronRight, Dashboard, People, Apartment, Business, Event, RequestPage, AssignmentInd, Payments, Category, Devices } from '@mui/icons-material';
@@ -37,7 +37,6 @@ const closedMixin = (theme) => ({
 });
 
 // Styled Components
-// Styled Components
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -49,7 +48,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   zIndex: 1100, // Ensure it's on top of everything else
 }));
-
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
@@ -82,35 +80,35 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 // Menu Configuration
 const MENU_GROUPS = [
   {
-    items: [{ text: 'Dashboard', icon: <Dashboard color="primary" />, path: '/' }],
+    items: [{ text: 'Dashboard', icon: <Dashboard />, path: '/' }],
   },
   {
     subheader: 'Employee Management',
     items: [
-      { text: 'Personnel', icon: <People color="secondary" />, path: '/employe' },
-      { text: 'Departement', icon: <Apartment color="secondary" />, path: '/departement' },
-      { text: 'Service', icon: <Business color="secondary" />, path: '/service' },
+      { text: 'Personnel', icon: <People />, path: '/employe' },
+      { text: 'Departement', icon: <Apartment />, path: '/departement' },
+      { text: 'Service', icon: <Business />, path: '/service' },
     ],
   },
   {
     subheader: 'Attendance & Leave',
     items: [
-      { text: 'Planning', icon: <Event color="secondary" />, path: '/planning' },
-      { text: 'Demande Congé', icon: <RequestPage color="secondary" />, path: '/demande-conge' },
-      { text: 'Absences', icon: <AssignmentInd color="secondary" />, path: '/absence' },
-      { text: 'Jour Ferie', icon: <AssignmentInd color="secondary" />, path: '/jour-ferie' }
+      { text: 'Planning', icon: <Event />, path: '/planning' },
+      { text: 'Demande Congé', icon: <RequestPage />, path: '/demande-conge' },
+      { text: 'Absences', icon: <AssignmentInd />, path: '/absence' },
+      { text: 'Jour Ferie', icon: <AssignmentInd />, path: '/jour-ferie' }
     ],
   },
   {
     subheader: 'Payroll & Administration',
     items: [
-      { text: 'Fiche de Paie', icon: <Payments color="secondary" />, path: '/fiche-de-paie' },
-      { text: 'Type Congé', icon: <Category color="secondary" />, path: '/type-conge' },
+      { text: 'Fiche de Paie', icon: <Payments />, path: '/fiche-de-paie' },
+      { text: 'Type Congé', icon: <Category />, path: '/type-conge' },
     ],
   },
   {
     subheader: 'Devices',
-    items: [{ text: 'Appareil', icon: <Devices color="secondary" />, path: '/appareil' }],
+    items: [{ text: 'Appareil', icon: <Devices />, path: '/appareil' }],
   },
 ];
 
@@ -122,7 +120,6 @@ export default function Navbar() {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
-
 
   // Toggle Drawer Open/Close
   const handleToggleDrawer = () => setIsOpen((prev) => !prev);
@@ -146,41 +143,43 @@ export default function Navbar() {
           <List key={index} subheader={isOpen && group.subheader ? <ListSubheader>{group.subheader}</ListSubheader> : null}>
             {group.items.map(({ text, icon, path }) => (
               <ListItem
-              key={text}
-              disablePadding
-              sx={{
-                display: 'block',
-                marginBottom: '5px',
-                backgroundColor: theme.palette.background.paper,
-              }}
-            >
-              <Box
+                key={text}
+                disablePadding
                 sx={{
                   display: 'block',
-                  marginBottom : '5px',
-                  marginLeft: '5px', // Add margin left
-                  marginRight: '5px', // Add margin right
-                  '&:hover':{
-                    backgroundColor: theme.palette.background.paper,
-                    marginLeft: '5px',
-                    marginRight: '5px'
-                  },
-                  } // Border radius for the active item
-                }
+                  marginBottom: '5px',
+                  backgroundColor: theme.palette.background.paper,
+                }}
               >
-                <ListItemButton onClick={() => navigate(path)}>
-                  <ListItemIcon
-                    
-                  >
-                    {icon}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
-                </ListItemButton>
-              </Box>
-            </ListItem>
-            
+                <Box
+                  sx={{
+                    display: 'block',
+                    marginBottom: '5px',
+                    marginLeft: '5px', // Add margin left
+                    marginRight: '5px', // Add margin right
+                    '&:hover': {
+                      backgroundColor: theme.palette.background.paper,
+                      marginLeft: '5px',
+                      marginRight: '5px',
+                      '& .MuiListItemIcon-root': {
+                        color: theme.palette.primary.main,
+                      },
+                    },
+                  }}
+                >
+                  <ListItemButton onClick={() => navigate(path)}>
+                    <ListItemIcon
+                      sx={{
+                        color: isActive(path) ? theme.palette.primary.main : theme.palette.secondary.main,
+                      }}
+                    >
+                      {icon}
+                    </ListItemIcon>
+                    <ListItemText primary={text} sx={{ opacity: isOpen ? 1 : 0 }} />
+                  </ListItemButton>
+                </Box>
+              </ListItem>
             ))}
-
           </List>
         ))}
       </Drawer>
