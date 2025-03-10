@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material"; // Import MUI ThemeProvider
 import darkTheme from "./theme/Theme"; // Import the dark theme
-import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 import EmployePage from "./pages/EmployePage";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
@@ -46,7 +46,7 @@ function App() {
             <Route path="/jour-ferie" element={< JourFeriePage/>} />
             <Route path="/fiche-de-paie" element={<FicheDePaie />} />
           </Route>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterAndLogout />} />
           <Route path="*" element={<NotFound />} />
