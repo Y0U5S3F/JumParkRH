@@ -14,7 +14,9 @@ import {
   Grid,
 } from "@mui/material";
 import { fetchMinimalEmployes } from "../service/EmployeService";
-
+import { fetchEmployeeSalaryInfo } from "../service/FicheDePaieService";
+import { addSalaire } from "../service/SalaireService"; // Import addSalaire function
+import FicheDePaie from "../models/ficheDePaie";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -50,29 +52,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function FicheDePaie() {
+export default function FicheDePaiePage() {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [salaireBase, setSalaireBase] = useState("");
-  const [nbJours, setNbJours] = useState("");
-  const [nbHeures, setNbHeures] = useState("");
-  const [salaireFinal, setSalaireFinal] = useState("");
-  const [jourHeureTravail, setJourHeureTravail] = useState("");
-  const [salaire, setSalaire] = useState("");
-  const [prixHeureSupp, setPrixHeureSupp] = useState("");
-  const [nbHeuresSupp, setNbHeuresSupp] = useState("");
-  const [prixTotalSupp, setPrixTotalSupp] = useState("");
-  const [primePresence, setPrimePresence] = useState("");
-  const [primeTransport, setPrimeTransport] = useState("");
-  const [acompte, setAcompte] = useState("");
-  const [impots, setImpots] = useState("");
-  const [apoint, setApoint] = useState("");
-  const [methodePaiement, setMethodePaiement] = useState("");
-  const [joursFeries, setJoursFeries] = useState("");
-  const [prixJoursFeries, setPrixJoursFeries] = useState("");
-  const [congesPayes, setCongesPayes] = useState("");
-  const [prixCongesPayes, setPrixCongesPayes] = useState("");
+  const [ficheDePaieData, setFicheDePaieData] = useState(new FicheDePaie());
   const classes = useStyles();
 
   useEffect(() => {
@@ -86,6 +70,129 @@ export default function FicheDePaie() {
     };
     fetchData();
   }, []);
+
+  const handleEmployeeChange = async (event, newValue) => {
+    setSelectedEmployee(newValue);
+    if (newValue) {
+      try {
+        const salaryInfo = await fetchEmployeeSalaryInfo(newValue.matricule);
+        const updatedData = new FicheDePaie(
+          newValue,
+          salaryInfo.salaire_base,
+          salaryInfo.jour_heure_travaille,
+          salaryInfo.salaire,
+          salaryInfo.taux_heure_sup,
+          salaryInfo.heures_sup,
+          salaryInfo.prix_tot_sup,
+          salaryInfo.prime_transport,
+          salaryInfo.prime_presence,
+          salaryInfo.acompte,
+          salaryInfo.impots,
+          salaryInfo.apoint,
+          salaryInfo.css,
+          salaryInfo.cnss,
+          salaryInfo.jour_ferie,
+          salaryInfo.prix_jour_ferie,
+          salaryInfo.prix_tot_ferie,
+          salaryInfo.conge_paye,
+          salaryInfo.jour_abcense,
+          salaryInfo.prix_conge_paye,
+          salaryInfo.prix_tot_conge,
+          salaryInfo.salaire_brut,
+          salaryInfo.salaire_imposable,
+          salaryInfo.salaire_net,
+          salaryInfo.mode_paiement
+        );
+        setFicheDePaieData(calculateSalary(updatedData));
+        console.log("Informations de salaire chargées avec succès:", salaryInfo);
+      } catch (error) {
+        console.error("Erreur lors du chargement des informations de salaire:", error);
+      }
+    }
+  };
+
+  const calculateSalary = (data) => {
+    const salaire_base = parseFloat(data.salaire_base);
+    const jour_heure_travaille = parseFloat(data.jour_heure_travaille);
+    const taux_heure_sup = parseFloat(data.taux_heure_sup);
+    const prix_jour_ferie = parseFloat(data.prix_jour_ferie);
+    const prix_conge_paye = parseFloat(data.prix_conge_paye);
+    const acompte = parseFloat(data.acompte);
+    const impots = parseFloat(data.impots);
+    const apoint = parseFloat(data.apoint);
+
+    const taux_heure_base = salaire_base / 208;
+    const jour_travaille = Math.floor(jour_heure_travaille / 8);
+
+    if (jour_heure_travaille < 208) {
+      const heures_manquantes = 208 - jour_heure_travaille;
+      data.salaire = salaire_base - (heures_manquantes * taux_heure_base);
+    } else if (jour_heure_travaille > 208) {
+      const heures_sup = jour_heure_travaille - 208;
+      data.heures_sup = heures_sup;
+      data.prix_tot_sup = heures_sup * taux_heure_sup;
+      data.salaire = salaire_base + data.prix_tot_sup;
+    } else {
+      data.salaire = salaire_base;
+    }
+
+    data.prime_presence = jour_travaille * (13.339 / jour_travaille) || 0;
+    data.prime_transport = jour_travaille * (71.253 / jour_travaille) || 0;
+    data.prix_tot_ferie = data.jour_ferie * prix_jour_ferie;
+    data.prix_tot_conge = data.conge_paye * prix_conge_paye;
+    data.salaire_brut = data.salaire + data.prime_presence + data.prime_transport + data.prix_tot_ferie + data.prix_tot_conge;
+    data.cnss = data.salaire_brut * 0.0968;
+    data.salaire_imposable = data.salaire_brut - data.cnss;
+    data.css = data.salaire_imposable * 0.005;
+    data.salaire_net = data.salaire_imposable - (acompte + impots + apoint + data.css);
+
+    return data;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFicheDePaieData((prevData) => {
+      const updatedData = { ...prevData, [name]: value };
+      return calculateSalary(updatedData);
+    });
+  };
+
+  const handleDownloadClick = async () => {
+    const salaireData = {
+      employe: ficheDePaieData.employe.matricule,
+      salaire_base: parseFloat(ficheDePaieData.salaire_base).toFixed(2),
+      jour_heure_travaille: parseFloat(ficheDePaieData.jour_heure_travaille).toFixed(2),
+      salaire: parseFloat(ficheDePaieData.salaire).toFixed(2),
+      taux_heure_sup: parseFloat(ficheDePaieData.taux_heure_sup).toFixed(2),
+      heures_sup: parseFloat(ficheDePaieData.heures_sup).toFixed(2),
+      prix_tot_sup: parseFloat(ficheDePaieData.prix_tot_sup).toFixed(2),
+      prime_transport: parseFloat(ficheDePaieData.prime_transport).toFixed(2),
+      prime_presence: parseFloat(ficheDePaieData.prime_presence).toFixed(2),
+      acompte: parseFloat(ficheDePaieData.acompte).toFixed(2),
+      impots: parseFloat(ficheDePaieData.impots).toFixed(2),
+      apoint: parseFloat(ficheDePaieData.apoint).toFixed(2),
+      css: parseFloat(ficheDePaieData.css).toFixed(2),
+      cnss: parseFloat(ficheDePaieData.cnss).toFixed(2),
+      jour_ferie: ficheDePaieData.jour_ferie,
+      prix_jour_ferie: parseFloat(ficheDePaieData.prix_jour_ferie).toFixed(2),
+      prix_tot_ferie: parseFloat(ficheDePaieData.prix_tot_ferie).toFixed(2),
+      conge_paye: ficheDePaieData.conge_paye,
+      jour_abcense: ficheDePaieData.jour_abcense,
+      prix_conge_paye: parseFloat(ficheDePaieData.prix_conge_paye).toFixed(2),
+      prix_tot_conge: parseFloat(ficheDePaieData.prix_tot_conge).toFixed(2),
+      salaire_brut: parseFloat(ficheDePaieData.salaire_brut).toFixed(2),
+      salaire_imposable: parseFloat(ficheDePaieData.salaire_imposable).toFixed(2),
+      salaire_net: parseFloat(ficheDePaieData.salaire_net).toFixed(2),
+      mode_paiement: ficheDePaieData.mode_paiement,
+    };
+    console.log("Données de salaire à ajouter:", salaireData);
+    try {
+      await addSalaire(salaireData);
+      console.log("Salaire ajouté avec succès");
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du salaire:", error);
+    }
+  };
 
   return (
     <Container className={classes.container}>
@@ -105,7 +212,7 @@ export default function FicheDePaie() {
                 `${option.nom} ${option.prenom} (${option.matricule})`
               }
               onInputChange={(event, value) => setSearchTerm(value)}
-              onChange={(event, newValue) => setSelectedEmployee(newValue)}
+              onChange={handleEmployeeChange}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -124,8 +231,10 @@ export default function FicheDePaie() {
               label="Salaire de base"
               fullWidth
               variant="outlined"
-              value={salaireBase}
-              onChange={(e) => setSalaireBase(e.target.value)}
+              name="salaire_base"
+              value={parseFloat(ficheDePaieData.salaire_base).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={4}>
@@ -134,8 +243,10 @@ export default function FicheDePaie() {
               label="Jour/Heure travaillée"
               fullWidth
               variant="outlined"
-              value={jourHeureTravail}
-              onChange={(e) => setJourHeureTravail(e.target.value)}
+              name="jour_heure_travaille"
+              value={parseFloat(ficheDePaieData.jour_heure_travaille).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={4}>
@@ -144,8 +255,10 @@ export default function FicheDePaie() {
               label="Salaire"
               fullWidth
               variant="outlined"
-              value={salaire}
-              onChange={(e) => setSalaire(e.target.value)}
+              name="salaire"
+              value={parseFloat(ficheDePaieData.salaire).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
             />
           </Grid>
 
@@ -156,8 +269,9 @@ export default function FicheDePaie() {
               label="Prix Heure Supplémentaire"
               fullWidth
               variant="outlined"
-              value={prixHeureSupp}
-              onChange={(e) => setPrixHeureSupp(e.target.value)}
+              name="taux_heure_sup"
+              value={parseFloat(ficheDePaieData.taux_heure_sup).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -166,8 +280,10 @@ export default function FicheDePaie() {
               label="Nombre d'heures supp."
               fullWidth
               variant="outlined"
-              value={nbHeuresSupp}
-              onChange={(e) => setNbHeuresSupp(e.target.value)}
+              name="heures_sup"
+              value={parseFloat(ficheDePaieData.heures_sup).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
             />
           </Grid>
           <Grid item xs={4}>
@@ -176,8 +292,10 @@ export default function FicheDePaie() {
               label="Prix Total Supplémentaires"
               fullWidth
               variant="outlined"
-              value={prixTotalSupp}
-              onChange={(e) => setPrixTotalSupp(e.target.value)}
+              name="prix_tot_sup"
+              value={parseFloat(ficheDePaieData.prix_tot_sup).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
             />
           </Grid>
 
@@ -188,8 +306,9 @@ export default function FicheDePaie() {
               label="Prime de présence"
               fullWidth
               variant="outlined"
-              value={primePresence}
-              onChange={(e) => setPrimePresence(e.target.value)}
+              name="prime_presence"
+              value={parseFloat(ficheDePaieData.prime_presence).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -198,8 +317,9 @@ export default function FicheDePaie() {
               label="Prime de transport"
               fullWidth
               variant="outlined"
-              value={primeTransport}
-              onChange={(e) => setPrimeTransport(e.target.value)}
+              name="prime_transport"
+              value={parseFloat(ficheDePaieData.prime_transport).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -208,8 +328,9 @@ export default function FicheDePaie() {
               label="Acompte"
               fullWidth
               variant="outlined"
-              value={acompte}
-              onChange={(e) => setAcompte(e.target.value)}
+              name="acompte"
+              value={parseFloat(ficheDePaieData.acompte).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -218,8 +339,9 @@ export default function FicheDePaie() {
               label="Impôts"
               fullWidth
               variant="outlined"
-              value={impots}
-              onChange={(e) => setImpots(e.target.value)}
+              name="impots"
+              value={parseFloat(ficheDePaieData.impots).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
           <Grid item xs={4}>
@@ -228,88 +350,125 @@ export default function FicheDePaie() {
               label="Apoint"
               fullWidth
               variant="outlined"
-              value={apoint}
-              onChange={(e) => setApoint(e.target.value)}
+              name="apoint"
+              value={parseFloat(ficheDePaieData.apoint).toFixed(2)}
+              onChange={handleInputChange}
             />
           </Grid>
-
-          {/* CNSS & CSS */}
-          <Grid item xs={6}>
-            <Typography variant="body1">CNSS: Automatique</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="body1">CSS: Automatique</Typography>
-          </Grid>
-
-          {/* Congés et Jours Fériés */}
-          <Grid item xs={3}>
-            <TextField
-              size="small"
-              label="Jours fériés"
-              fullWidth
-              variant="outlined"
-              value={joursFeries}
-              onChange={(e) => setJoursFeries(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              size="small"
-              label="Prix jours fériés"
-              fullWidth
-              variant="outlined"
-              value={prixJoursFeries}
-              onChange={(e) => setPrixJoursFeries(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              size="small"
-              label="Congés payés"
-              fullWidth
-              variant="outlined"
-              value={congesPayes}
-              onChange={(e) => setCongesPayes(e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              size="small"
-              label="Prix congés payés"
-              fullWidth
-              variant="outlined"
-              value={prixCongesPayes}
-              onChange={(e) => setPrixCongesPayes(e.target.value)}
-            />
-          </Grid>
-
           {/* Mode de paiement */}
-          <Grid item xs={12}>
+          <Grid item xs={4}>
             <FormControl size="small" fullWidth>
               <InputLabel>Mode de paiement</InputLabel>
               <Select
                 label="Mode de paiement"
-                value={methodePaiement}
-                onChange={(e) => setMethodePaiement(e.target.value)}
+                name="mode_paiement"
+                value={ficheDePaieData.mode_paiement}
+                onChange={handleInputChange}
               >
-                <MenuItem value="virement">Virement Bancaire</MenuItem>
+                <MenuItem value="virement bancaire">Virement Bancaire</MenuItem>
                 <MenuItem value="cheque">Chèque</MenuItem>
                 <MenuItem value="espece">Espèces</MenuItem>
               </Select>
             </FormControl>
           </Grid>
+
+          {/* CNSS & CSS */}
+          <Grid item xs={6}>
+            <Typography variant="body1">CNSS: {parseFloat(ficheDePaieData.cnss).toFixed(2)}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body1">CSS: {parseFloat(ficheDePaieData.css).toFixed(2)}</Typography>
+          </Grid>
+
+          {/* Congés et Jours Fériés */}
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Jours fériés"
+              fullWidth
+              variant="outlined"
+              name="jour_ferie"
+              value={parseFloat(ficheDePaieData.jour_ferie).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Prix jours fériés"
+              fullWidth
+              variant="outlined"
+              name="prix_jour_ferie"
+              value={parseFloat(ficheDePaieData.prix_jour_ferie).toFixed(2)}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Total jours fériés"
+              fullWidth
+              variant="outlined"
+              name="prix_tot_ferie"
+              value={parseFloat(ficheDePaieData.prix_tot_ferie).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Congés payés"
+              fullWidth
+              variant="outlined"
+              name="conge_paye"
+              value={parseFloat(ficheDePaieData.conge_paye).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Prix congés payés"
+              fullWidth
+              variant="outlined"
+              name="prix_conge_paye"
+              value={parseFloat(ficheDePaieData.prix_conge_paye).toFixed(2)}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              size="small"
+              label="Total congés payés"
+              fullWidth
+              variant="outlined"
+              name="prix_tot_conge"
+              value={parseFloat(ficheDePaieData.prix_tot_conge).toFixed(2)}
+              onChange={handleInputChange}
+              disabled
+            />
+          </Grid>
+
+          {/* Absences */}
+          <Grid item xs={4}>
+            <Typography variant="body1">Jours absence: {parseFloat(ficheDePaieData.jour_abcense).toFixed(2)}</Typography>
+          </Grid>
+          
         </Grid>
         {/* Bouton Télécharger */}
         <Box className={classes.actionContainer}>
           {/* Total Salary */}
-          <Box className={classes.boxLeft}>Total: 3000€</Box>
+          <Box className={classes.boxLeft}>Total: {parseFloat(ficheDePaieData.salaire_net).toFixed(2)}€</Box>
 
           {/* Buttons */}
           <Box className={classes.boxRight}>
             <Button variant="outlined" color="secondary">
               Réinitialiser
             </Button>
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={handleDownloadClick}>
               Télécharger
             </Button>
           </Box>
