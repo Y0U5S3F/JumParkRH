@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material"; // Import MUI ThemeProvider
 import darkTheme from "./theme/Theme"; // Import the dark theme
-import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 import EmployePage from "./pages/EmployePage";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
@@ -16,6 +16,7 @@ import Planning from "./pages/Planning";
 import TypeCongePage from "./pages/TypeCongePage";
 import JourFeriePage from "./pages/JourFeriePage";
 import FicheDePaie from "./pages/FicheDePaie";
+import SalairesPage from "./pages/SalairesPage";
 
 function Logout() {
   localStorage.clear();
@@ -45,8 +46,9 @@ function App() {
             <Route path="/type-conge" element={< TypeCongePage/>} />
             <Route path="/jour-ferie" element={< JourFeriePage/>} />
             <Route path="/fiche-de-paie" element={<FicheDePaie />} />
+            <Route path="/salaires" element={<SalairesPage />} />
           </Route>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/register" element={<RegisterAndLogout />} />
           <Route path="*" element={<NotFound />} />
