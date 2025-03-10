@@ -16,6 +16,7 @@ import Planning from "./pages/Planning";
 import TypeCongePage from "./pages/TypeCongePage";
 import JourFeriePage from "./pages/JourFeriePage";
 import FicheDePaie from "./pages/FicheDePaie";
+import SalairesPage from "./pages/SalairesPage";
 
 function Logout() {
   localStorage.clear();
@@ -45,6 +46,7 @@ function App() {
             <Route path="/type-conge" element={< TypeCongePage/>} />
             <Route path="/jour-ferie" element={< JourFeriePage/>} />
             <Route path="/fiche-de-paie" element={<FicheDePaie />} />
+            <Route path="/salaires" element={<SalairesPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/logout" element={<Logout />} />

@@ -55,3 +55,40 @@ export const deleteSalaire = async (salaireId) => {
     throw error;
   }
 };
+
+export const fetchSalairesStream = async (onData) => {
+  try {
+    const response = await fetch(`${SALAIRE_API_URL}?stream=true`);
+
+    if (!response.body) {
+      throw new Error("ReadableStream not supported in this environment");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      let lines = buffer.split("\n");
+      buffer = lines.pop(); // Keep any incomplete JSON object for next iteration
+
+      for (let line of lines) {
+        if (line.trim()) {
+          try {
+            const parsedData = JSON.parse(line);
+            onData(parsedData); // Pass each salary object to a callback
+          } catch (err) {
+            console.error("Error parsing streamed JSON:", err);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching streamed salaires:", error);
+  }
+};

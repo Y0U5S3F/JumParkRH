@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, status
 from .models import Salaire
+from django.utils.translation import gettext as _
 from employe.models import Employe
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +13,8 @@ from jourferie.models import JourFerie
 from datetime import datetime
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
-
+from django.http import StreamingHttpResponse
+import json
 import re
 import os
 import subprocess
@@ -20,8 +22,49 @@ import tempfile
 
 # DRF views for Salaire API
 class SalaireListCreateView(generics.ListCreateAPIView):
-    queryset = Salaire.objects.all()
+    queryset = Salaire.objects.all().order_by('id').select_related('employe')
     serializer_class = SalaireSerializer
+
+    def list(self, request, *args, **kwargs):
+        """Handles both normal and streaming responses"""
+        if request.query_params.get("stream") == "true":
+            return self.stream_response()
+        return super().list(request, *args, **kwargs)
+    
+    def stream_response(self):
+        """Streams JSON data for large datasets"""
+        queryset = self.filter_queryset(self.get_queryset())
+
+        def data_stream():
+            for salaire in queryset.iterator(chunk_size=100):
+                salaire_data = {
+                    "id": salaire.id,
+                    "employe": salaire.employe.matricule,  # Assuming matricule is a unique identifier
+                    "salaire_base": str(salaire.salaire_base),
+                    "salaire_net": str(salaire.salaire_net),
+                    "jour_heure_travaille": str(salaire.jour_heure_travaille),
+                    "heures_sup": str(salaire.heures_sup),
+                    "prix_tot_sup": str(salaire.prix_tot_sup),
+                    "prime_transport": str(salaire.prime_transport),
+                    "prime_presence": str(salaire.prime_presence),
+                    "acompte": str(salaire.acompte),
+                    "impots": str(salaire.impots),
+                    "css": str(salaire.css),
+                    "cnss": str(salaire.cnss),
+                    "salaire_brut": str(salaire.salaire_brut),
+                    "salaire_imposable": str(salaire.salaire_imposable),
+                    "mode_paiement": salaire.mode_paiement,
+                    "created_at": salaire.created_at.isoformat(),
+                }
+                yield f"{json.dumps(salaire_data)}\n"
+
+        response = StreamingHttpResponse(data_stream(), content_type="application/json")
+        response["Cache-Control"] = "no-cache"
+        return response
+
+    def perform_create(self, serializer):
+        """Handles object creation"""
+        serializer.save()
 
 class SalaireRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Salaire.objects.all()
@@ -80,34 +123,43 @@ class SalaireBaseView(APIView):
             "jours_absence": total_absences  # Total absence days
         }, status=status.HTTP_200_OK)
     
+
+months_french = [
+    _('January'), _('February'), _('March'), _('April'),
+    _('May'), _('June'), _('July'), _('August'),
+    _('September'), _('October'), _('November'), _('December')
+]
+
     
-def generetfichedepaie(request):
-    # Retrieve the salary ID from the GET parameter
-    salary_id = request.GET.get('id')
-    if not salary_id:
-        raise Http404("No salary id provided.")
+    
+def generetfichedepaie(request, id):
+    # Récupérer l'objet Salaire correspondant à l'ID
+    salaire = get_object_or_404(Salaire, id=id)
 
-    # Get the Salaire object (or 404 if not found)
-    salaire = get_object_or_404(Salaire, id=salary_id)
+    # Construire le contexte pour le template
+    months_french = [
+        _('Janvier'), _('Février'), _('Mars'), _('Avril'),
+        _('Mai'), _('Juin'), _('Juillet'), _('Août'),
+        _('Septembre'), _('Octobre'), _('Novembre'), _('Décembre')
+    ]
+    current_month = datetime.now().month
+    month_french = months_french[current_month - 1]  # Adjust for 0-based index
 
-    # Build the context dictionary.
-    # Note: Adjust field names as needed. For instance, we now use `rib_bancaire` from Employe.
     context = {
-        "nom": salaire.employe.nom,
+        "nom": salaire.employe.nom + " " + salaire.employe.prenom,
         "situationFamiliale": getattr(salaire.employe, "situation_familiale", ""),
         "cnss": salaire.employe.CNSS,
-        "matricule": salaire.employe.matricule,  # since matricule is the primary key in Employe
+        "matricule": salaire.employe.matricule,
         "createdAt": salaire.employe.created_at.strftime("%d/%m/%Y") if salaire.employe.created_at else "",
-        "salaireContrat": salaire.employe.salaire_base,  # Using the field from Salaire model
-        "serviceNom": str(salaire.employe.service.nom),  # Assuming Service model has a useful __str__
-        "departementNom": str(salaire.employe.departement.nom),  # Likewise for Departement
+        "salaireContrat": salaire.employe.salaire_base,
+        "serviceNom": str(salaire.employe.service.nom),
+        "departementNom": str(salaire.employe.departement.nom),
         "ribBancaire": salaire.employe.rib_bancaire,
-        # For demonstration, we use jour_heure_travaille for both nbJourBase and nbJourTotal.
         "jourTotal": salaire.jour_heure_travaille,
         "jourFerie": salaire.jour_ferie,
         "jourConge": salaire.conge_paye,
-        "jourAbcense": 0,  # If not stored, default to 0
-        "soldeConge": salaire.prix_tot_conge, 
+        "jourAbcense": 0,  # Valeur par défaut
+        "soldeConge": salaire.prix_tot_conge,
         "nbJourBase": salaire.jour_heure_travaille,
         "salaireBase": salaire.employe.salaire_base,
         "nbJourTotal": salaire.jour_heure_travaille,
@@ -116,47 +168,41 @@ def generetfichedepaie(request):
         "salaireBrut": salaire.salaire_brut,
         "retenueCNSS": salaire.cnss,
         "salaireImposable": salaire.salaire_imposable,
-        "appointPlus": salaire.prix_tot_sup,  # Using the field from the model
+        "appointPlus": salaire.prix_tot_sup,
         "acompte": salaire.acompte,
         "impoRev": salaire.impots,
         "appointMoins": salaire.apoint,
         "CSS": salaire.css,
         "salaireNet": salaire.salaire_net,
         "modePaiment": salaire.mode_paiement,
-        # Static or derived month/year information
-        "mois": "Mars",
-        "annee": "2025"
+        # Mois et année dynamiques
+        "mois": month_french,  # Use French month
+        "annee": datetime.now().strftime("%Y")
     }
 
-    # Render the LaTeX template with context
-    template = get_template("payslip_template.tex")
+    # Charger et rendre le template LaTeX
+    template = get_template("fichedepaie.tex")
     rendered_tex = template.render(context)
 
-    # Create a temporary directory and write the rendered LaTeX code to a .tex file
+    # Création d'un fichier temporaire pour stocker le LaTeX et générer le PDF
     with tempfile.TemporaryDirectory() as tmpdirname:
-        tex_file_path = os.path.join(tmpdirname, "payslip.tex")
-        pdf_file_path = os.path.join(tmpdirname, "payslip.pdf")
+        tex_file_path = os.path.join(tmpdirname, "fichedepaie.tex")
+        pdf_file_path = os.path.join(tmpdirname, "fichedepaie.pdf")
 
         with open(tex_file_path, "w", encoding="utf-8") as tex_file:
             tex_file.write(rendered_tex)
 
-        # Compile the LaTeX file into a PDF using pdflatex.
-        subprocess.run(
-            ["pdflatex", "-interaction=nonstopmode", tex_file_path],
-            cwd=tmpdirname,
-            check=True
-        )
+        # Compilation en PDF avec pdflatex
+        subprocess.run(["pdflatex", "-interaction=nonstopmode", tex_file_path], cwd=tmpdirname, check=True)
 
-        # Read the generated PDF file
         with open(pdf_file_path, "rb") as pdf_file:
             pdf_data = pdf_file.read()
 
-    # Build the filename using the employee's name and the month.
-    # Replace spaces with underscores for a safe filename.
-    employee_name = re.sub(r'\s+', '_', salaire.employe.nom)
-    month = context.get("mois", "month")
-    filename = f"{employee_name}_{month}.pdf"
-    
+    # Construire le nom du fichier (avec des underscores pour éviter les problèmes d'espaces)
+    employe_nom = re.sub(r'\s+', '_', salaire.employe.nom + " " + salaire.employe.prenom)
+    mois = context["mois"]
+    filename = f"{employe_nom}_{mois}_fichedepaie.pdf"
+
     response = HttpResponse(pdf_data, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
