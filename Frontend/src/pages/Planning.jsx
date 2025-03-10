@@ -30,9 +30,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import D
 // Create a styled container for the Scheduler
 const StyledSchedulerFrame = styled.div`
   height: 80vh;
-  width: 100%;
   overflow: auto;
-  position: absolute;
   font-weight: bold;
 `;
 
@@ -57,6 +55,15 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "8px",
     display: "flex",
     flexDirection: "column",
+  },
+  calendar: {
+    position: "relative",
+    height: "100vh",
+    width: "100%",
+    overflow: "hidden",
+    border: `2px solid rgb(61, 61, 61)`, // You can replace this with any color you want
+    borderRadius: "12px",
+    height: "80vh" // Adjust the border-radius as needed
   },
   contentContainer: {
     flex: 1,
@@ -320,7 +327,8 @@ export default function SimpleCalendar() {
           Ajouter une Présence
         </Button> 
       </Box>
-        <StyledSchedulerFrame>
+      <Box className={classes.calendar}>
+        {/* <StyledSchedulerFrame> */}
           <Scheduler
             isLoading={isLoading}
             data={schedulerData}
@@ -338,7 +346,8 @@ export default function SimpleCalendar() {
               defaultTheme: "dark",
             }}
           />
-        </StyledSchedulerFrame>
+        {/* </StyledSchedulerFrame> */}
+        </Box>
       {/* Add Presence Modal */}
       <Modal
         open={openPresenceModal}
