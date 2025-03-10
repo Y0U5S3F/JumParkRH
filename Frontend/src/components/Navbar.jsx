@@ -160,10 +160,8 @@ export default function Navbar() {
                   marginBottom : '5px',
                   marginLeft: '5px', // Add margin left
                   marginRight: '5px', // Add margin right
-                  borderRadius: '10px', // Border radius for all items
-                  backgroundColor: isActive(path) ? theme.palette.action.selected : 'transparent', // Background color for active item
                   '&:hover':{
-                    backgroundColor: theme.palette.action.selected,
+                    backgroundColor: theme.palette.background.paper,
                     marginLeft: '5px',
                     marginRight: '5px'
                   },
