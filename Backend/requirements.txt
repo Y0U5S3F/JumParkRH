@@ -10,3 +10,5 @@ sqlparse
 psycopg2-binary
 python-dotenv
 pyzk
+jinja2
+pylatex

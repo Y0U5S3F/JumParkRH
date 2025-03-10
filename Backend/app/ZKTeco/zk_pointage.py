@@ -217,7 +217,7 @@ def main():
     for device in devices:
         DEVICE_IP = device['ip']
         DEVICE_PORT = device['port']
-        marker_file = f"logs_{DEVICE_IP.replace('.', '_')}.csv"
+        marker_file = f"logs_{DEVICE_IP.replace('.', '_')}_{DEVICE_PORT}.csv"
         zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
         conn = None
         try:

@@ -119,13 +119,15 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Employé"
         verbose_name_plural = "Employés"
-        ordering = ['nom', 'prenom']  # Sort employees alphabetically by name
+        ordering = ['nom', 'prenom']
         constraints = [
             models.UniqueConstraint(fields=['email'], name='unique_email'),
             models.UniqueConstraint(fields=['CIN'], name='unique_cin'),
             models.UniqueConstraint(fields=['num_telephone'], name='unique_num_telephone'),
             models.UniqueConstraint(fields=['compte_bancaire'], name='unique_compte_bancaire'),
             models.UniqueConstraint(fields=['rib_bancaire'], name='unique_rib_bancaire'),
+            models.UniqueConstraint(fields=['CNSS'], name='unique_cnss'),
+            models.UniqueConstraint(fields=['uid'], name='unique_uid'),
         ]
         indexes = [
             models.Index(fields=['email']),
