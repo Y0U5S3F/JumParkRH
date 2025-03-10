@@ -13,7 +13,8 @@ from jourferie.models import JourFerie
 from datetime import datetime
 from django.http import HttpResponse, Http404
 from django.template.loader import get_template
-
+from django.http import StreamingHttpResponse
+import json
 import re
 import os
 import subprocess
@@ -21,8 +22,49 @@ import tempfile
 
 # DRF views for Salaire API
 class SalaireListCreateView(generics.ListCreateAPIView):
-    queryset = Salaire.objects.all()
+    queryset = Salaire.objects.all().order_by('id').select_related('employe')
     serializer_class = SalaireSerializer
+
+    def list(self, request, *args, **kwargs):
+        """Handles both normal and streaming responses"""
+        if request.query_params.get("stream") == "true":
+            return self.stream_response()
+        return super().list(request, *args, **kwargs)
+    
+    def stream_response(self):
+        """Streams JSON data for large datasets"""
+        queryset = self.filter_queryset(self.get_queryset())
+
+        def data_stream():
+            for salaire in queryset.iterator(chunk_size=100):
+                salaire_data = {
+                    "id": salaire.id,
+                    "employe": salaire.employe.matricule,  # Assuming matricule is a unique identifier
+                    "salaire_base": str(salaire.salaire_base),
+                    "salaire_net": str(salaire.salaire_net),
+                    "jour_heure_travaille": str(salaire.jour_heure_travaille),
+                    "heures_sup": str(salaire.heures_sup),
+                    "prix_tot_sup": str(salaire.prix_tot_sup),
+                    "prime_transport": str(salaire.prime_transport),
+                    "prime_presence": str(salaire.prime_presence),
+                    "acompte": str(salaire.acompte),
+                    "impots": str(salaire.impots),
+                    "css": str(salaire.css),
+                    "cnss": str(salaire.cnss),
+                    "salaire_brut": str(salaire.salaire_brut),
+                    "salaire_imposable": str(salaire.salaire_imposable),
+                    "mode_paiement": salaire.mode_paiement,
+                    "created_at": salaire.created_at.isoformat(),
+                }
+                yield f"{json.dumps(salaire_data)}\n"
+
+        response = StreamingHttpResponse(data_stream(), content_type="application/json")
+        response["Cache-Control"] = "no-cache"
+        return response
+
+    def perform_create(self, serializer):
+        """Handles object creation"""
+        serializer.save()
 
 class SalaireRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Salaire.objects.all()
