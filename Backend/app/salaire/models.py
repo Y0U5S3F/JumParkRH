@@ -46,7 +46,8 @@ class Salaire(models.Model):
 
     mode_paiement = models.CharField(max_length=20, choices=MODE_PAIEMENT_CHOICES, default="virement bancaire", verbose_name="Mode de paiement")
 
-    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 

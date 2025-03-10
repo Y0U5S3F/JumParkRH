@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, status
 from .models import Salaire
+from django.utils.translation import gettext as _
 from employe.models import Employe
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -80,14 +81,30 @@ class SalaireBaseView(APIView):
             "jours_absence": total_absences  # Total absence days
         }, status=status.HTTP_200_OK)
     
+
+months_french = [
+    _('January'), _('February'), _('March'), _('April'),
+    _('May'), _('June'), _('July'), _('August'),
+    _('September'), _('October'), _('November'), _('December')
+]
+
+    
     
 def generetfichedepaie(request, id):
     # Récupérer l'objet Salaire correspondant à l'ID
     salaire = get_object_or_404(Salaire, id=id)
 
     # Construire le contexte pour le template
+    months_french = [
+        _('Janvier'), _('Février'), _('Mars'), _('Avril'),
+        _('Mai'), _('Juin'), _('Juillet'), _('Août'),
+        _('Septembre'), _('Octobre'), _('Novembre'), _('Décembre')
+    ]
+    current_month = datetime.now().month
+    month_french = months_french[current_month - 1]  # Adjust for 0-based index
+
     context = {
-        "nom": salaire.employe.nom,
+        "nom": salaire.employe.nom + " " + salaire.employe.prenom,
         "situationFamiliale": getattr(salaire.employe, "situation_familiale", ""),
         "cnss": salaire.employe.CNSS,
         "matricule": salaire.employe.matricule,
@@ -117,7 +134,7 @@ def generetfichedepaie(request, id):
         "salaireNet": salaire.salaire_net,
         "modePaiment": salaire.mode_paiement,
         # Mois et année dynamiques
-        "mois": datetime.now().strftime("%B"),
+        "mois": month_french,  # Use French month
         "annee": datetime.now().strftime("%Y")
     }
 
@@ -140,7 +157,7 @@ def generetfichedepaie(request, id):
             pdf_data = pdf_file.read()
 
     # Construire le nom du fichier (avec des underscores pour éviter les problèmes d'espaces)
-    employe_nom = re.sub(r'\s+', '_', salaire.employe.nom)
+    employe_nom = re.sub(r'\s+', '_', salaire.employe.nom + " " + salaire.employe.prenom)
     mois = context["mois"]
     filename = f"{employe_nom}_{mois}_fichedepaie.pdf"
 
