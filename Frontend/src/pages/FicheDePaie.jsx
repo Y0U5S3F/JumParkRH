@@ -1,13 +1,27 @@
 import { useState, useEffect } from "react";
 import {
+  DataGrid,
+  useGridApiRef,
+  DEFAULT_GRID_AUTOSIZE_OPTIONS,
+} from "@mui/x-data-grid";
+import dayjs from "dayjs";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DownloadIcon from '@mui/icons-material/Download';
+import {
   Container,
   TextField,
   Button,
   Box,
   FormControl,
   Autocomplete,
+  IconButton,
+  Modal,
+  Divider,
   InputLabel,
   MenuItem,
+  Snackbar,
+  Alert,
   Select,
   Typography,
   Paper,
@@ -15,7 +29,7 @@ import {
 } from "@mui/material";
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import { fetchEmployeeSalaryInfo } from "../service/FicheDePaieService";
-import { addSalaire } from "../service/SalaireService"; // Import addSalaire function
+import { addSalaire, fetchSalaires , downloadSalaire} from "../service/SalaireService"; // Import addSalaire function
 import FicheDePaie from "../models/ficheDePaie";
 import { makeStyles } from "@mui/styles";
 
@@ -27,6 +41,31 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginBottom: "10px",
   },
+  modalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 1000,
+    height: 350,
+    backgroundColor: "black",
+    boxShadow: 24,
+    padding: "20px",
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  contentContainer: {
+    flex: 1,
+    overflowY: "auto",
+    paddingRight: "10px", // Prevents content from touching the scrollbar
+    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    "&::-webkit-scrollbar": {
+      display: "none", // Hides scrollbar in Chrome/Safari
+    },
+  },
+  
   formContainer: {
     padding: "20px",
     backgroundColor: theme.palette.background.paper,
@@ -53,23 +92,75 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function FicheDePaiePage() {
+  const [open, setOpen] = useState(false); // State to manage modal open/close
+
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [ficheDePaieData, setFicheDePaieData] = useState(new FicheDePaie());
   const classes = useStyles();
+  const apiRef = useGridApiRef();
+    const [loading, setLoading] = useState(true);
+    const [salaires, setSalaires] = useState([]);
+
+    const [snackbar, setSnackbar] = useState({
+      open: false,
+      severity: "",
+      message: "",
+    });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const employeesData = await fetchMinimalEmployes();
+        const [employeesData,salairesData] = await Promise.all([
+          fetchMinimalEmployes(),
+          fetchSalaires()]);
         setEmployees(employeesData);
+        console.log("Fetched salaires:", salairesData);
+        setSalaires(salairesData);
       } catch (error) {
         console.error("Erreur lors du chargement des employés:", error);
+      } finally{
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
+  const columns = [
+    { field: "id", headerName: "id", flex: 0.5 },
+      { field: "employe", headerName: "Matricule", flex: 1 },
+      { field: "salaire_net", headerName: "Salaire Net", flex: 1 },
+      { field: "mode_paiement", headerName: "Mode de Paiement", flex: 1 },
+      {
+        field: "created_at",
+        headerName: "Date (Mois:Année)",
+        flex: 1,
+        
+      },    
+      {
+        field: "actions",
+        headerName: "Actions",
+        flex: 0.6,
+        renderCell: (params) => (
+          <div style={{ display: "flex" }}>
+            <IconButton onClick={() => console.log("edit", params.row.id)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => console.log("delete", params.row.id)}>
+              <DeleteIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDownload(params.row.id)}>
+  <DownloadIcon />
+</IconButton>
+          </div>
+        ),
+      },
+    ];
 
   const handleEmployeeChange = async (event, newValue) => {
     setSelectedEmployee(newValue);
@@ -157,6 +248,7 @@ export default function FicheDePaiePage() {
     });
   };
 
+  
   const handleDownloadClick = async () => {
     const salaireData = {
       employe: ficheDePaieData.employe.matricule,
@@ -193,15 +285,33 @@ export default function FicheDePaiePage() {
       console.error("Erreur lors de l'ajout du salaire:", error);
     }
   };
+  const handleDownload = async (salaireId) => {
+    try {
+      const result = await downloadSalaire(salaireId);
+      console.log(result);
+    } catch (error) {
+      console.error("Error downloading salaire:", error);
+    }
+  };
 
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" gutterBottom>
           Fiche de Paie
         </Typography>
+        <Button variant="contained" onClick={() => setOpen(true)}>
+          Ajouter fiche de paie
+        </Button>
       </Box>
-      <Paper elevation={3} className={classes.formContainer}>
+      
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Box className={classes.modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Veuillez saisir les coordonnées de la fiche de paie
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box className={classes.contentContainer}>
         <Grid container spacing={2}>
           {/* Employé */}
           <Grid item xs={12}>
@@ -458,6 +568,7 @@ export default function FicheDePaiePage() {
           </Grid>
           
         </Grid>
+      </Box>
         {/* Bouton Télécharger */}
         <Box className={classes.actionContainer}>
           {/* Total Salary */}
@@ -473,7 +584,29 @@ export default function FicheDePaiePage() {
             </Button>
           </Box>
         </Box>
-      </Paper>
+      </Box>
+      </Modal>
+      <DataGrid
+              apiRef={apiRef}
+              rows={salaires}
+              columns={columns}
+              pageSize={5}
+              disableRowSelectionOnClick
+              disableMultipleRowSelection
+              loading={loading}
+              pagination
+            />
+      
+            <Snackbar
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              open={snackbar.open}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackbar}
+            >
+              <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
     </Container>
   );
 }
