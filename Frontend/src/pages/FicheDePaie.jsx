@@ -4,6 +4,8 @@ import {
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
+import DescriptionIcon from "@mui/icons-material/Description";
+
 import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -40,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -77,17 +80,17 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginTop: "16px",
   },
-  boxLeft: {
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    fontWeight: "bold",
-    fontSize: "16px",
-  },
+  
   boxRight: {
     display: "flex",
     justifyContent: "flex-end",
     gap: "10px",
+  },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
   },
 }));
 
@@ -297,9 +300,12 @@ export default function FicheDePaiePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-      <Typography variant="h5" gutterBottom>
-          Fiche de Paie
-        </Typography>
+      <Box className={classes.titleContainer}>
+          <DescriptionIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Fiche de Paie
+          </Typography>
+        </Box>
         <Button variant="contained" onClick={() => setOpen(true)}>
           Ajouter fiche de paie
         </Button>
@@ -311,7 +317,7 @@ export default function FicheDePaiePage() {
             Veuillez saisir les coordonnées de la fiche de paie
           </Typography>
           <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
+          <Box className={classes.contentContainer}>]
         <Grid container spacing={2}>
           {/* Employé */}
           <Grid item xs={12}>
@@ -586,6 +592,7 @@ export default function FicheDePaiePage() {
         </Box>
       </Box>
       </Modal>
+      
       <DataGrid
               apiRef={apiRef}
               rows={salaires}
