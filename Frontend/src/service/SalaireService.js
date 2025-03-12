@@ -24,6 +24,17 @@ export const fetchSalaireById = async (salaireId) => {
   }
 };
 
+
+export const downloadSalaire = async (salaireId) => {
+  try {
+    const response = await axios.get(`127.0.0.1:8000/api/salaire/generer/${salaireId}/`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching salaire:", error);
+    throw error;
+  }
+};
+
 // Add a new salaire
 export const addSalaire = async (salaireData) => {
   try {

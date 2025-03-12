@@ -1307,8 +1307,9 @@ export default function EmployePage() {
           </Box>
         </Box>
       </Modal>
-
+                      
       <DataGrid
+      sx={{mt:"4px"}}
         apiRef={apiRef}
         rows={employees}
         columns={columns}
