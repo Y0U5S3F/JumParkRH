@@ -205,4 +205,5 @@ def generetfichedepaie(request, id):
 
     response = HttpResponse(pdf_data, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    response["Access-Control-Expose-Headers"] = "Content-Disposition"
     return response

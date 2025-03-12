@@ -25,13 +25,37 @@ export const fetchSalaireById = async (salaireId) => {
 };
 
 
+// In SalaireService.js
+
 export const downloadSalaire = async (salaireId) => {
   try {
-    const response = await axios.get(`127.0.0.1:8000/api/salaire/generer/${salaireId}/`);
-    return response.data;
+    const url = `http://127.0.0.1:8000/api/salaire/generer/${salaireId}/`;
+    const response = await axios.get(url, {
+      responseType: "blob", // Get response as a Blob for binary data
+    });
+    
+    // Extract filename from Content-Disposition header if available
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = `salaire_${salaireId}.pdf`;
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="(.+?)"/);
+      if (match) {
+        filename = match[1];
+      }
+    }
+    
+    // Create a URL for the Blob and simulate a download link click
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    // Clean up the DOM and revoke the object URL
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error("Error fetching salaire:", error);
-    throw error;
+    console.error("Error downloading salaire:", error);
   }
 };
 

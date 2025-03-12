@@ -285,10 +285,10 @@ export default function FicheDePaiePage() {
       console.error("Erreur lors de l'ajout du salaire:", error);
     }
   };
+  
   const handleDownload = async (salaireId) => {
     try {
-      const result = await downloadSalaire(salaireId);
-      console.log(result);
+      await downloadSalaire(salaireId);
     } catch (error) {
       console.error("Error downloading salaire:", error);
     }
