@@ -35,6 +35,7 @@ import {
   deleteEmployee,
   addEmployee,
   updateEmployee,
+  fetchEmployesStream,
 } from "../service/EmployeService";
 import { fetchDepartements } from "../service/DepartementService";
 import { fetchServices } from "../service/ServiceService";
@@ -117,26 +118,34 @@ export default function EmployePage() {
   };
 
   useEffect(() => {
+    const handleNewEmployee = (newEmployee) => {
+      setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+    };
+  
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [employeesData, departmentsData, servicesData] =
-          await Promise.all([
-            fetchEmployes(),
-            fetchDepartements(),
-            fetchServices(),
-          ]);
-
-        setEmployees(employeesData);
+        const [departmentsData, servicesData] = await Promise.all([
+          fetchDepartements(),
+          fetchServices(),
+        ]);
+  
         setDepartments(departmentsData);
         setServices(servicesData);
+  
+        await fetchEmployesStream(handleNewEmployee);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "Error fetching data.",
+        });
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [refresh]);
 
