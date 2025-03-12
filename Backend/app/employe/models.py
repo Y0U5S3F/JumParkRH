@@ -6,6 +6,8 @@ from django.apps import apps
 from departement.models import Departement
 from label.models import Label
 from service.models import Service
+from django.contrib.auth.hashers import check_password
+import json
 
 
 
