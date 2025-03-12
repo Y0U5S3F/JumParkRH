@@ -9,6 +9,7 @@ class EmployeSerializer(serializers.ModelSerializer):
     departement = DepartementSerializer(read_only=True)  # Read-only nested serializer
     service = ServiceSerializer(read_only=True)  # Read-only nested serializer
 
+
     # Write-only fields for departement and service
     departement_id = serializers.PrimaryKeyRelatedField(
         queryset=Departement.objects.all(),

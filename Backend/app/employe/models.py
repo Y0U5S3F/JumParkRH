@@ -6,6 +6,7 @@ from django.apps import apps
 from departement.models import Departement
 from label.models import Label
 from service.models import Service
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
@@ -15,9 +16,11 @@ class EmployeManager(BaseUserManager):
             raise ValueError("L'email est obligatoire")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)  # Hashes the password
+        if password:
+            user.set_password(password)  # Hash the password
         user.save(using=self._db)
         return user
+
 
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
@@ -137,9 +140,15 @@ class Employe(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=['service']),
         ]
 
-zkteco_id = models.PositiveIntegerField(
-    unique=True, 
-    null=True, 
-    blank=True, 
-    verbose_name="ZKTeco User ID"
-)
+    def get_tokens_for_user(self):
+        refresh = RefreshToken.for_user(self)
+        
+        refresh["email"] = self.email
+        refresh["nom"] = self.nom
+        refresh["prenom"] = self.prenom
+        refresh["matricule"] = self.matricule
+
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }

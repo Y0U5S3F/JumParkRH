@@ -54,3 +54,5 @@ doc.dumps = lambda: rendered_tex
 doc.generate_pdf("output", clean_tex=True, compiler="pdflatex")
 
 print("PDF generated successfully!")
+
+#gotta install texlive and texlive-collection-langfrench
