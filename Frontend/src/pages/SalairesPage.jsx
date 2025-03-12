@@ -14,7 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import dayjs from "dayjs";
 import { fetchMinimalEmployes } from "../service/EmployeService";
-import { fetchSalairesStream, deleteSalaire } from "../service/SalaireService";
+import { fetchSalairesStream,fetchSalaires, deleteSalaire } from "../service/SalaireService";
 
 export default function SalairesPage() {
   const [employees, setEmployees] = useState([]);
@@ -60,7 +60,7 @@ export default function SalairesPage() {
     { field: "salaire_net", headerName: "Salaire Net", flex: 1 },
     { field: "mode_paiement", headerName: "Mode de Paiement", flex: 1 },
     {
-      field: "date_mois_annee",
+      field: "created_at",
       headerName: "Date (Mois:Année)",
       flex: 1,
       valueGetter: (params) => {
@@ -87,6 +87,7 @@ export default function SalairesPage() {
 
   return (
     <Container>
+      
       <DataGrid
         apiRef={apiRef}
         rows={salaires}
