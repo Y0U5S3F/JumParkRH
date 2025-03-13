@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants";
 import { useState, useEffect } from "react";
@@ -16,7 +16,7 @@ function ProtectedRoute() {
 
     // Function to refresh the token using the refresh token
     const refreshToken = async () => {
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN) || sessionStorage.getItem(REFRESH_TOKEN);
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
         console.log('Attempting to refresh token with:', refreshToken); // Debugging line
 
         try {
@@ -26,7 +26,6 @@ function ProtectedRoute() {
             if (res.status === 200) {
                 // Store the new access token and set authorized state
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
-                sessionStorage.setItem(ACCESS_TOKEN, res.data.access);
                 setIsAuthorized(true);  // Successfully refreshed, set authorization to true
             } else {
                 console.log('Failed to refresh token'); // Debugging line
@@ -40,7 +39,7 @@ function ProtectedRoute() {
 
     // Function to authenticate the user by checking the token validity
     const auth = async () => {
-        const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
+        const token = localStorage.getItem(ACCESS_TOKEN);
         console.log('Current access token:', token); // Debugging line
 
         if (!token) {
