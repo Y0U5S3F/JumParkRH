@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 import {
   Container,
   Box,
   Grid,
   Card,
   Typography,
+  Paper,
   CardContent,
   Snackbar,
   Alert,
@@ -16,6 +18,7 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import CelebrationIcon from "@mui/icons-material/Celebration";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import {
   DataGrid,
   useGridApiRef,
@@ -32,7 +35,7 @@ const absenceData = [
 ];
 
 // Reusable Summary Card Component
-const SummaryCard = ({ title, value, icon }) => {
+const SummaryCard = ({ title, value, subValue, icon }) => {
   return (
     <Card
       sx={{
@@ -64,21 +67,34 @@ const SummaryCard = ({ title, value, icon }) => {
             variant="body1"
             fontWeight="semi-bold"
             sx={{
-              fontSize: "0.9rem",
-              color: "gray",
+              fontSize: "1rem",
+              color: (theme) => theme.palette.primary.main,
               lineHeight: 1.2,
             }}
           >
             {title}
           </Typography>
-          <Typography
-            variant="h5"
-            sx={{
-              fontWeight: "bold",
-            }}
-          >
-            {value}
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              {value}
+            </Typography>
+            {subValue && (
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "0.7rem",
+                  color: (theme) => theme.palette.text.secondary, // Set color to primary main
+                }}
+              >
+                {subValue}
+              </Typography>
+            )}
+          </Box>
         </Box>
 
         {/* Icon Box */}
@@ -87,7 +103,6 @@ const SummaryCard = ({ title, value, icon }) => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            
           }}
         >
           {icon}
@@ -96,7 +111,6 @@ const SummaryCard = ({ title, value, icon }) => {
     </Card>
   );
 };
-
 
 const PieChartCard = ({ data }) => {
   return (
@@ -108,20 +122,22 @@ const PieChartCard = ({ data }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
-        height: "80%", // Ensures all cards are the same height
-        padding: "16px",
+        height: "90%", // Set a fixed height
+        padding: "8px",
       }}
     >
       <CardContent sx={{ textAlign: "center" }}>
         <Typography
+          fontWeight="semi-bold"
+          variant="body1"
           sx={{
-            fontSize: "0.9rem",
-            color: "gray",
-            lineHeight: 1.2, // Reduces line spacing
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
           }}
         >
-          Employee Distribution by Department
+          Répartition des employés par département
         </Typography>
         <PieChart
           series={[
@@ -129,7 +145,15 @@ const PieChartCard = ({ data }) => {
               data: data.map((item, index) => ({
                 id: index,
                 value: item.total,
-                label: item.departementnom,
+                label: item.departement__nom,
+                color: [
+                  "rgba(252, 184, 89, 0.8)", // Warm Yellow with 20% opacity
+                  "rgba(169, 223, 216, 0.8)", // Soft Teal with 20% opacity
+                  "rgba(40, 174, 243, 0.8)", // Bright Blue with 20% opacity
+                  "rgba(242, 200, 237, 0.8)", // Pastel Pink with 20% opacity
+                  "rgba(242, 109, 91, 0.8)", // Deep Coral with 20% opacity
+                  "rgba(199, 162, 255, 0.8)", // Muted Lavender with 20% opacity
+                ][index % 6], // Cycle through colors
               })),
             },
           ]}
@@ -140,7 +164,6 @@ const PieChartCard = ({ data }) => {
     </Card>
   );
 };
-
 const BarChartCard = ({ data }) => {
   return (
     <Card
@@ -152,33 +175,91 @@ const BarChartCard = ({ data }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        height: "80%", // Ensures all cards are the same height
-        padding: "16px",
+        height: "90%", // Set a fixed height
       }}
     >
       <CardContent sx={{ textAlign: "center" }}>
         <Typography
+          fontWeight="semi-bold"
+          variant="body1"
           sx={{
-            fontSize: "0.9rem",
-            color: "gray",
-            lineHeight: 1.2, // Reduces line spacing
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
           }}
         >
-          Most Absent Employees
+          Employés les plus absents
         </Typography>
         <BarChart
           dataset={data}
           xAxis={[{ scaleType: "band", dataKey: "name" }]}
           series={[
-            { dataKey: "absences", label: "Absences", color: "#FF6B6B" },
+            { dataKey: "absences", label: "Absences", color: "#FCB859" },
           ]}
           height={200}
-          width={400}
+          width={350}
         />
       </CardContent>
     </Card>
   );
 };
+
+const BirthdaysCard = ({ data }) => {
+  return (
+    <Card
+      sx={{
+        color: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        height: "90%", // Set a fixed height
+        overflow: "hidden", // Hide overflow
+      }}
+    >
+      <CardContent
+        sx={{
+          textAlign: "center",
+          overflowY: "auto", // Enable vertical scrolling
+          "&::-webkit-scrollbar": {
+            display: "none", // Hide scrollbar
+          },
+        }}
+      >
+        <Typography
+          fontWeight="semi-bold"
+          variant="body1"
+          sx={{
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
+          }}
+        >
+          Anniversaires ce mois-ci
+        </Typography>
+        {data.length > 0 ? (
+          data.map((birthday, index) => (
+            <Box key={index} sx={{ mb: 1 }}>
+              <Typography variant="h6" fontWeight="bold">
+                {`${birthday.prenom} ${birthday.nom}`}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "gray" }}>
+                {dayjs(birthday.date_de_naissance).format("D MMM")}
+              </Typography>
+            </Box>
+          ))
+        ) : (
+          <Typography sx={{ fontSize: "0.9rem", color: "gray" }}>
+            Aucun anniversaire ce mois-ci
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState({});
@@ -189,25 +270,31 @@ export default function Dashboard() {
     message: "",
   });
   const apiRef = useGridApiRef();
+  const [pageTitle, setPageTitle] = useState("Tableau de bord");
 
+  useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const data = await fetchDashboardData();
         // Add unique id to each employee on leave
-        const employesOnLeave = data.employes_on_leave.map((employee, index) => ({
-          ...employee,
-          id: index,
-        }));
+        const employesOnLeave = data.employes_on_leave.map(
+          (employee, index) => ({
+            ...employee,
+            id: index,
+          })
+        );
         setDashboardData({ ...data, employes_on_leave: employesOnLeave });
         console.log("Dashboard Data:", data);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        console.error("Erreur lors de la récupération des données du tableau de bord:", error);
         setSnackbar({
           open: true,
           severity: "error",
-          message: "Error fetching dashboard data.",
+          message: "Erreur lors de la récupération des données du tableau de bord.",
         });
       } finally {
         setLoading(false);
@@ -222,9 +309,9 @@ export default function Dashboard() {
   };
 
   const columns = [
-    { field: "nom", headerName: "Name", flex: 1 },
-    { field: "departement", headerName: "Department", flex: 1 },
-    { field: "return_date", headerName: "Return Date", flex: 1 },
+    { field: "nom", headerName: "Nom", flex: 1 },
+    { field: "departement", headerName: "Département", flex: 1 },
+    { field: "return_date", headerName: "Date de retour", flex: 1 },
     { field: "type", headerName: "Type", flex: 1 },
   ];
 
@@ -236,59 +323,129 @@ export default function Dashboard() {
         flexDirection: "column",
       }}
     >
-      <h1>Dashboard</h1>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
+          padding: "5px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          <DashboardIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Fiche de Paie
+          </Typography>
+        </Box>
+        <Typography
+          variant="h6"
+          fontWeight="semi-bold"
+          sx={{ color: (theme) => theme.palette.text.secondary, fontSize: "1rem" }}
+        >
+          {dayjs().format("dddd, D MMMM YYYY")}
+        </Typography>
+      </Box>
       <Box className="mainContent">
         <Grid container spacing={3}>
           <Grid item xs={3}>
             <SummaryCard
-              title="Total Employees"
-              value={dashboardData.statistiques?.totalemployes || "Loading..."}
-              icon={<PeopleIcon sx={{ color: (theme) => theme.palette.primary.main, fontSize:32 }} />}
+              title="Total employés"
+              value={dashboardData.statistiques?.totalemployes || "Chargement..."}
+              subValue="employés"
+              icon={
+                <PeopleIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Total Departments"
-              value={dashboardData.statistiques?.totaldepartements || "Loading..."}
-              icon={<BusinessIcon sx={{ color: (theme) => theme.palette.primary.main, fontSize:32 }} />}
+              title="Total départements"
+              value={dashboardData.statistiques?.totaldepartements || "Chargement..."}
+              subValue="départements"
+              icon={
+                <BusinessIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Pending Vacation "
-              value={dashboardData.statistiques?.pendingvacation || "Loading..."}
-              icon={<EventNoteIcon sx={{ color: (theme) => theme.palette.primary.main, fontSize:32 }} />}
+              title="Congés en attente"
+              value={dashboardData.statistiques?.pendingvacation || "Chargement..."}
+              subValue="demandes"
+              icon={
+                <EventNoteIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Next Public Holiday"
-              value={dashboardData.statistiques?.nextpublicholiday || "Loading..."}
-              icon={<CelebrationIcon sx={{ color: (theme) => theme.palette.primary.main, fontSize:32 }} />}
+              title="Prochain jour férié"
+              value={
+                dashboardData.statistiques?.nextpublicholiday
+                  ? dayjs(dashboardData.statistiques.nextpublicholiday).format("D MMM")
+                  : "Chargement..."
+              }
+              icon={
+                <CelebrationIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={5}>
             <PieChartCard data={dashboardData.employedistribution || []} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <BarChartCard data={absenceData} />
+          </Grid>
+          <Grid item xs={3}>
+            <BirthdaysCard data={dashboardData.birthdays_this_month || []} />
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
+          
               <Typography
+                fontWeight="semi-bold"
+                variant="body1"
                 sx={{
-                  fontSize: "0.9rem",
-                  color: "gray",
-                  lineHeight: 1.2, // Reduces line spacing
+                  fontSize: "1rem",
+                  color: (theme) => theme.palette.primary.main,
+                  lineHeight: 1.2,
+                  mb: "10px", // Reduces line spacing
                 }}
               >
-                Employees on Leave Today
+                Employés en congé aujourd'hui
               </Typography>
-              <div style={{ height: 300, width: "100%" }}>
+              <Paper>
+              <div style={{ height: "100%", width: "100%" }}>
                 <DataGrid
                   apiRef={apiRef}
                   rows={dashboardData.employes_on_leave || []}
@@ -302,9 +459,9 @@ export default function Dashboard() {
                   disableMultipleColumnsSorting
                   loading={loading}
                 />
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+              </Paper>
+            
         </Grid>
       </Box>
       <Snackbar
