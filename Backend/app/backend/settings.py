@@ -31,6 +31,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
+    'USER_ID_FIELD': 'matricule',
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,

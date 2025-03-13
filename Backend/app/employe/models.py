@@ -1,37 +1,49 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.apps import apps
 from departement.models import Departement
-from label.models import Label
 from service.models import Service
 from rest_framework_simplejwt.tokens import RefreshToken
-
-
+from django.utils.timezone import now
+from django.contrib.auth.hashers import make_password
 
 class EmployeManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("L'email est obligatoire")
+
         email = self.normalize_email(email)
+        extra_fields.setdefault("created_at", now())  # Ensure created_at exists
+
         user = self.model(email=email, **extra_fields)
+        
         if password:
-            user.set_password(password)  # Hash the password
+            user.password = make_password(password)  # 🔥 Use Django's password hasher
+        
         user.save(using=self._db)
         return user
 
-
     def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
         return self.create_user(email, password, **extra_fields)
+    
+class CustomRefreshToken(RefreshToken):
+    # Override the for_user method
+    @classmethod
+    def for_user(cls, user):
+        token = super().for_user(user)
+        
+        # Remove 'user_id' from the payload
+        if 'user_id' in token:
+            del token['user_id']
+        
+        # Add 'matricule', 'email', and 'departement' to the token
+        token['matricule'] = user.matricule
+        token['email'] = user.email
+        token['departement'] = user.departement.id  # Assuming departement has a 'nom' field
+        
+        return token
 
 class Employe(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
@@ -53,7 +65,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     ]
 
     # Personal Information
-    matricule = models.CharField(max_length=6, primary_key=True, verbose_name="Matricule")
+    matricule = models.CharField(max_length=6, unique=True, primary_key=True, verbose_name="Matricule")
     nom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Nom")
     prenom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Prénom")
     email = models.EmailField(unique=True, null=False, blank=False, verbose_name="Email", db_index=True)
@@ -140,14 +152,12 @@ class Employe(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=['service']),
         ]
 
-    def get_tokens_for_user(self):
-        refresh = RefreshToken.for_user(self)
-        
-        refresh["email"] = self.email
-        refresh["nom"] = self.nom
-        refresh["prenom"] = self.prenom
-        refresh["matricule"] = self.matricule
 
+
+    def get_tokens(self):
+        # Use the custom token class to create the refresh token
+        refresh = CustomRefreshToken.for_user(self)
+        
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),

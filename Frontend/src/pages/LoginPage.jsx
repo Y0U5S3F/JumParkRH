@@ -12,7 +12,9 @@ import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import darkTheme from '../theme/Theme'; // Adjust the import path as necessary
-import gymParkLogo from '../../public/logos/gympark.svg'; // Adjust the import path as necessary
+import gymParkLogo from '../../public/logos/gympark.svg';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // For redirecting after login
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -52,18 +54,61 @@ export default function SignIn(props) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
+  const navigate = useNavigate(); // for redirecting after login
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    // Validate inputs
+    if (!validateInputs()) {
       return;
     }
+  
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const email = data.get('email');
+    const password = data.get('password');
+    const rememberMe = data.get('remember') !== null; // This will be true if checkbox is checked
+  
+    try {
+      setIsLoading(true);
+      const response = await axios.post('http://127.0.0.1:8000/api/employe/login/', {
+        email: email,
+        password: password,
+      });
+  
+      // Check if the response contains the tokens
+      if (response.data.access && response.data.refresh) {
+        // Save tokens in localStorage or sessionStorage based on "Remember me" checkbox
+        if (rememberMe) {
+          localStorage.setItem('access_token', response.data.access);
+          localStorage.setItem('refresh_token', response.data.refresh);
+        } else {
+          sessionStorage.setItem('access_token', response.data.access);
+          sessionStorage.setItem('refresh_token', response.data.refresh);
+        }
+  
+        // Log to check if the tokens are being stored
+        console.log('Access Token:', response.data.access);
+        console.log('Refresh Token:', response.data.refresh);
+  
+        // Redirect user to dashboard or protected route
+        navigate('/'); // Modify this route as necessary
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setEmailError(true);
+      setEmailErrorMessage('Invalid email or password');
+      setPasswordError(true);
+      setPasswordErrorMessage('Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
 
   const validateInputs = () => {
     const email = document.getElementById('email');
@@ -119,7 +164,7 @@ export default function SignIn(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email" sx={{ mb: "3px" }}>Email</FormLabel>
+              <FormLabel htmlFor="email" sx={{ mb: '3px' }}>Email</FormLabel>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
@@ -137,7 +182,7 @@ export default function SignIn(props) {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="password" sx={{ mb: "3px" }}>Password</FormLabel>
+              <FormLabel htmlFor="password" sx={{ mb: '3px' }}>Password</FormLabel>
               <TextField
                 error={passwordError}
                 helperText={passwordErrorMessage}
@@ -162,9 +207,9 @@ export default function SignIn(props) {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              disabled={isLoading}
             >
-              Sign in
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
           </Box>
         </Card>
