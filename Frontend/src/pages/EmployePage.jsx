@@ -6,6 +6,11 @@ import {
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
 import {
+  
+  People,
+  
+} from "@mui/icons-material";
+import {
   Container,
   TextField,
   Button,
@@ -22,6 +27,7 @@ import {
   InputLabel,
   IconButton,
 } from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -42,9 +48,10 @@ const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -81,6 +88,12 @@ const useStyles = makeStyles((theme) => ({
     bottom: "20px",
     right: "20px",
     zIndex: 1000,
+  },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
   },
 }));
 
@@ -330,11 +343,30 @@ export default function EmployePage() {
 
   return (
     <Container className={classes.container}>
+      
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
-          Ajouter Employé
-        </Button>
-      </Box>
+            <Box className={classes.titleContainer}>
+                <People />
+                <Typography variant="h6" fontWeight="bold">
+                  Personnel
+                </Typography>
+              </Box>
+              <Button
+              size="medium"
+  variant="outlined"
+  startIcon={<AddIcon />}
+  sx={{
+    '&:hover': {
+      backgroundColor: (theme) => theme.palette.primary.main,
+      color: 'white',
+      borderColor: (theme) => theme.palette.primary.main,
+    },
+  }}
+  onClick={() => setOpen(true)}
+>
+  Ajouter Employé
+</Button>
+            </Box>
 
       {/* View Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>

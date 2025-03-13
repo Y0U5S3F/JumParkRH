@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 import {
   Container,
   Box,
   Grid,
   Card,
   Typography,
+  Paper,
   CardContent,
   Snackbar,
   Alert,
@@ -14,81 +16,15 @@ import PeopleIcon from "@mui/icons-material/People";
 import BusinessIcon from "@mui/icons-material/Business";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import CelebrationIcon from "@mui/icons-material/Celebration";
-import { makeStyles } from "@mui/styles";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import {
   DataGrid,
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
-
-const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
-  topBar: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: "10px",
-  },
-  modalStyle: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 350,
-    backgroundColor: "black",
-    boxShadow: 24,
-    padding: "20px",
-    border: `1px solid ${theme.palette.primary.main}`,
-    borderRadius: "8px",
-    display: "flex",
-    flexDirection: "column",
-  },
-  contentContainer: {
-    flex: 1,
-    overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
-    "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
-    },
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    marginTop: "10px",
-  },
-  alertContainer: {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    zIndex: 1000,
-  },
-  card: {
-    backgroundColor: "#1E1E2D",
-    color: "white",
-    boxShadow: 3,
-    borderRadius: 2,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "80%", // Ensures all cards are the same height
-    padding: "16px",
-  },
-  title: {
-    fontSize: "0.9rem",
-    color: "gray",
-    lineHeight: 1.2, // Reduces line spacing
-  },
-  value: {
-    fontWeight: "bold",
-    marginTop: "8px",
-  },
-}));
+import { fetchDashboardData } from "../service/DashboardService"; // Import the fetchDashboardData function
 
 const absenceData = [
   { name: "John Doe", absences: 15 },
@@ -99,41 +35,126 @@ const absenceData = [
 ];
 
 // Reusable Summary Card Component
-const SummaryCard = ({ title, value, icon }) => {
-  const classes = useStyles();
+const SummaryCard = ({ title, value, subValue, icon }) => {
   return (
-    <Card className={classes.card}>
-      <CardContent sx={{ textAlign: "center" }}>
-        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-          {icon}
-          <Typography className={classes.title}>{title}</Typography>
+    <Card
+      sx={{
+        color: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "80%", // Ensures all cards are the same height
+        padding: "8px",
+      }}
+    >
+      <CardContent
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="body1"
+            fontWeight="semi-bold"
+            sx={{
+              fontSize: "1rem",
+              color: (theme) => theme.palette.primary.main,
+              lineHeight: 1.2,
+            }}
+          >
+            {title}
+          </Typography>
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: "bold",
+              }}
+            >
+              {value}
+            </Typography>
+            {subValue && (
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: "0.7rem",
+                  color: (theme) => theme.palette.text.secondary, // Set color to primary main
+                }}
+              >
+                {subValue}
+              </Typography>
+            )}
+          </Box>
         </Box>
-        <Typography variant="h5" className={classes.value}>
-          {value}
-        </Typography>
+
+        {/* Icon Box */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {icon}
+        </Box>
       </CardContent>
     </Card>
   );
 };
 
-const PieChartCard = () => {
-  const classes = useStyles();
+const PieChartCard = ({ data }) => {
   return (
-    <Card className={classes.card}>
+    <Card
+      sx={{
+        color: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "90%", // Set a fixed height
+        padding: "8px",
+      }}
+    >
       <CardContent sx={{ textAlign: "center" }}>
-        <Typography className={classes.title}>
-          Employee Distribution by Department
+        <Typography
+          fontWeight="semi-bold"
+          variant="body1"
+          sx={{
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
+          }}
+        >
+          Répartition des employés par département
         </Typography>
         <PieChart
           series={[
             {
-              data: [
-                { id: 0, value: 10, label: "HR" },
-                { id: 1, value: 15, label: "Engineering" },
-                { id: 2, value: 20, label: "Sales" },
-                { id: 3, value: 5, label: "Marketing" },
-                { id: 4, value: 10, label: "Support" },
-              ],
+              data: data.map((item, index) => ({
+                id: index,
+                value: item.total,
+                label: item.departement__nom,
+                color: [
+                  "rgba(252, 184, 89, 0.8)", // Warm Yellow with 20% opacity
+                  "rgba(169, 223, 216, 0.8)", // Soft Teal with 20% opacity
+                  "rgba(40, 174, 243, 0.8)", // Bright Blue with 20% opacity
+                  "rgba(242, 200, 237, 0.8)", // Pastel Pink with 20% opacity
+                  "rgba(242, 109, 91, 0.8)", // Deep Coral with 20% opacity
+                  "rgba(199, 162, 255, 0.8)", // Muted Lavender with 20% opacity
+                ][index % 6], // Cycle through colors
+              })),
             },
           ]}
           width={400}
@@ -143,30 +164,105 @@ const PieChartCard = () => {
     </Card>
   );
 };
-
-const BarChartCard = () => {
-  const classes = useStyles();
+const BarChartCard = ({ data }) => {
   return (
-    <Card className={classes.card}>
+    <Card
+      sx={{
+        color: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "90%", // Set a fixed height
+      }}
+    >
       <CardContent sx={{ textAlign: "center" }}>
-        <Typography className={classes.title}>Most Absent Employees</Typography>
+        <Typography
+          fontWeight="semi-bold"
+          variant="body1"
+          sx={{
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
+          }}
+        >
+          Employés les plus absents
+        </Typography>
         <BarChart
-          dataset={absenceData}
+          dataset={data}
           xAxis={[{ scaleType: "band", dataKey: "name" }]}
           series={[
-            { dataKey: "absences", label: "Absences", color: "#FF6B6B" },
+            { dataKey: "absences", label: "Absences", color: "#FCB859" },
           ]}
           height={200}
-          width={400}
+          width={350}
         />
       </CardContent>
     </Card>
   );
 };
 
+const BirthdaysCard = ({ data }) => {
+  return (
+    <Card
+      sx={{
+        color: "white",
+        boxShadow: 3,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        height: "90%", // Set a fixed height
+        overflow: "hidden", // Hide overflow
+      }}
+    >
+      <CardContent
+        sx={{
+          textAlign: "center",
+          overflowY: "auto", // Enable vertical scrolling
+          "&::-webkit-scrollbar": {
+            display: "none", // Hide scrollbar
+          },
+        }}
+      >
+        <Typography
+          fontWeight="semi-bold"
+          variant="body1"
+          sx={{
+            fontSize: "1rem",
+            color: (theme) => theme.palette.primary.main,
+            lineHeight: 1.2,
+            mb: "10px", // Reduces line spacing
+          }}
+        >
+          Anniversaires ce mois-ci
+        </Typography>
+        {data.length > 0 ? (
+          data.map((birthday, index) => (
+            <Box key={index} sx={{ mb: 1 }}>
+              <Typography variant="h6" fontWeight="bold">
+                {`${birthday.prenom} ${birthday.nom}`}
+              </Typography>
+              <Typography variant="body1" sx={{ color: "gray" }}>
+                {dayjs(birthday.date_de_naissance).format("D MMM")}
+              </Typography>
+            </Box>
+          ))
+        ) : (
+          <Typography sx={{ fontSize: "0.9rem", color: "gray" }}>
+            Aucun anniversaire ce mois-ci
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+
 export default function Dashboard() {
-  const classes = useStyles();
-  const [employeesOnLeave, setEmployeesOnLeave] = useState([]);
+  const [dashboardData, setDashboardData] = useState({});
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -174,28 +270,38 @@ export default function Dashboard() {
     message: "",
   });
   const apiRef = useGridApiRef();
+  const [pageTitle, setPageTitle] = useState("Tableau de bord");
 
   useEffect(() => {
-    const fetchEmployeesOnLeave = async () => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/leave/today/"
+        const data = await fetchDashboardData();
+        // Add unique id to each employee on leave
+        const employesOnLeave = data.employes_on_leave.map(
+          (employee, index) => ({
+            ...employee,
+            id: index,
+          })
         );
-        setEmployeesOnLeave(response.data);
+        setDashboardData({ ...data, employes_on_leave: employesOnLeave });
+        console.log("Dashboard Data:", data);
       } catch (error) {
-        console.error("Error fetching employees on leave:", error);
+        console.error("Erreur lors de la récupération des données du tableau de bord:", error);
         setSnackbar({
           open: true,
           severity: "error",
-          message: "Error fetching employees on leave.",
+          message: "Erreur lors de la récupération des données du tableau de bord.",
         });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEmployeesOnLeave();
+    fetchData();
   }, []);
 
   const handleCloseSnackbar = () => {
@@ -203,79 +309,160 @@ export default function Dashboard() {
   };
 
   const columns = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "department", headerName: "Department", flex: 1 },
-    { field: "returnDate", headerName: "Return Date", flex: 1 },
+    { field: "nom", headerName: "Nom", flex: 1 },
+    { field: "departement", headerName: "Département", flex: 1 },
+    { field: "return_date", headerName: "Date de retour", flex: 1 },
+    { field: "type", headerName: "Type", flex: 1 },
   ];
 
   return (
-    <Container className={classes.container}>
-      <h1>Dashboard</h1>
+    <Container
+      sx={{
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
+          padding: "5px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            fontWeight: "bold",
+          }}
+        >
+          <DashboardIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Fiche de Paie
+          </Typography>
+        </Box>
+        <Typography
+          variant="h6"
+          fontWeight="semi-bold"
+          sx={{ color: (theme) => theme.palette.text.secondary, fontSize: "1rem" }}
+        >
+          {dayjs().format("dddd, D MMMM YYYY")}
+        </Typography>
+      </Box>
       <Box className="mainContent">
         <Grid container spacing={3}>
           <Grid item xs={3}>
             <SummaryCard
-              title="Total Employees"
-              value="120"
-              icon={<PeopleIcon sx={{ color: "gray" }} />}
+              title="Total employés"
+              value={dashboardData.statistiques?.totalemployes || "Chargement..."}
+              subValue="employés"
+              icon={
+                <PeopleIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Total Departments"
-              value="5"
-              icon={<BusinessIcon sx={{ color: "gray" }} />}
+              title="Total départements"
+              value={dashboardData.statistiques?.totaldepartements || "Chargement..."}
+              subValue="départements"
+              icon={
+                <BusinessIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Pending Vacation Requests"
-              value="5"
-              icon={<EventNoteIcon sx={{ color: "gray" }} />}
+              title="Congés en attente"
+              value={dashboardData.statistiques?.pendingvacation || "Chargement..."}
+              subValue="demandes"
+              icon={
+                <EventNoteIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
-              title="Next Public Holiday"
-              value="March 15, 2025"
-              icon={<CelebrationIcon sx={{ color: "gray" }} />}
+              title="Prochain jour férié"
+              value={
+                dashboardData.statistiques?.nextpublicholiday
+                  ? dayjs(dashboardData.statistiques.nextpublicholiday).format("D MMM")
+                  : "Chargement..."
+              }
+              icon={
+                <CelebrationIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    fontSize: 32,
+                  }}
+                />
+              }
             />
           </Grid>
         </Grid>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
-            <PieChartCard />
+          <Grid item xs={5}>
+            <PieChartCard data={dashboardData.employedistribution || []} />
           </Grid>
-          <Grid item xs={6}>
-            <BarChartCard />
+          <Grid item xs={4}>
+            <BarChartCard data={absenceData} />
+          </Grid>
+          <Grid item xs={3}>
+            <BirthdaysCard data={dashboardData.birthdays_this_month || []} />
           </Grid>
         </Grid>
-          <Grid item xs={12}>
-            <Card >
-              <CardContent >
-                <Typography className={classes.title}>
-                  Employees on Leave Today
-                </Typography>
-                <div style={{ height: 300, width: "100%" }}>
-                  <DataGrid
-                    apiRef={apiRef}
-                    rows={employeesOnLeave}
-                    columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    autoHeight
-                    disableColumnMenu
-                    disableColumnSelector
-                    disableSelectionOnClick
-                    disableMultipleColumnsSorting
-                    loading={loading}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+        <Grid item xs={12}>
           
+              <Typography
+                fontWeight="semi-bold"
+                variant="body1"
+                sx={{
+                  fontSize: "1rem",
+                  color: (theme) => theme.palette.primary.main,
+                  lineHeight: 1.2,
+                  mb: "10px", // Reduces line spacing
+                }}
+              >
+                Employés en congé aujourd'hui
+              </Typography>
+              <Paper>
+              <div style={{ height: "100%", width: "100%" }}>
+                <DataGrid
+                  apiRef={apiRef}
+                  rows={dashboardData.employes_on_leave || []}
+                  columns={columns}
+                  pageSize={5}
+                  rowsPerPageOptions={[5]}
+                  autoHeight
+                  disableColumnMenu
+                  disableColumnSelector
+                  disableSelectionOnClick
+                  disableMultipleColumnsSorting
+                  loading={loading}
+                />
+                </div>
+              </Paper>
+            
         </Grid>
-        
       </Box>
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}

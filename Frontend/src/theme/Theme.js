@@ -32,9 +32,7 @@ const darkTheme = createTheme({
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    allVariants: {
-      color: '#E2E8F0', // Ensures all text follows the primary text color
-    },
+    
   },
   components: {
     MuiCard: {

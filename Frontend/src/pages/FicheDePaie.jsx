@@ -29,6 +29,7 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
+
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import { fetchEmployeeSalaryInfo } from "../service/FicheDePaieService";
 import { addSalaire, fetchSalaires , downloadSalaire} from "../service/SalaireService"; // Import addSalaire function
