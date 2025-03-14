@@ -23,7 +23,7 @@
     "axios": "^1.8.3",
     "dayjs": "^1.11.13",
     "dayjs-plugin-utc": "^0.1.2",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.25.0",
     "jwt-decode": "^4.0.0",
     "node-fetch": "^3.3.2",
     "react": "^19.0.0",
