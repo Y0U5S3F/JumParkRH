@@ -12,10 +12,15 @@ import {
   ListItemText,
   ListSubheader,
 } from "@mui/material";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
+
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import MuiDrawer from "@mui/material/Drawer";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-
+import CategoryIcon from '@mui/icons-material/Category';
 // Icons
 import {
   ChevronLeft,
@@ -120,21 +125,21 @@ const MENU_GROUPS = [
     subheader: "Attendance & Leave",
     items: [
       { text: "Planning", icon: <Event />, path: "/planning" },
-      { text: "Demande Congé", icon: <RequestPage />, path: "/demande-conge" },
-      { text: "Absences", icon: <AssignmentInd />, path: "/absence" },
-      { text: "Jour Ferie", icon: <AssignmentInd />, path: "/jour-ferie" },
+      { text: "Demande Congé", icon: <Payments />, path: "/demande-conge" },
+      { text: "Absences", icon: <EventBusyOutlinedIcon />, path: "/absence" },
+      { text: "Jour Ferie", icon: <EventAvailableIcon />, path: "/jour-ferie" },
     ],
   },
   {
     subheader: "Payroll & Administration",
     items: [
-      { text: "Fiche de Paie", icon: <Payments />, path: "/fiche-de-paie" },
+      { text: "Fiche de Paie", icon: <DescriptionIcon/>, path: "/fiche-de-paie" },
       { text: "Type Congé", icon: <Category />, path: "/type-conge" },
     ],
   },
   {
     subheader: "Devices",
-    items: [{ text: "Appareil", icon: <Devices />, path: "/appareil" }],
+    items: [{ text: "Appareil", icon: <PhonelinkSetupIcon />, path: "/appareil" }],
   },
 ];
 

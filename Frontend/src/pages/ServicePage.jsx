@@ -26,19 +26,22 @@ import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { updateService } from "../service/ServiceService";
-import {fetchDepartements} from "../service/DepartementService";
-import {fetchServices} from "../service/ServiceService";
+import { fetchDepartements } from "../service/DepartementService";
+import { fetchServices } from "../service/ServiceService";
 import EditIcon from "@mui/icons-material/Edit";
 import Departement from "../models/departement";
 import Service from "../models/service";
+import AddIcon from '@mui/icons-material/Add';
+import { Business} from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -76,6 +79,12 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function ServicePage() {
@@ -91,15 +100,19 @@ export default function ServicePage() {
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
-      open: false,
-      severity: "",
-      message: "",
-    });
+    open: false,
+    severity: "",
+    message: "",
+  });
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
+  const [pageTitle, setPageTitle] = useState("Service");
 
+  useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -109,19 +122,19 @@ export default function ServicePage() {
           fetchServices(),
           fetchDepartements(),
         ]);
-  
+
         // Map departments to an object for quick lookup
         const departmentMap = departmentsData.reduce((acc, dept) => {
           acc[dept.id] = dept.nom; // Store department name by ID
           return acc;
         }, {});
-  
+
         // Process services to replace department ID with name
         const formattedServices = servicesData.map((service) => ({
           ...service,
           departement: departmentMap[service.departement] || "N/A", // Get name from map
         }));
-  
+
         setServices(formattedServices);
         setDepartements(departmentsData);
       } catch (error) {
@@ -130,11 +143,9 @@ export default function ServicePage() {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [refresh]);
-  
-  
 
   const handleView = (service) => {
     setSelectedService(service);
@@ -144,17 +155,17 @@ export default function ServicePage() {
   const handleEdit = (service) => {
     // Find the department ID based on the department name
     const department = departements.find((dept) => dept.nom === service.departement);
-  
+
     // Create a new service object with updated departement_id
     const updatedService = {
       ...service,
       departement: department ? department.id : "", // Set department ID
     };
-  
+
     setEditService(updatedService);
     setOpenEditModal(true);
   };
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewService((prev) => ({ ...prev, [name]: value }));
@@ -180,19 +191,19 @@ export default function ServicePage() {
         });
         return;
       }
-  
+
       // Create service object
       const serviceToSend = {
         nom: newService.nom,
         departement: newService.departement, // Send department ID
       };
-  
+
       // Send POST request
       const response = await axios.post(
         "http://127.0.0.1:8000/api/service/services/",
         serviceToSend
       );
-  
+
       if (response.status === 201) {
         setSnackbar({
           open: true,
@@ -218,7 +229,7 @@ export default function ServicePage() {
       });
     }
   };
-  
+
   const handleUpdateService = async (e) => {
     e.preventDefault();
     try {
@@ -228,11 +239,11 @@ export default function ServicePage() {
         severity: "success",
         message: "Service mis à jour avec succès!",
       });
-  
+
       setServices((prev) =>
         prev.map((srv) => (srv.id === editService.id ? editService : srv))
       );
-  
+
       setOpenEditModal(false);
       setRefresh((prev) => !prev);
     } catch (error) {
@@ -248,17 +259,14 @@ export default function ServicePage() {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  
-
   const handleInputModifyChange = (e) => {
     const { name, value } = e.target;
-  
+
     setEditService((prev) => ({
       ...prev,
       [name]: name === "departement" ? parseInt(value) : value, // Ensure department is stored as an ID
     }));
   };
-  
 
   const columns = [
     { field: "id", headerName: "id", flex: 1 },
@@ -270,9 +278,6 @@ export default function ServicePage() {
       flex: 0.4,
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
-          {/* <IconButton onClick={() => handleView(params.row)}>
-            <VisibilityIcon />
-          </IconButton> */}
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon /> {/* Add Edit icon */}
           </IconButton>
@@ -287,41 +292,29 @@ export default function ServicePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
+        <Box className={classes.titleContainer}>
+          <Business />
+          <Typography variant="h6" fontWeight="bold">
+            Services
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
           Ajouter Service
         </Button>
       </Box>
 
-      {/* <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
-        <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Détails du Service
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          {selectedService && (
-            <Box className={classes.contentContainer}>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Typography variant="subtitle1">
-                    <strong>ID:</strong> {selectedService.id}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="subtitle1">
-                    <strong>Nom:</strong> {selectedService.nom}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography variant="subtitle1">
-                    <strong>Département:</strong> {selectedService.departement}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-        </Box>
-      </Modal> */}
-      
       {/* Edit modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
@@ -385,7 +378,6 @@ export default function ServicePage() {
       </Modal>
 
       {/* Add Modal */}
-      {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
@@ -398,7 +390,7 @@ export default function ServicePage() {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-            <Grid item xs={4}>
+              <Grid item xs={4}>
                 <TextField
                   id="outlined-search"
                   label="nom"
@@ -410,8 +402,8 @@ export default function ServicePage() {
                   fullWidth
                 />
               </Grid>
-            
-            <Grid item xs={4}>
+
+              <Grid item xs={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
@@ -428,7 +420,7 @@ export default function ServicePage() {
                   </Select>
                 </FormControl>
               </Grid>
-              </Grid>
+            </Grid>
           </Box>
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
@@ -466,23 +458,22 @@ export default function ServicePage() {
             paginationModel: { pageSize: 10, page: 0 },
           },
         }}
-        // checkboxSelection={false}
       />
 
       <Snackbar
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              open={snackbar.open}
-              autoHideDuration={6000}
-              onClose={handleCloseSnackbar}
-            >
-              <Alert
-                onClose={handleCloseSnackbar}
-                severity={snackbar.severity}
-                variant="filled"
-              >
-                {snackbar.message}
-              </Alert>
-            </Snackbar>
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

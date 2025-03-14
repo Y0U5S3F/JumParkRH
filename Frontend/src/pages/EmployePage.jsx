@@ -129,6 +129,12 @@ export default function EmployePage() {
     console.log(editEmployee);
   };
 
+  const [pageTitle, setPageTitle] = useState("Personnel");
+  
+    useEffect(() => {
+      document.title = pageTitle; // Update the document title
+    }, [pageTitle]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

@@ -26,6 +26,9 @@ import {
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from '@mui/icons-material/Add';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import { Business } from "@mui/icons-material";
 import { fetchJourFeries, addJourFerie, updateJourFerie, deleteJourFerie } from "../service/JourFerieService";
 import JourFerie from "../models/jourferie";
 
@@ -33,9 +36,10 @@ const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -73,6 +77,12 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function JourFeriePage() {
@@ -94,7 +104,11 @@ export default function JourFeriePage() {
   const [newJourFerie, setNewJourFerie] = useState(new JourFerie("", "", "", ""));
 
   const classes = useStyles();
+const [pageTitle, setPageTitle] = useState("Jour Ferie");
 
+  useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -241,7 +255,25 @@ export default function JourFeriePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
+        <Box className={classes.titleContainer}>
+          <EventAvailableIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Jours Fériés
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
           Ajouter Jour Férié
         </Button>
       </Box>

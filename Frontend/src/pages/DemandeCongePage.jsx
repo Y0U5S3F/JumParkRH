@@ -38,15 +38,12 @@ import Service from "../models/service";
 import { fetchConges, deleteConge } from "../service/CongeService";
 import Conge from "../models/conge";
 import { fetchTypeConges } from "../service/TypeCongeService";
+import AddIcon from '@mui/icons-material/Add';
+import { Payments } from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
-  topBar: {
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-    marginBottom: "10px",
-  },
+  
   modalStyle: {
     position: "absolute",
     top: "50%",
@@ -83,6 +80,19 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+    padding: "5px",
+  },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function DemandeCongePage() {
@@ -106,6 +116,11 @@ export default function DemandeCongePage() {
   const [newConge, setNewConge] = useState(new Conge());
 
   const classes = useStyles();
+  const [pageTitle, setPageTitle] = useState("Demande congé");
+  
+    useEffect(() => {
+      document.title = pageTitle; // Update the document title
+    }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -327,8 +342,26 @@ export default function DemandeCongePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
-          Ajouter Conge
+        <Box className={classes.titleContainer}>
+          <Payments />
+          <Typography variant="h6" fontWeight="bold">
+            Demandes de Congé
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
+          Ajouter Congé
         </Button>
       </Box>
 

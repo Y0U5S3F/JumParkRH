@@ -29,7 +29,8 @@ import {
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { fetchAbsences, addAbsence, updateAbsence, deleteAbsence } from "../service/AbsenceService";
+import AddIcon from '@mui/icons-material/Add';
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';import { fetchAbsences, addAbsence, updateAbsence, deleteAbsence } from "../service/AbsenceService";
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import Absence from "../models/absence";
 
@@ -37,9 +38,10 @@ const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -85,6 +87,12 @@ const useStyles = makeStyles((theme) => ({
     color: "red",
     fontWeight: "bold",
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function AbsencePage() {
@@ -108,6 +116,11 @@ export default function AbsencePage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const classes = useStyles();
+  const [pageTitle, setPageTitle] = useState("Absence");
+  
+    useEffect(() => {
+      document.title = pageTitle; // Update the document title
+    }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -300,7 +313,25 @@ export default function AbsencePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
+        <Box className={classes.titleContainer}>
+        <EventBusyOutlinedIcon/>
+          <Typography variant="h6" fontWeight="bold">
+            Absences
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
           Ajouter Absence
         </Button>
       </Box>
