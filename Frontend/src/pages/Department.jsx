@@ -22,15 +22,18 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from '@mui/icons-material/Add';
 import Departement from "../models/departement";
+import { Apartment} from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -68,6 +71,12 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function Department() {
@@ -76,9 +85,8 @@ export default function Department() {
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
-    const [loading, setLoading] = useState(true);
-  
-    const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
+  const [loading, setLoading] = useState(true);
+  const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [newDepartment, setNewDepartment] = useState(new Departement("", ""));
   const [openViewModal, setOpenViewModal] = useState(false);
@@ -89,6 +97,12 @@ export default function Department() {
   });
   const [selectedDepartement, setSelectedDepartement] = useState(null);
   const classes = useStyles();
+
+  const [pageTitle, setPageTitle] = useState("Departement");
+  
+    useEffect(() => {
+      document.title = pageTitle; // Update the document title
+    }, [pageTitle]);
 
   useEffect(() => {
     // Fetch departments data
@@ -126,7 +140,6 @@ export default function Department() {
     const { name, value } = e.target;
     setNewDepartment((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleUpdateDepartement = async (e) => {
     e.preventDefault();
@@ -230,9 +243,6 @@ export default function Department() {
       width: 100,
       renderCell: (params) => (
         <>
-          {/* <IconButton onClick={() => handleView(params.row)}>
-            <VisibilityIcon />
-          </IconButton> */}
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
@@ -247,36 +257,28 @@ export default function Department() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
-          Ajouter Departement
+        <Box className={classes.titleContainer}>
+          <Apartment />
+          <Typography variant="h6" fontWeight="bold">
+            Départements
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
+          Ajouter Département
         </Button>
       </Box>
-
-      {/*View Modal*/}
-      {/* <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
-        <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Détails du Departement
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          {selectedDepartement && (
-            <Box className={classes.contentContainer}>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle1">
-                    <strong>ID:</strong> {selectedDepartement.id}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle1">
-                    <strong>Nom:</strong> {selectedDepartement.nom}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Box>
-          )}
-        </Box>
-      </Modal> */}
 
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -323,8 +325,7 @@ export default function Department() {
         </Box>
       </Modal>
 
-
-      {/* Update Modal*/}
+      {/* Update Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
@@ -349,12 +350,12 @@ export default function Department() {
                   fullWidth
                 />
               </Grid>
-              </Grid>
+            </Grid>
           </Box>
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              onClick={() => setEditDepartement(new Employe("",""))}
+              onClick={() => setEditDepartement(new Departement("", ""))}
             >
               Réinitialiser
             </Button>
@@ -405,5 +406,4 @@ export default function Department() {
       </Snackbar>
     </Container>
   );
-
 }

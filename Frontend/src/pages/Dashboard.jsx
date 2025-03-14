@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import {
   Container,
@@ -18,12 +17,8 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import CelebrationIcon from "@mui/icons-material/Celebration";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import {
-  DataGrid,
-  useGridApiRef,
-  DEFAULT_GRID_AUTOSIZE_OPTIONS,
-} from "@mui/x-data-grid";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
 import { fetchDashboardData } from "../service/DashboardService"; // Import the fetchDashboardData function
 
 const absenceData = [
@@ -260,7 +255,6 @@ const BirthdaysCard = ({ data }) => {
   );
 };
 
-
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -290,11 +284,15 @@ export default function Dashboard() {
         setDashboardData({ ...data, employes_on_leave: employesOnLeave });
         console.log("Dashboard Data:", data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des données du tableau de bord:", error);
+        console.error(
+          "Erreur lors de la récupération des données du tableau de bord:",
+          error
+        );
         setSnackbar({
           open: true,
           severity: "error",
-          message: "Erreur lors de la récupération des données du tableau de bord.",
+          message:
+            "Erreur lors de la récupération des données du tableau de bord.",
         });
       } finally {
         setLoading(false);
@@ -348,7 +346,10 @@ export default function Dashboard() {
         <Typography
           variant="h6"
           fontWeight="semi-bold"
-          sx={{ color: (theme) => theme.palette.text.secondary, fontSize: "1rem" }}
+          sx={{
+            color: (theme) => theme.palette.text.secondary,
+            fontSize: "1rem",
+          }}
         >
           {dayjs().format("dddd, D MMMM YYYY")}
         </Typography>
@@ -358,7 +359,9 @@ export default function Dashboard() {
           <Grid item xs={3}>
             <SummaryCard
               title="Total employés"
-              value={dashboardData.statistiques?.totalemployes || "Chargement..."}
+              value={
+                dashboardData.statistiques?.totalemployes || "Chargement..."
+              }
               subValue="employés"
               icon={
                 <PeopleIcon
@@ -373,7 +376,9 @@ export default function Dashboard() {
           <Grid item xs={3}>
             <SummaryCard
               title="Total départements"
-              value={dashboardData.statistiques?.totaldepartements || "Chargement..."}
+              value={
+                dashboardData.statistiques?.totaldepartements || "Chargement..."
+              }
               subValue="départements"
               icon={
                 <BusinessIcon
@@ -388,7 +393,9 @@ export default function Dashboard() {
           <Grid item xs={3}>
             <SummaryCard
               title="Congés en attente"
-              value={dashboardData.statistiques?.pendingvacation || "Chargement..."}
+              value={
+                dashboardData.statistiques?.pendingvacation || "Chargement..."
+              }
               subValue="demandes"
               icon={
                 <EventNoteIcon
@@ -405,7 +412,9 @@ export default function Dashboard() {
               title="Prochain jour férié"
               value={
                 dashboardData.statistiques?.nextpublicholiday
-                  ? dayjs(dashboardData.statistiques.nextpublicholiday).format("D MMM")
+                  ? dayjs(dashboardData.statistiques.nextpublicholiday).format(
+                      "D MMM"
+                    )
                   : "Chargement..."
               }
               icon={
@@ -431,37 +440,35 @@ export default function Dashboard() {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          
-              <Typography
-                fontWeight="semi-bold"
-                variant="body1"
-                sx={{
-                  fontSize: "1rem",
-                  color: (theme) => theme.palette.primary.main,
-                  lineHeight: 1.2,
-                  mb: "10px", // Reduces line spacing
-                }}
-              >
-                Employés en congé aujourd'hui
-              </Typography>
-              <Paper>
-              <div style={{ height: "100%", width: "100%" }}>
-                <DataGrid
-                  apiRef={apiRef}
-                  rows={dashboardData.employes_on_leave || []}
-                  columns={columns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  autoHeight
-                  disableColumnMenu
-                  disableColumnSelector
-                  disableSelectionOnClick
-                  disableMultipleColumnsSorting
-                  loading={loading}
-                />
-                </div>
-              </Paper>
-            
+          <Typography
+            fontWeight="semi-bold"
+            variant="body1"
+            sx={{
+              fontSize: "1rem",
+              color: (theme) => theme.palette.primary.main,
+              lineHeight: 1.2,
+              mb: "10px", // Reduces line spacing
+            }}
+          >
+            Employés en congé aujourd'hui
+          </Typography>
+          <Paper>
+            <div style={{ height: "100%", width: "100%" }}>
+              <DataGrid
+                apiRef={apiRef}
+                rows={dashboardData.employes_on_leave || []}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                autoHeight
+                disableColumnMenu
+                disableColumnSelector
+                disableSelectionOnClick
+                disableMultipleColumnsSorting
+                loading={loading}
+              />
+            </div>
+          </Paper>
         </Grid>
       </Box>
       <Snackbar

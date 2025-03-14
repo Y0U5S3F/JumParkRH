@@ -4,6 +4,8 @@ import {
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
+import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
+
 import {
   Container,
   TextField,
@@ -30,6 +32,8 @@ import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from '@mui/icons-material/Add';
+import { Business } from "@mui/icons-material";
 import { fetchAppareils, addAppareil, updateAppareil, toggleAppareilStatus, deleteAppareil } from "../service/AppareilService";
 import Appareil from "../models/appareil";
 
@@ -37,9 +41,10 @@ const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -85,6 +90,12 @@ const useStyles = makeStyles((theme) => ({
     color: "red",
     fontWeight: "bold",
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function AppareilPage() {
@@ -106,6 +117,11 @@ export default function AppareilPage() {
   const [newAppareil, setNewAppareil] = useState(new Appareil("", "", "", ""));
 
   const classes = useStyles();
+  const [pageTitle, setPageTitle] = useState("Appareil");
+      
+        useEffect(() => {
+          document.title = pageTitle; // Update the document title
+        }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -291,7 +307,25 @@ export default function AppareilPage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
+        <Box className={classes.titleContainer}>
+          <PhonelinkSetupIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Appareils
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
           Ajouter Appareil
         </Button>
       </Box>

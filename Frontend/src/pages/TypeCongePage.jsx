@@ -20,17 +20,21 @@ import {
   Divider,
   Grid,
 } from "@mui/material";
+import CategoryIcon from '@mui/icons-material/Category';
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from '@mui/icons-material/Add';
+import { Business } from "@mui/icons-material";
 import TypeConge from "../models/typeConge";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
   topBar: {
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -68,6 +72,12 @@ const useStyles = makeStyles((theme) => ({
     right: "20px",
     zIndex: 1000,
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
 }));
 
 export default function TypeCongePage() {
@@ -86,6 +96,11 @@ export default function TypeCongePage() {
     message: "",
   });
   const classes = useStyles();
+  const [pageTitle, setPageTitle] = useState("Type conge");
+      
+        useEffect(() => {
+          document.title = pageTitle; // Update the document title
+        }, [pageTitle]);
 
   useEffect(() => {
     // Fetch types of leave data
@@ -227,7 +242,25 @@ export default function TypeCongePage() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Button variant="contained" onClick={() => setOpen(true)}>
+        <Box className={classes.titleContainer}>
+          <CategoryIcon />
+          <Typography variant="h6" fontWeight="bold">
+            Types de Congé
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
           Ajouter Type de Congé
         </Button>
       </Box>

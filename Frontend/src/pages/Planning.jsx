@@ -27,6 +27,10 @@ import { addLabel, updateLabel, deleteLabel } from "../service/LabelDataService"
 import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
 
+import AddIcon from '@mui/icons-material/Add';
+import { Event } from "@mui/icons-material";
+
+
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: "20px",
@@ -37,9 +41,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "1rem",
-    width: "100%",
-    margin: "0 auto",
+    marginBottom: "10px",
+    padding: "5px",
   },
   modalStyle: {
     position: "absolute",
@@ -76,6 +79,12 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontWeight: "bold",
+  },
   formContainer: {
     display: "flex",
     flexDirection: "column",
@@ -103,6 +112,11 @@ export default function SimpleCalendar() {
     severity: "",
     message: "",
   });
+  const [pageTitle, setPageTitle] = useState("Planning");
+  
+    useEffect(() => {
+      document.title = pageTitle; // Update the document title
+    }, [pageTitle]);
 
   useEffect(() => {
     const fetchLabels = async () => {
@@ -315,10 +329,27 @@ export default function SimpleCalendar() {
   return (
     <Container className={classes.container}>
       <Box className={classes.topBar}>
-        <Typography variant="h5">Calendar</Typography>
-        <Button variant="contained" onClick={() => setOpenPresenceModal(true)}>
+        <Box className={classes.titleContainer}>
+          <Event />
+          <Typography variant="h6" fontWeight="bold">
+            Planning
+          </Typography>
+        </Box>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpenPresenceModal(true)}
+        >
           Ajouter une Présence
-        </Button> 
+        </Button>
       </Box>
       <Box className={classes.calendar}>
         {/* <StyledSchedulerFrame> */}

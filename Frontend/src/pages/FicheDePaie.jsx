@@ -10,6 +10,8 @@ import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from '@mui/icons-material/Download';
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   Container,
   TextField,
@@ -113,6 +115,11 @@ export default function FicheDePaiePage() {
       message: "",
     });
 
+    const [pageTitle, setPageTitle] = useState("Fiche de paie");
+    
+      useEffect(() => {
+        document.title = pageTitle; // Update the document title
+      }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -307,8 +314,20 @@ export default function FicheDePaiePage() {
             Fiche de Paie
           </Typography>
         </Box>
-        <Button variant="contained" onClick={() => setOpen(true)}>
-          Ajouter fiche de paie
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<AddIcon />}
+          sx={{
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: 'white',
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={() => setOpen(true)}
+        >
+          Ajouter Fiche de Paie
         </Button>
       </Box>
       
