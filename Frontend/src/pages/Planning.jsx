@@ -27,43 +27,45 @@ import { addLabel, updateLabel, deleteLabel } from "../service/LabelDataService"
 import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
 
-// Create a styled container for the Scheduler
-const StyledSchedulerFrame = styled.div`
-  height: 80vh;
-  overflow: auto;
-  font-weight: bold;
-`;
-
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
+  container: {
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+  },
   topBar: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: "10px",
+    alignItems: "center",
+    marginBottom: "1rem",
+    width: "100%",
+    margin: "0 auto",
   },
   modalStyle: {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 350,
+    width: "95%",
+    maxWidth: "800px",
+    height: "85vh",
+    maxHeight: "400px",
     backgroundColor: "black",
     boxShadow: 24,
     padding: "20px",
-    border: `1px solid ${theme.palette.primary.main}`,
     borderRadius: "8px",
     display: "flex",
     flexDirection: "column",
+    margin: "0 auto",
   },
   calendar: {
     position: "relative",
-    height: "100vh",
     width: "100%",
+    height: "85vh",
     overflow: "hidden",
-    border: `2px solid rgb(61, 61, 61)`, // You can replace this with any color you want
+    border: `2px solid rgb(61, 61, 61)`,
     borderRadius: "12px",
-    height: "80vh" // Adjust the border-radius as needed
+    margin: "0 auto",
   },
   contentContainer: {
     flex: 1,
@@ -79,15 +81,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     gap: "15px",
     marginTop: "10px",
-  },
-  alertContainer: {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    zIndex: 1000,
-  },
-  schedulerDayCell: {
-    width: "150px !important",
   },
 }));
 
