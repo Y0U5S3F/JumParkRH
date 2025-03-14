@@ -10,16 +10,17 @@ from conge.models import Conge
 from django.db.models import Count, Sum
 from jourferie.models import JourFerie
 from salaire.models import Salaire
-from datetime import datetime
+from rest_framework.permissions import IsAuthenticated
 
 
 class AbsenceListCreateView(generics.ListCreateAPIView):
     queryset = Absence.objects.all()
     serializer_class = AbsenceSerializer
-
+    permission_classes = [IsAuthenticated]
 class AbsenceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Absence.objects.all()
     serializer_class = AbsenceSerializer
+    permission_classes = [IsAuthenticated]
 
 def dashboard_stats(request):
     today = now().date()
@@ -58,12 +59,10 @@ def dashboard_stats(request):
             "type": "absence"
         })
     
-    # Employee Birthdays This Month 🎂
     birthdays_this_month = Employe.objects.filter(date_de_naissance__month=current_month).values(
         "nom", "prenom", "date_de_naissance"
     )
 
-    # Total Payroll Cost for the Month 💰
     total_payroll = Salaire.objects.filter(created_at__year=current_year, created_at__month=current_month).aggregate(
         total=Sum('salaire_net')
     )["total"] or 0
@@ -74,7 +73,7 @@ def dashboard_stats(request):
             "totaldepartements": total_departements,
             "pendingvacation": pending_vacation,
             "nextpublicholiday": str(next_public_holiday_date),
-            "total_payroll_this_month": float(total_payroll)  # Convert to float for JSON serialization
+            "total_payroll_this_month": float(total_payroll)
         },
         "employedistribution": list(employe_distribution),
         "employes_on_leave": employes_on_leave,

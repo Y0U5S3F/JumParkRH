@@ -12,12 +12,12 @@ class EmployeManager(BaseUserManager):
             raise ValueError("L'email est obligatoire")
 
         email = self.normalize_email(email)
-        extra_fields.setdefault("created_at", now())  # Ensure created_at exists
+        extra_fields.setdefault("created_at", now())
 
         user = self.model(email=email, **extra_fields)
         
         if password:
-            user.password = make_password(password)  # 🔥 Use Django's password hasher
+            user.password = make_password(password)
         
         user.save(using=self._db)
         return user

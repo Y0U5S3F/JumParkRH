@@ -7,6 +7,7 @@ from employe.serializers import EmployeSerializer, EmployeMinimalSerializer
 from employe.filters import EmployeFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 class EmployeListCreateView(generics.ListCreateAPIView):
     queryset = Employe.objects.all().order_by('matricule')
@@ -48,6 +49,7 @@ class EmployeMinimalDetailView(generics.RetrieveAPIView):
     lookup_field = 'matricule'
 
 class EmployeLoginView(APIView):
+    permission_classes = [AllowAny]  # Allow unauthenticated access
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")
         password = request.data.get("password")

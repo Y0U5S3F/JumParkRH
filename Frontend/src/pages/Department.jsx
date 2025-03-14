@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import EditIcon from "@mui/icons-material/Edit";
+import {
+  fetchDepartements,
+  addDepartment,
+  updateDepartement,
+  deleteDepartment,
+} from "../service/DepartementService"; // Import services
+import Departement from "../models/departement";
 import {
   DataGrid,
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
-import { updateDepartement } from "../service/DepartementService";
 import {
   Container,
   Button,
@@ -22,12 +26,16 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from '@mui/icons-material/Add';
-import Departement from "../models/departement";
-import { Apartment} from "@mui/icons-material";
+import EditIcon from "@mui/icons-material/Edit";
+import AddIcon from "@mui/icons-material/Add";
+import Apartment from "@mui/icons-material/Apartment";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
+  container: {
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+  },
   topBar: {
     display: "flex",
     justifyContent: "space-between",
@@ -53,10 +61,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", 
-    scrollbarWidth: "none", 
+    paddingRight: "10px",
+    scrollbarWidth: "none",
     "&::-webkit-scrollbar": {
-      display: "none", 
+      display: "none",
     },
   },
   formContainer: {
@@ -97,33 +105,29 @@ export default function Department() {
   });
   const [selectedDepartement, setSelectedDepartement] = useState(null);
   const classes = useStyles();
-
-  const [pageTitle, setPageTitle] = useState("Departement");
-  
-    useEffect(() => {
-      document.title = pageTitle; // Update the document title
-    }, [pageTitle]);
+  const [pageTitle, setPageTitle] = useState("Département");
 
   useEffect(() => {
-    // Fetch departments data
-    const fetchDepartements = async () => {
-      setLoading(true)
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
+
+  useEffect(() => {
+    // Fetch departments data using the service
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/departement/departements/"
-        );
-        const formattedDepartments = response.data.map(
+        const response = await fetchDepartements();
+        const formattedDepartments = response.map(
           (dept) => new Departement(dept.id, dept.nom)
         );
         setDepartements(formattedDepartments);
       } catch (error) {
         console.error("Error fetching departments:", error);
-      }finally{
-        setLoading(false)
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchDepartements();
+    fetchData();
   }, [refresh]);
 
   const handleView = (departement) => {
@@ -150,11 +154,9 @@ export default function Department() {
         severity: "success",
         message: "Département mis à jour avec succès!",
       });
-  
       setDepartements((prev) =>
         prev.map((dept) => (dept.id === editDepartement.id ? editDepartement : dept))
       );
-  
       setOpenEditModal(false);
       setRefresh((prev) => !prev);
     } catch (error) {
@@ -176,32 +178,16 @@ export default function Department() {
         });
         return;
       }
-
-      // Create department object
-      const departmentToSend = new Departement("", newDepartment.nom);
-
-      // Send POST request
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/departement/departements/",
-        departmentToSend
-      );
-
-      if (response.status === 201) {
-        setSnackbar({
-          open: true,
-          severity: "success",
-          message: "Département ajouté avec succès !",
-        });
-        setOpen(false); // Close modal
-        setNewDepartment(new Departement("", "")); // Reset form
-        setRefresh((prev) => !prev); // Refresh department list
-      } else {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "Échec de l'ajout du département.",
-        });
-      }
+      // Send POST request using the service
+      await addDepartment(newDepartment);
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Département ajouté avec succès!",
+      });
+      setOpen(false); // Close modal
+      setNewDepartment(new Departement("", "")); // Reset form
+      setRefresh((prev) => !prev); // Refresh department list
     } catch (error) {
       console.error("Erreur lors de l'ajout du département:", error);
       setSnackbar({
@@ -216,17 +202,23 @@ export default function Department() {
     const { name, value } = e.target;
     setEditDepartement((prev) => ({ ...prev, [name]: value }));
   };
-  
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/departement/departements/${id}/`
-      );
-      console.log("Deleted department with id:", id);
-      setRefresh((prev) => !prev); // Toggle refresh state to trigger useEffect
+      await deleteDepartment(id); // Use the service
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Département supprimé avec succès!",
+      });
+      setRefresh((prev) => !prev); // Trigger re-fetch
     } catch (error) {
       console.error("Error deleting department:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Échec de la suppression du département.",
+      });
     }
   };
 
@@ -235,7 +227,7 @@ export default function Department() {
   };
 
   const columns = [
-    { field: "id", headerName: "id", width: 100 },
+    { field: "id", headerName: "ID", width: 100 },
     { field: "nom", headerName: "Nom", width: 950 },
     {
       field: "actions",
@@ -247,7 +239,7 @@ export default function Department() {
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon />
           </IconButton>
         </>
       ),
@@ -268,9 +260,9 @@ export default function Department() {
           variant="outlined"
           startIcon={<AddIcon />}
           sx={{
-            '&:hover': {
+            "&:hover": {
               backgroundColor: (theme) => theme.palette.primary.main,
-              color: 'white',
+              color: "white",
               borderColor: (theme) => theme.palette.primary.main,
             },
           }}
@@ -284,12 +276,12 @@ export default function Department() {
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de vos personnels
+            Ajouter un nouveau département
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
             <Typography variant="body1" gutterBottom>
-              Informations personnelles
+              Informations du département
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -329,19 +321,19 @@ export default function Department() {
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
           <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de vos personnels
+            Modifier le département
           </Typography>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
             <Typography variant="body1" gutterBottom>
-              Informations personnelles
+              Informations du département
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <TextField
                   id="outlined-search"
-                  label="nom"
+                  label="Nom"
                   type="search"
                   variant="outlined"
                   name="nom"
