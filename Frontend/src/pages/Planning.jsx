@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Scheduler } from "@y0u5s3f/custom-react-scheduler";
-import "@y0u5s3f/custom-react-scheduler/dist/style.css";
+import { Scheduler } from "react-employe-attendance-scheduler";
+import "react-employe-attendance-scheduler/dist/style.css";
 import dayjs from "dayjs";
-import styled from "styled-components";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
@@ -313,7 +312,7 @@ export default function SimpleCalendar() {
   };
 
   return (
-    <Container className={classes.container}>
+    <Container className={classes.container} maxWidth={false}>
       <Box className={classes.topBar}>
         <Typography variant="h5">Calendar</Typography>
         <Button variant="contained" onClick={() => setOpenPresenceModal(true)}>

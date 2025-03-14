@@ -200,7 +200,7 @@ export default function SignIn(props) {
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox name="remember" value="true" color="primary" />}
               label="Remember me"
             />
             <Button
