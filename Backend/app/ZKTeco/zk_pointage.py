@@ -1,6 +1,8 @@
 import csv
-import os
 import requests
+import sys
+import os
+sys.path.insert(1,os.path.abspath("./pyzk"))
 from zk import ZK
 
 # Constants
