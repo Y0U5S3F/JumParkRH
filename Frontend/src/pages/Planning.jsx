@@ -366,7 +366,7 @@ export default function SimpleCalendar() {
       });
     } finally {
       console.log("Setting isImportingPresence to false");
-      window
+      window.location.reload(); // Reload the window
       setIsImportingPresence(false); // Set loading state for importPresence to false
     }
   };

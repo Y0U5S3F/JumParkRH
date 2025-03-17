@@ -137,7 +137,7 @@ const MENU_GROUPS = [
 export default function Navbar() {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
