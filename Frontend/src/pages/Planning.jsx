@@ -25,8 +25,8 @@ import { fetchMinimalEmployes } from "../service/EmployeService";
 import { addLabel, updateLabel, deleteLabel } from "../service/LabelDataService"; // Import the addLabel service
 import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
-
 import AddIcon from '@mui/icons-material/Add';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import { Event } from "@mui/icons-material";
 
 
@@ -117,16 +117,33 @@ export default function SimpleCalendar() {
       document.title = pageTitle; // Update the document title
     }, [pageTitle]);
 
-  useEffect(() => {
-    const fetchLabels = async () => {
-      try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/label/labels/?stream=true"
-        );
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
 
+    useEffect(() => {
+      const fetchLabels = async () => {
+        try {
+          // Retrieve the access token from local storage
+          const token = localStorage.getItem(ACCESS_TOKEN);
+    
+          // Fetch labels with the Authorization header
+          const response = await fetch(
+            "http://127.0.0.1:8000/api/label/labels/?stream=true",
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+              },
+            }
+          );
+    
+          // Check if the response is successful
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+    
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = "";
+    
         const statusColorMapping = {
           Present: "rgba(144, 238, 191, 0.8)", // Soft Green (representing presence and positivity)
           "En Pause": "rgba(169, 223, 216, 0.8)", // Light Teal (calm and neutral, good for pause)
@@ -136,91 +153,91 @@ export default function SimpleCalendar() {
           Anomalie: "rgba(252, 184, 89, 0.8)", // Warm Yellow (warning or irregularity)
           "Jour Ferie": "rgba(242, 200, 237, 0.8)", // Pastel Pink (celebration or special day)
         };
-        
-
-        // Helper function to transform each streamed item
-        const transformItem = (item) => {
-          const transformEvent = (event) => {
-            const formatDate = (dateString) =>
-              dateString
-                ? dayjs(dateString).format("YYYY-MM-DDTHH:mm:ss")
-                : null;
-            const formatTime = (timeString) =>
-              timeString ? dayjs(timeString).format("HH:mm") : null;
+    
+          // Helper function to transform each streamed item
+          const transformItem = (item) => {
+            const transformEvent = (event) => {
+              const formatDate = (dateString) =>
+                dateString ? dayjs(dateString).format("YYYY-MM-DDTHH:mm:ss") : null;
+              const formatTime = (timeString) =>
+                timeString ? dayjs(timeString).format("HH:mm") : null;
+              return {
+                ...event,
+                startDate: formatDate(event.startDate),
+                endDate: formatDate(event.endDate),
+                title: dayjs(event.startDate).format("HH:mm"),
+                subtitle: `${dayjs(event.endDate).format("HH:mm")} - ${event.status}`,
+                description:
+                  event.startPause || event.endPause
+                    ? `${event.startPause ? formatTime(event.startPause) : ""}${
+                        event.startPause && event.endPause ? " - " : ""
+                      }${event.endPause ? formatTime(event.endPause) : ""}`
+                    : "pas de pause",
+                bgColor: statusColorMapping[event.status] || "#FFFFFF",
+              };
+            };
+    
             return {
-              ...event,
-              startDate: formatDate(event.startDate),
-              endDate: formatDate(event.endDate),
-              title: dayjs(event.startDate).format("HH:mm"),
-              subtitle: `${dayjs(event.endDate).format("HH:mm")} - ${event.status}`,
-              description:
-                event.startPause || event.endPause
-                  ? `${event.startPause ? formatTime(event.startPause) : ""}${event.startPause && event.endPause ? " - " : ""}${event.endPause ? formatTime(event.endPause) : ""}`
-                  : "pas de pause",
-              bgColor: statusColorMapping[event.status] || "#FFFFFF",
+              id: item.id,
+              label: { title: item.title, subtitle: item.subtitle },
+              data: item.data.map(transformEvent),
             };
           };
-
-          return {
-            id: item.id,
-            label: { title: item.title, subtitle: item.subtitle },
-            data: item.data.map(transformEvent),
-          };
-        };
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop(); // Save last incomplete line
-          for (const line of lines) {
-            if (line.trim()) {
-              try {
-                const item = JSON.parse(line);
-                const transformedItem = transformItem(item);
-                // Append the new item to schedulerData if it doesn't already exist
-                setSchedulerData((prevData) => {
-                  const existingItem = prevData.find(
-                    (data) => data.id === transformedItem.id
-                  );
-                  if (!existingItem) {
-                    return [...prevData, transformedItem];
-                  }
-                  return prevData;
-                });
-              } catch (e) {
-                console.error("Error parsing JSON:", e);
+    
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split("\n");
+            buffer = lines.pop(); // Save last incomplete line
+            for (const line of lines) {
+              if (line.trim()) {
+                try {
+                  const item = JSON.parse(line);
+                  const transformedItem = transformItem(item);
+                  // Append the new item to schedulerData if it doesn't already exist
+                  setSchedulerData((prevData) => {
+                    const existingItem = prevData.find(
+                      (data) => data.id === transformedItem.id
+                    );
+                    if (!existingItem) {
+                      return [...prevData, transformedItem];
+                    }
+                    return prevData;
+                  });
+                } catch (e) {
+                  console.error("Error parsing JSON:", e);
+                }
               }
             }
           }
-        }
-        // Handle any remaining buffered content.
-        if (buffer.trim()) {
-          try {
-            const item = JSON.parse(buffer);
-            const transformedItem = transformItem(item);
-            setSchedulerData((prevData) => {
-              const existingItem = prevData.find(
-                (data) => data.id === transformedItem.id
-              );
-              if (!existingItem) {
-                return [...prevData, transformedItem];
-              }
-              return prevData;
-            });
-          } catch (e) {
-            console.error("Error parsing final JSON:", e);
+    
+          // Handle any remaining buffered content.
+          if (buffer.trim()) {
+            try {
+              const item = JSON.parse(buffer);
+              const transformedItem = transformItem(item);
+              setSchedulerData((prevData) => {
+                const existingItem = prevData.find(
+                  (data) => data.id === transformedItem.id
+                );
+                if (!existingItem) {
+                  return [...prevData, transformedItem];
+                }
+                return prevData;
+              });
+            } catch (e) {
+              console.error("Error parsing final JSON:", e);
+            }
           }
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-      setIsLoading(false);
-    };
-
-    fetchLabels();
-  }, []);
+        setIsLoading(false);
+      };
+    
+      fetchLabels();
+    }, []);
 
   useEffect(() => {
     const fetchEmployees = async () => {

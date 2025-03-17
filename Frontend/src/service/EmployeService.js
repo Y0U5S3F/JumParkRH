@@ -1,10 +1,22 @@
 import axios from "axios";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
 const EMPLOYEE_API_URL = "http://127.0.0.1:8000/api/employe/employes/";
 
+// Helper function to get the token from local storage
+export const getAccessToken = () => {
+  return localStorage.getItem(ACCESS_TOKEN);
+};
+
+// Fetch all employees with token
 export const fetchEmployes = async () => {
   try {
-    const response = await axios.get(EMPLOYEE_API_URL);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(EMPLOYEE_API_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data.map((emp) => ({
       id: emp.matricule,
       ...emp,
@@ -17,10 +29,15 @@ export const fetchEmployes = async () => {
   }
 };
 
-// Delete an employee by matricule
+// Delete an employee by matricule with token
 export const deleteEmployee = async (matricule) => {
   try {
-    await axios.delete(`${EMPLOYEE_API_URL}${matricule}/`);
+    const token = getAccessToken(); // Retrieve the token
+    await axios.delete(`${EMPLOYEE_API_URL}${matricule}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     console.log("Deleted employee with matricule:", matricule);
   } catch (error) {
     console.error("Error deleting employee:", error);
@@ -28,9 +45,47 @@ export const deleteEmployee = async (matricule) => {
   }
 };
 
+// Add a new employee with token
+export const addEmployee = async (employeeData) => {
+  try {
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.post(EMPLOYEE_API_URL, employeeData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error adding employee:", error);
+    throw error;
+  }
+};
+
+// Update an existing employee by matricule with token
+export const updateEmployee = async (matricule, updatedData) => {
+  try {
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.put(`${EMPLOYEE_API_URL}${matricule}/`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error("Error updating employee:", error);
+    throw error;
+  }
+};
+
+// Fetch minimal employee data with token
 export const fetchMinimalEmployes = async () => {
   try {
-    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/`);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data.map((emp) => ({
       matricule: emp.matricule,
       nom: emp.nom,
@@ -42,31 +97,15 @@ export const fetchMinimalEmployes = async () => {
   }
 };
 
-
-export const addEmployee = async (employeeData) => {
-  try {
-    const response = await axios.post(EMPLOYEE_API_URL, employeeData);
-    return response;
-  } catch (error) {
-    console.error("Error adding employee:", error);
-    throw error;
-  }
-};
-
-// ✅ Update an existing employee by matricule
-export const updateEmployee = async (matricule, updatedData) => {
-  try {
-    const response = await axios.put(`${EMPLOYEE_API_URL}${matricule}/`, updatedData);
-    return response;
-  } catch (error) {
-    console.error("Error updating employee:", error);
-    throw error;
-  }
-};
-
+// Fetch employee minimal data by matricule with token
 export const fetchEmployeeMinimalByMatricule = async (matricule) => {
   try {
-    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/${matricule}/`);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(`${EMPLOYEE_API_URL}minimal/${matricule}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data; // Expected to return { nom: "John", prenom: "Doe" }
   } catch (error) {
     console.error(`Error fetching employee by matricule ${matricule}:`, error);
@@ -74,16 +113,21 @@ export const fetchEmployeeMinimalByMatricule = async (matricule) => {
   }
 };
 
-
+// Fetch employees as a stream with token
 export const fetchEmployesStream = async (onData) => {
   try {
-    const response = await fetch(`${EMPLOYEE_API_URL}?stream=true`);
+    const token = getAccessToken(); // Retrieve the token
 
-    if (!response.body) {
-      throw new Error("ReadableStream not supported in this environment");
-    }
+    const response = await axios({
+      method: "GET",
+      url: `${EMPLOYEE_API_URL}?stream=true`,
+      responseType: "stream", // Ensure the response is treated as a stream
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
 
-    const reader = response.body.getReader();
+    const reader = response.data.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
 
@@ -111,18 +155,3 @@ export const fetchEmployesStream = async (onData) => {
     console.error("Error fetching streamed employees:", error);
   }
 };
-
-
-// // Get all employee
-// // Add a new employee (data passed as an argument)
-// export const addEmployee = (employee) => {
-//   employeesData.push({ id: Date.now(), ...employee });
-//   return employeesData; // Return updated list
-// };
-
-// // Delete an employee by ID
-// export const deleteEmployee = (id) => {
-//   const index = employeesData.findIndex(emp => emp.id === id);
-//   if (index !== -1) employeesData.splice(index, 1);
-//   return employeesData;
-// };
