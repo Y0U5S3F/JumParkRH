@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   Container,
   Button,
@@ -22,11 +23,11 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { fetchMinimalEmployes } from "../service/EmployeService";
-import { addLabel, updateLabel, deleteLabel } from "../service/LabelDataService"; // Import the addLabel service
+import { addLabel, updateLabel, deleteLabel, importPresence } from "../service/LabelDataService"; // Import the addLabel service
 import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
 import AddIcon from '@mui/icons-material/Add';
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { ACCESS_TOKEN } from "../constants";
 import { CloudDownloadRounded, Event } from "@mui/icons-material";
 
 
@@ -111,6 +112,7 @@ export default function SimpleCalendar() {
     severity: "",
     message: "",
   });
+  const [isImportingPresence, setIsImportingPresence] = useState(false);
   const [pageTitle, setPageTitle] = useState("Planning");
   
     useEffect(() => {
@@ -343,29 +345,52 @@ export default function SimpleCalendar() {
   };
 
   const handleImportPresence = async () => {
+    console.log("Setting isImportingPresence to true");
+    setIsImportingPresence(true); // Set loading state for importPresence to true
     try {
-      const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
-      if (!token) {
-        console.error("Access token not found");
-        return;
-      }
-  
-      const response = await axios.get("http://127.0.0.1:8000/api/label/zk_auto_import/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      console.log("Calling importPresence...");
+      await importPresence();
+      console.log("importPresence completed successfully.");
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Présence importée avec succès!",
       });
-  
-      console.log("Response:", response.data);
-      // Refresh the page after the request finishes
-      window.location.reload();
+      setRefresh((prev) => !prev); // Trigger re-fetch
     } catch (error) {
-      console.error("Error importing presence:", error);
+      console.error("Error during import:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: `Erreur lors de l'importation de la présence: ${error.message}`,
+      });
+    } finally {
+      console.log("Setting isImportingPresence to false");
+      window
+      setIsImportingPresence(false); // Set loading state for importPresence to false
     }
   };
 
   return (
     <Container className={classes.container} maxWidth={false}>
+    {isImportingPresence && (
+      <Box
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+        }}
+      >
+        <CircularProgress color="primary" />
+      </Box>
+    )}
       <Box className={classes.topBar}>
         <Box className={classes.titleContainer}>
           <Event />

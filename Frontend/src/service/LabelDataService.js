@@ -111,3 +111,21 @@ export const deleteLabel = async (labelId) => {
     throw error;
   }
 };
+
+export const importPresence = async () => {
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        console.error("Access token not found");
+        return;
+      }
+      const response = await axios.get("http://127.0.0.1:8000/api/label/zk_auto_import/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error importing presence:", error);
+    }
+  };
