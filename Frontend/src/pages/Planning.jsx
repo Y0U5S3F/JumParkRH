@@ -122,7 +122,8 @@ export default function SimpleCalendar() {
       const fetchLabels = async () => {
         try {
           // Retrieve the access token from local storage
-          const token = localStorage.getItem(ACCESS_TOKEN);
+          const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
+          ;
     
           // Fetch labels with the Authorization header
           const response = await fetch(
