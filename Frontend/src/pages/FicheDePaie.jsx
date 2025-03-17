@@ -34,7 +34,7 @@ import {
 
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import { fetchEmployeeSalaryInfo } from "../service/FicheDePaieService";
-import { addSalaire, fetchSalaires , downloadSalaire} from "../service/SalaireService"; // Import addSalaire function
+import { addSalaire, fetchSalaires , downloadSalaire, deleteSalaire} from "../service/SalaireService"; // Import addSalaire function
 import FicheDePaie from "../models/ficheDePaie";
 import { makeStyles } from "@mui/styles";
 
@@ -162,12 +162,12 @@ export default function FicheDePaiePage() {
             <IconButton onClick={() => console.log("edit", params.row.id)}>
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => console.log("delete", params.row.id)}>
+            <IconButton onClick={() => handleDelete(params.row.id)}>
               <DeleteIcon />
             </IconButton>
             <IconButton onClick={() => handleDownload(params.row.id)}>
-  <DownloadIcon />
-</IconButton>
+              <DownloadIcon />
+            </IconButton>
           </div>
         ),
       },
@@ -302,6 +302,25 @@ export default function FicheDePaiePage() {
       await downloadSalaire(salaireId);
     } catch (error) {
       console.error("Error downloading salaire:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteSalaire(id); // Call the delete function with the passed id
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Salaire supprimé avec succès!",
+      });
+      setSalaires((prev) => prev.filter((salaire) => salaire.id !== id)); // Update state
+    } catch (error) {
+      console.error("Error deleting salaire:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression du salaire.",
+      });
     }
   };
 

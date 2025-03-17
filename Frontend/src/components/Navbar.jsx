@@ -295,7 +295,7 @@ export default function Navbar() {
         >
           <Box sx={{ display: "flex", alignItems: "center" ,}}>
             <Avatar alt="User Avatar"   sx={{ width: 37, height: 37,  bgcolor: (theme) => theme.palette.primary.main}}
-size="small "src="/path/to/avatar.jpg" >{user.role}</Avatar>
+            size="small "src="/path/to/avatar.jpg" >{user.nom[0]}</Avatar>
             <Box sx={{ ml: 2 }}>
               <Typography variant="body1" sx={{color: (theme) => theme.palette.text.primary}} fontWeight={700}>
                 {user.nom}
