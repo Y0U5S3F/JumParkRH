@@ -1,5 +1,3 @@
-import sys
-import os
 from .ZKTeco.zk_pointage import update_last_uid, read_last_uid, fetch_devices, process_punch, process_log
 from .ZKTeco.pyzk.zk import ZK
 from rest_framework import generics
