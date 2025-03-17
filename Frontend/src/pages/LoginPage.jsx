@@ -15,6 +15,7 @@ import darkTheme from '../theme/Theme'; // Adjust the import path as necessary
 import gymParkLogo from '../../public/logos/gympark.svg';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For redirecting after login
+import Loading from '../components/Loading'; // Import the Loading component
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -57,37 +58,36 @@ export default function SignIn(props) {
   const [isLoading, setIsLoading] = React.useState(false);
   const navigate = useNavigate(); // for redirecting after login
 
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     // Validate inputs
     if (!validateInputs()) {
       return;
     }
-  
+
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
     const rememberMe = data.get('remember') !== null; // This will be true if checkbox is checked
-  
+
     try {
       setIsLoading(true);
       const response = await axios.post('http://127.0.0.1:8000/api/employe/login/', {
         email: email,
         password: password,
       });
-  
+
       if (response.data.access && response.data.refresh) {
         if (rememberMe) {
-            localStorage.setItem('access_token', response.data.access);
-            localStorage.setItem('refresh_token', response.data.refresh);
+          localStorage.setItem('access_token', response.data.access);
+          localStorage.setItem('refresh_token', response.data.refresh);
         } else {
-            sessionStorage.setItem('access_token', response.data.access);
-            sessionStorage.setItem('refresh_token', response.data.refresh);
-        }    
+          sessionStorage.setItem('access_token', response.data.access);
+          sessionStorage.setItem('refresh_token', response.data.refresh);
+        }
         navigate('/');
-    } else {
+      } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
@@ -100,7 +100,6 @@ export default function SignIn(props) {
       setIsLoading(false);
     }
   };
-  
 
   const validateInputs = () => {
     const email = document.getElementById('email');
@@ -132,6 +131,7 @@ export default function SignIn(props) {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline enableColorScheme />
+      {isLoading && <Loading />} {/* Show Loading component when isLoading is true */}
       <SignInContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <Box sx={{ display: 'flex' }}>

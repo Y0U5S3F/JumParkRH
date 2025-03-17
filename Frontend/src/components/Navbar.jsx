@@ -155,8 +155,9 @@ export default function Navbar() {
   const handleToggleDrawer = () => setIsOpen((prev) => !prev);
 
   const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logout clicked");
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login");
   };
 
   return (
