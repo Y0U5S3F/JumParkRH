@@ -11,6 +11,7 @@ from django.db.models import Count, Sum
 from jourferie.models import JourFerie
 from salaire.models import Salaire
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 
 class AbsenceListCreateView(generics.ListCreateAPIView):
@@ -22,6 +23,8 @@ class AbsenceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AbsenceSerializer
     permission_classes = [IsAuthenticated]
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def dashboard_stats(request):
     today = now().date()
     current_month = today.month

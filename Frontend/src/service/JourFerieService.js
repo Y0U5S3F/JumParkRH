@@ -1,11 +1,22 @@
 import axios from "axios";
+import { ACCESS_TOKEN } from "../constants";
 
 const JOUR_FERIE_API_URL = "http://127.0.0.1:8000/api/jourferie/jourferies/";
+
+// Helper function to get the token from local storage
+export const getAccessToken = () => {
+  return localStorage.getItem(ACCESS_TOKEN);
+};
 
 // Fetch all jour feries
 export const fetchJourFeries = async () => {
   try {
-    const response = await axios.get(JOUR_FERIE_API_URL);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(JOUR_FERIE_API_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching jour feries:", error);
@@ -16,7 +27,12 @@ export const fetchJourFeries = async () => {
 // Fetch a single jour ferie by ID
 export const fetchJourFerieById = async (jourFerieId) => {
   try {
-    const response = await axios.get(`${JOUR_FERIE_API_URL}${jourFerieId}/`);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(`${JOUR_FERIE_API_URL}${jourFerieId}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching jour ferie:", error);
@@ -27,7 +43,12 @@ export const fetchJourFerieById = async (jourFerieId) => {
 // Add a new jour ferie
 export const addJourFerie = async (jourFerieData) => {
   try {
-    const response = await axios.post(JOUR_FERIE_API_URL, jourFerieData);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.post(JOUR_FERIE_API_URL, jourFerieData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error adding jour ferie:", error);
@@ -38,7 +59,12 @@ export const addJourFerie = async (jourFerieData) => {
 // Update an existing jour ferie
 export const updateJourFerie = async (jourFerieId, updatedJourFerie) => {
   try {
-    const response = await axios.put(`${JOUR_FERIE_API_URL}${jourFerieId}/`, updatedJourFerie);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.put(`${JOUR_FERIE_API_URL}${jourFerieId}/`, updatedJourFerie, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error updating jour ferie:", error);
@@ -49,7 +75,12 @@ export const updateJourFerie = async (jourFerieId, updatedJourFerie) => {
 // Delete a jour ferie
 export const deleteJourFerie = async (jourFerieId) => {
   try {
-    await axios.delete(`${JOUR_FERIE_API_URL}${jourFerieId}/`);
+    const token = getAccessToken(); // Retrieve the token
+    await axios.delete(`${JOUR_FERIE_API_URL}${jourFerieId}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
   } catch (error) {
     console.error("Error deleting jour ferie:", error);
     throw error;

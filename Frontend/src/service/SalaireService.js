@@ -1,11 +1,22 @@
 import axios from "axios";
+import { ACCESS_TOKEN } from "../constants";
 
 const SALAIRE_API_URL = "http://127.0.0.1:8000/api/salaire/salaires/";
+
+// Helper function to get the token from local storage
+export const getAccessToken = () => {
+  return localStorage.getItem(ACCESS_TOKEN);
+};
 
 // Fetch all salaires
 export const fetchSalaires = async () => {
   try {
-    const response = await axios.get(SALAIRE_API_URL);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(SALAIRE_API_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching salaires:", error);
@@ -16,7 +27,12 @@ export const fetchSalaires = async () => {
 // Fetch a single salaire by ID
 export const fetchSalaireById = async (salaireId) => {
   try {
-    const response = await axios.get(`${SALAIRE_API_URL}${salaireId}/`);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(`${SALAIRE_API_URL}${salaireId}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching salaire:", error);
@@ -24,13 +40,15 @@ export const fetchSalaireById = async (salaireId) => {
   }
 };
 
-
-// In SalaireService.js
-
+// Download a salaire
 export const downloadSalaire = async (salaireId) => {
   try {
+    const token = getAccessToken(); // Retrieve the token
     const url = `http://127.0.0.1:8000/api/salaire/generer/${salaireId}/`;
     const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
       responseType: "blob", // Get response as a Blob for binary data
     });
     
@@ -62,7 +80,12 @@ export const downloadSalaire = async (salaireId) => {
 // Add a new salaire
 export const addSalaire = async (salaireData) => {
   try {
-    const response = await axios.post(SALAIRE_API_URL, salaireData);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.post(SALAIRE_API_URL, salaireData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error adding salaire:", error);
@@ -73,7 +96,12 @@ export const addSalaire = async (salaireData) => {
 // Update an existing salaire
 export const updateSalaire = async (salaireId, updatedSalaire) => {
   try {
-    const response = await axios.put(`${SALAIRE_API_URL}${salaireId}/`, updatedSalaire);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.put(`${SALAIRE_API_URL}${salaireId}/`, updatedSalaire, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error updating salaire:", error);
@@ -84,16 +112,27 @@ export const updateSalaire = async (salaireId, updatedSalaire) => {
 // Delete a salaire
 export const deleteSalaire = async (salaireId) => {
   try {
-    await axios.delete(`${SALAIRE_API_URL}${salaireId}/`);
+    const token = getAccessToken(); // Retrieve the token
+    await axios.delete(`${SALAIRE_API_URL}${salaireId}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
   } catch (error) {
     console.error("Error deleting salaire:", error);
     throw error;
   }
 };
 
+// Fetch salaires stream
 export const fetchSalairesStream = async (onData) => {
   try {
-    const response = await fetch(`${SALAIRE_API_URL}?stream=true`);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await fetch(`${SALAIRE_API_URL}?stream=true`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
 
     if (!response.body) {
       throw new Error("ReadableStream not supported in this environment");

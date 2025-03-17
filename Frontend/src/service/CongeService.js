@@ -1,12 +1,24 @@
 import axios from "axios";
-import {fetchEmployeeMinimalByMatricule} from "./EmployeService";
+import { fetchEmployeeMinimalByMatricule } from "./EmployeService";
 import { fetchTypeCongeById } from "./TypeCongeService";
+import { ACCESS_TOKEN } from "../constants";
+
 const CONGE_API_URL = "http://127.0.0.1:8000/api/conge/conges/";
+
+// Helper function to get the token from local storage
+export const getAccessToken = () => {
+  return localStorage.getItem(ACCESS_TOKEN);
+};
 
 // Fetch all congés with employee names
 export const fetchConges = async () => {
   try {
-    const response = await axios.get(CONGE_API_URL);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.get(CONGE_API_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     const conges = response.data;
 
     // Fetch employee names and typeConge names for each congé
@@ -30,11 +42,15 @@ export const fetchConges = async () => {
   }
 };
 
-
 // Add a new congé
 export const addConge = async (congeData) => {
   try {
-    const response = await axios.post(CONGE_API_URL, congeData);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.post(CONGE_API_URL, congeData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error adding congé:", error);
@@ -45,7 +61,12 @@ export const addConge = async (congeData) => {
 // Update an existing congé
 export const updateConge = async (congeId, updatedConge) => {
   try {
-    const response = await axios.put(`${CONGE_API_URL}${congeId}/`, updatedConge);
+    const token = getAccessToken(); // Retrieve the token
+    const response = await axios.put(`${CONGE_API_URL}${congeId}/`, updatedConge, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error updating congé:", error);
@@ -56,7 +77,12 @@ export const updateConge = async (congeId, updatedConge) => {
 // Delete a congé
 export const deleteConge = async (congeId) => {
   try {
-    await axios.delete(`${CONGE_API_URL}${congeId}/`);
+    const token = getAccessToken(); // Retrieve the token
+    await axios.delete(`${CONGE_API_URL}${congeId}/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the token to the headers
+      },
+    });
   } catch (error) {
     console.error("Error deleting congé:", error);
     throw error;
