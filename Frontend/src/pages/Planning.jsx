@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "85vh",
     overflow: "hidden",
-    border: `2px solid rgb(61, 61, 61)`,
+    border: `1px solid rgb(70, 69, 69)`,
     borderRadius: "12px",
     margin: "0 auto",
   },
@@ -117,6 +117,7 @@ export default function SimpleCalendar() {
       document.title = pageTitle; // Update the document title
     }, [pageTitle]);
 
+
     useEffect(() => {
       const fetchLabels = async () => {
         try {
@@ -143,15 +144,15 @@ export default function SimpleCalendar() {
           const decoder = new TextDecoder();
           let buffer = "";
     
-          const statusColorMapping = {
-            Present: "#2A9D8F", // Teal green
-            "En Pause": "#F4A261", // Warm orange
-            "En Conge": "#9B5DE5", // Soft purple
-            Absent: "#E63946", // Warm red
-            "Fin de Service": "#457B9D", // Muted blue
-            Anomalie: "#6D6875", // Warm gray
-            "Jour Ferie": "#B0A8B9", // Soft neutral gray
-          };
+        const statusColorMapping = {
+          Present: "rgba(144, 238, 191, 0.8)", // Soft Green (representing presence and positivity)
+          "En Pause": "rgba(169, 223, 216, 0.8)", // Light Teal (calm and neutral, good for pause)
+          "En Conge": "rgba(40, 174, 243, 0.8)", // Bright Blue (freedom and relaxation)
+          Absent: "rgba(242, 109, 91, 0.8)", // Deep Coral (alert and attention)
+          "Fin de Service": "rgba(199, 162, 255, 0.8)", // Soft Purple (closure or completion)
+          Anomalie: "rgba(252, 184, 89, 0.8)", // Warm Yellow (warning or irregularity)
+          "Jour Ferie": "rgba(242, 200, 237, 0.8)", // Pastel Pink (celebration or special day)
+        };
     
           // Helper function to transform each streamed item
           const transformItem = (item) => {
