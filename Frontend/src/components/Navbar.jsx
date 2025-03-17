@@ -11,17 +11,18 @@ import {
   ListItemIcon,
   ListItemText,
   ListSubheader,
+  Avatar,
+  Typography,
 } from "@mui/material";
+import LogoutIcon from '@mui/icons-material/Logout';
 import DescriptionIcon from "@mui/icons-material/Description";
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
-
 import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import MuiDrawer from "@mui/material/Drawer";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import CategoryIcon from '@mui/icons-material/Category';
-// Icons
 import {
   ChevronLeft,
   ChevronRight,
@@ -30,20 +31,12 @@ import {
   Apartment,
   Business,
   Event,
-  RequestPage,
-  AssignmentInd,
   Payments,
-  Category,
-  Devices,
 } from "@mui/icons-material";
-
-// Assets
 import gymParkLogo from "../../public/logos/gympark.svg";
 
-// Constants
 const DRAWER_WIDTH = 240;
 
-// Drawer Styles (Open & Closed States)
 const openedMixin = (theme) => ({
   width: DRAWER_WIDTH,
   transition: theme.transitions.create("width", {
@@ -65,17 +58,16 @@ const closedMixin = (theme) => ({
   },
 });
 
-// Styled Components
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   padding: theme.spacing(1, 2),
   ...theme.mixins.toolbar,
-  position: "sticky", // Ensures it's sticky
-  top: 0, // Keeps it at the top
+  position: "sticky",
+  top: 0,
   backgroundColor: theme.palette.background.paper,
-  zIndex: 1100, // Ensure it's on top of everything else
+  zIndex: 1100,
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -90,9 +82,9 @@ const Drawer = styled(MuiDrawer, {
         ...openedMixin(theme),
         "& .MuiDrawer-paper": {
           ...openedMixin(theme),
-          overflow: "auto", // Enable scrolling
+          overflow: "auto",
           "&::-webkit-scrollbar": {
-            display: "none", // Hide scrollbar
+            display: "none",
           },
         },
       }
@@ -100,15 +92,14 @@ const Drawer = styled(MuiDrawer, {
         ...closedMixin(theme),
         "& .MuiDrawer-paper": {
           ...closedMixin(theme),
-          overflow: "auto", // Enable scrolling
+          overflow: "auto",
           "&::-webkit-scrollbar": {
-            display: "none", // Hide scrollbar
+            display: "none",
           },
         },
       }),
 }));
 
-// Menu Configuration
 const MENU_GROUPS = [
   {
     items: [{ text: "Dashboard", icon: <Dashboard />, path: "/" }],
@@ -134,7 +125,7 @@ const MENU_GROUPS = [
     subheader: "Payroll & Administration",
     items: [
       { text: "Fiche de Paie", icon: <DescriptionIcon/>, path: "/fiche-de-paie" },
-      { text: "Type Congé", icon: <Category />, path: "/type-conge" },
+      { text: "Type Congé", icon: <CategoryIcon />, path: "/type-conge" },
     ],
   },
   {
@@ -143,7 +134,6 @@ const MENU_GROUPS = [
   },
 ];
 
-// Navbar Component
 export default function Navbar() {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -152,14 +142,17 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
-  // Toggle Drawer Open/Close
   const handleToggleDrawer = () => setIsOpen((prev) => !prev);
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log("Logout clicked");
+  };
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
 
-      {/* Sidebar Drawer */}
       <Drawer variant="permanent" open={isOpen}>
         <DrawerHeader>
           {isOpen && <img src={gymParkLogo} alt="GymPark Logo" />}
@@ -178,7 +171,6 @@ export default function Navbar() {
           </IconButton>
         </DrawerHeader>
 
-        {/* Menu Items */}
         {MENU_GROUPS.map((group, index) => (
           <List
             key={index}
@@ -190,32 +182,32 @@ export default function Navbar() {
           >
             {group.items.map(({ text, icon, path }) => (
               <ListItem
-              key={text}
-              disablePadding
-              sx={{
-                display: "block",
-                mb: "6px",
-                ...(isOpen && {
-                  "&:hover": {
-                    backgroundColor: theme.palette.primary.main,
-                    borderRadius: "8px",
-                    width: "calc(100% - 20px)",
-                    marginLeft: "10px",
-                    "& .MuiListItemIcon-root, & .MuiListItemText-root": {
-                      color: theme.palette.background.paper,
+                key={text}
+                disablePadding
+                sx={{
+                  display: "block",
+                  mb: "6px",
+                  ...(isOpen && {
+                    "&:hover": {
+                      backgroundColor: theme.palette.primary.main,
+                      borderRadius: "8px",
+                      width: "calc(100% - 20px)",
+                      marginLeft: "10px",
+                      "& .MuiListItemIcon-root, & .MuiListItemText-root": {
+                        color: theme.palette.background.paper,
+                      },
                     },
-                  },
-                }),
-                ...(!isOpen && {
-                  "&:hover": {
-                    backgroundColor: "transparent", // Remove background color on hover when closed
-                    "& .MuiListItemIcon-root": {
-                      color: theme.palette.primary.main,
+                  }),
+                  ...(!isOpen && {
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                      "& .MuiListItemIcon-root": {
+                        color: theme.palette.primary.main,
+                      },
                     },
-                  },
-                }),
-              }}
-            >
+                  }),
+                }}
+              >
                 <ListItemButton
                   onClick={() => navigate(path)}
                   sx={{
@@ -239,8 +231,8 @@ export default function Navbar() {
                       }),
                     ...(!isOpen && {
                       "&:hover, &.Mui-selected": {
-        backgroundColor: "transparent", // Remove background color on hover and active when closed
-      },
+                        backgroundColor: "transparent",
+                      },
                       "&:hover .MuiListItemIcon-root,": {
                         color: theme.palette.primary.main,
                       },
@@ -270,12 +262,41 @@ export default function Navbar() {
                         },
                       }),
                     }}
-                  />{" "}
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         ))}
+
+        {/* User Box */}
+        <Box
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            backgroundColor: theme.palette.background.paper,
+            p: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            zIndex: 1100,
+
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" ,}}>
+            <Avatar alt="User Avatar"   sx={{ width: 37, height: 37,  bgcolor: (theme) => theme.palette.primary.main}}
+size="small "src="/path/to/avatar.jpg" />
+            <Box sx={{ ml: 2 }}>
+              <Typography variant="body1" sx={{color: (theme) => theme.palette.text.primary}} fontWeight={700}>
+                John Doe
+              </Typography>
+              <Typography variant="body2" sx={{color: (theme) => theme.palette.text.secondary}}>Admin</Typography>
+            </Box>
+          </Box>
+          <IconButton onClick={handleLogout}>
+            <LogoutIcon />
+          </IconButton>
+        </Box>
       </Drawer>
     </Box>
   );

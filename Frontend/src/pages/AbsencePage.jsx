@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   contentContainer: {
+    
     flex: 1,
     overflowY: "auto",
     paddingRight: "10px", // Prevents content from touching the scrollbar
@@ -598,6 +599,8 @@ export default function AbsencePage() {
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}
+
+      
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
       >
