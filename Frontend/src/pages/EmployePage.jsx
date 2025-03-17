@@ -5,6 +5,7 @@ import {
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
+import CloseIcon from '@mui/icons-material/Close';
 import {
   
   People,
@@ -60,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     width: 1000,
     height: 450,
-    backgroundColor: "black",
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -557,15 +558,23 @@ export default function EmployePage() {
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de vos personnels
+          <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom >
+            Ajouter en employé
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpen(false)} sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+            borderRadius: '50%', // Circular shape
+          },
+        }}/>
+          
+          </Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
+            <Typography variant="body1" fontWeight={600} gutterBottom >
               Informations personnelles
             </Typography>
-            <Divider sx={{ mb: 2 }} />
+            <Divider sx={{mb:2}}/>
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <TextField
@@ -715,6 +724,7 @@ export default function EmployePage() {
             </Grid>
             <Typography
               variant="body1"
+              fontWeight={600}
               color="white"
               sx={{ pt: 2 }}
               gutterBottom
@@ -775,6 +785,7 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
+              fontWeight={600}
               color="white"
               gutterBottom
             >
@@ -810,6 +821,7 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
+              fontWeight={600}
               color="white"
               gutterBottom
             >
@@ -876,6 +888,7 @@ export default function EmployePage() {
               sx={{ mt: 2 }}
               variant="body1"
               color="white"
+              fontWeight={600}
               gutterBottom
             >
               Information Banquaire
