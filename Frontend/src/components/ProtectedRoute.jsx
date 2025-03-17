@@ -35,7 +35,6 @@ function ProtectedRoute() {
 
     // Function to authenticate user by checking token validity
     const auth = async () => {
-        // Check both localStorage and sessionStorage for the access token
         const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 
         if (!token) {

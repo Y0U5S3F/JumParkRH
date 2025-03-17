@@ -4,7 +4,7 @@ import { ACCESS_TOKEN } from "../constants";
 const DASHBOARD_API_URL = "http://127.0.0.1:8000/api/absence/dashboard/";
 
 export const getAccessToken = () => {
-  return localStorage.getItem(ACCESS_TOKEN);
+  return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
 // Fetch dashboard data

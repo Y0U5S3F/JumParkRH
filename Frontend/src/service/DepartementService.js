@@ -5,7 +5,7 @@ const DEPARTMENT_API_URL = "http://127.0.0.1:8000/api/departement/departements/"
 
 // Helper function to get the token from local storage
 export const getAccessToken = () => {
-  return localStorage.getItem(ACCESS_TOKEN);
+  return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
 // Fetch all departments with token

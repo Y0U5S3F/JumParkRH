@@ -42,6 +42,8 @@ class CustomRefreshToken(RefreshToken):
         token['matricule'] = user.matricule
         token['email'] = user.email
         token['departement'] = user.departement.id  # Assuming departement has a 'nom' field
+        token['role'] = user.role
+        token['nom'] = user.prenom + " " + user.nom
         
         return token
 

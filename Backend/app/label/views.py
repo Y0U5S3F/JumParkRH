@@ -1,12 +1,17 @@
+import sys
+import os
+from .ZKTeco.zk_pointage import update_last_uid, read_last_uid, fetch_devices, process_punch, process_log
+sys.path.insert(1,os.path.abspath(".ZKTeco/pyzk"))
+from zk import ZK
 from rest_framework import generics
 from rest_framework.response import Response
-from django.core.serializers import serialize
 from django.http import StreamingHttpResponse
 from rest_framework import status
 import json
-from django.shortcuts import get_object_or_404
 from .models import Label, LabelData
 from .serializers import LabelSerializer, LabelDataSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 class LabelListCreateView(generics.ListCreateAPIView):
     queryset = Label.objects.all().order_by('id').prefetch_related('data')
@@ -116,3 +121,43 @@ class LabelDataCreateManualView(generics.CreateAPIView):
         serializer.save()
         
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def auto_import_labels(request):
+    try:
+        devices = fetch_devices(request)
+        if not devices:
+            return Response({"detail": "No devices found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        for device in devices:
+            DEVICE_IP = device['ip']
+            DEVICE_PORT = device['port']
+            marker_file = f"logs_{DEVICE_IP.replace('.', '_')}_{DEVICE_PORT}.csv"
+            zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
+            conn = None
+            try:
+                conn = zk.connect()
+                print(f"Connected to Device")
+                attendance_logs = conn.get_attendance()
+                last_uid = read_last_uid(marker_file)
+
+                # Process each new log entry as it comes in.
+                for log in attendance_logs:
+                    if log.uid > last_uid:
+                        event = process_punch(log.punch)
+                        log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
+                        process_log(log_entry, marker_file, request.headers.get('Authorization'))
+                        # Update the marker file immediately after processing each log.
+                        update_last_uid(marker_file, log.uid)
+                print("All logs processed.")
+            except Exception as e:
+                return Response({"detail": f"An error occurred while importing labels from device {DEVICE_IP}:{DEVICE_PORT}."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            finally:
+                if conn:
+                    conn.disconnect()
+                    print("Disconnected from the device.")
+        
+        return Response({"detail": "Labels imported successfully."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"detail": "An error occurred while importing labels."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

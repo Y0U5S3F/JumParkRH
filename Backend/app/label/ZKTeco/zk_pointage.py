@@ -16,7 +16,6 @@ def read_last_uid(filename):
             try:
                 return int(first_line)
             except ValueError:
-                print("Invalid UID in marker file. Defaulting to 0.")
                 return 0
     return 0
 
@@ -31,11 +30,9 @@ def update_last_uid(filename, uid):
             lines = [str(uid) + "\n"]
         with open(filename, 'w') as f:
             f.writelines(lines)
-        print(f"Updated last processed UID to {uid} in {filename}")
     else:
         with open(filename, 'w') as f:
             f.write(str(uid) + "\n")
-        print(f"Created {filename} and set last processed UID to {uid}")
 
 def append_log_entry(user_id, returned_id, filename):
     """Append a new check‑in record (user_id, returned_data_id) to the logfile."""
@@ -91,7 +88,7 @@ def process_punch(punch):
         case 5: return "Break End"
         case _: return "Unknown"
 
-def send_label_data(user_id, start_date, end_date, start_pause, end_pause, status):
+def send_label_data(user_id, start_date, end_date, start_pause, end_pause, status, token):
     """
     For a check‑in (punch 0), send the initial POST request.
     The fields end_date, start_pause, and end_pause can be None.
@@ -104,17 +101,23 @@ def send_label_data(user_id, start_date, end_date, start_pause, end_pause, statu
        "endPause": end_pause,
        "status": status
     }
-    return requests.post(url, json=payload)
+    headers = {
+        'Authorization': token
+    }
+    return requests.post(url, json=payload, headers=headers)
 
-def update_record(data_id, field, value):
+def update_record(data_id, field, value, token):
     """
     Update a single field of the record with the given data_id via a PUT request.
     """
     url = f"http://127.0.0.1:8000/api/label/labels/data/{data_id}/"
     payload = { field: value }
-    return requests.put(url, json=payload)
+    headers = {
+        'Authorization': token
+    }
+    return requests.put(url, json=payload, headers=headers)
 
-def process_log(log, MARKER_FILE):
+def process_log(log, MARKER_FILE, token):
     """
     Process a single log entry based on its punch value.
     Each entry is handled immediately.
@@ -130,120 +133,55 @@ def process_log(log, MARKER_FILE):
         if existing_data_id:
             # Update the endDate of the existing log to the same day at 23:59
             end_date_str = timestamp.strftime("%Y-%m-%dT23:59:00")
-            update_response = update_record(existing_data_id, "endDate", end_date_str)
-            if update_response.status_code == 200:
-                print(f"Updated endDate of existing record ID {existing_data_id} to {end_date_str}.")
-            else:
-                print(f"Error updating endDate for existing record ID {existing_data_id}: {update_response.text}")
 
-        response = send_label_data(user_id, start_date_str, None, None, None, status)
+        response = send_label_data(user_id, start_date_str, None, None, None, status, token)
 
         if response.status_code == 201:
             returned_id = response.json().get("id")
             if existing_data_id:
                 # Replace the old log ID with the new one
                 remove_first_log_entry(user_id, MARKER_FILE)
-                print(f"User {user_id} already had an open check‑in (record ID: {existing_data_id}). Replacing with new record ID: {returned_id}.")
             append_log_entry(user_id, returned_id, MARKER_FILE)
-            print(f"Check‑In processed for user {user_id} with status '{status}'.")
-        else:
-            print(f"Error processing Check‑In for user {user_id}: {response.text}")
 
     elif punch == 4:
         # Break Start: update the 'endPause' field and 'status' to 'present' for the open record.
         pause_end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
-            response = update_record(data_id, "endPause", pause_end_date)
+            response = update_record(data_id, "endPause", pause_end_date, token)
             if response.status_code == 200:
                 # Update the status to "present"
-                response = update_record(data_id, "status", "present")
-                if response.status_code == 200:
-                    print(f"Break Start processed for user {user_id}: updated endPause and status to 'present'.")
-                else:
-                    print(f"Error updating status for user {user_id}: {response.text}")
-            else:
-                print(f"Error updating endPause for user {user_id}: {response.text}")
-        else:
-            print(f"No open log entry found for user {user_id} for Break Start event.")
+                response = update_record(data_id, "status", "present", token)
 
     elif punch == 5:
         # Break End: update the 'startPause' field and 'status' to 'en pause' for the open record.
         pause_start_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
-            response = update_record(data_id, "startPause", pause_start_date)
+            response = update_record(data_id, "startPause", pause_start_date, token)
             if response.status_code == 200:
                 # Update the status to "en pause"
-                response = update_record(data_id, "status", "en pause")
-                if response.status_code == 200:
-                    print(f"Break End processed for user {user_id}: updated startPause and status to 'en pause'.")
-                else:
-                    print(f"Error updating status for user {user_id}: {response.text}")
-            else:
-                print(f"Error updating startPause for user {user_id}: {response.text}")
-        else:
-            print(f"No open log entry found for user {user_id} for Break End event.")
+                response = update_record(data_id, "status", "en pause", token)
 
     elif punch == 1:
         # Check‑Out: update the 'endDate' and 'status' fields on the first open record and remove that entry.
         end_date = timestamp.strftime("%Y-%m-%dT%H:%M:%S")
         data_id = get_first_open_data_id_for_user(user_id, MARKER_FILE)
         if data_id:
-            response = update_record(data_id, "endDate", end_date)
+            response = update_record(data_id, "endDate", end_date, token)
             if response.status_code == 200:
                 # Update the status to "fin de service"
-                response = update_record(data_id, "status", "fin de service")
-                if response.status_code == 200:
-                    print(f"Check‑Out processed for user {user_id}: updated endDate and status to 'fin de service'.")
-                    # Remove only the first matching open record.
-                    remove_first_log_entry(user_id, MARKER_FILE)
-                else:
-                    print(f"Error updating status for user {user_id}: {response.text}")
-            else:
-                print(f"Error updating endDate for user {user_id}: {response.text}")
-        else:
-            print(f"No open log entry found for user {user_id} for Check‑Out event.")
+                response = update_record(data_id, "status", "fin de service", token)
 
-def fetch_devices():
+def fetch_devices(request):
     """Fetch device details from the backend API."""
-    response = requests.get(DEVICE_API_URL)
+    token = request.headers.get('Authorization')
+    headers = {
+        'Authorization': token
+    }
+    response = requests.get(DEVICE_API_URL, headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
         print(f"Error fetching devices: {response.text}")
         return []
-
-def main():
-    devices = fetch_devices()
-    for device in devices:
-        DEVICE_IP = device['ip']
-        DEVICE_PORT = device['port']
-        marker_file = f"logs_{DEVICE_IP.replace('.', '_')}_{DEVICE_PORT}.csv"
-        zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
-        conn = None
-        try:
-            conn = zk.connect()
-            print(f"Connected to {DEVICE_IP}:{DEVICE_PORT}")
-            attendance_logs = conn.get_attendance()
-            last_uid = read_last_uid(marker_file)
-            print(f"Last processed UID: {last_uid}")
-
-            # Process each new log entry as it comes in.
-            for log in attendance_logs:
-                if log.uid > last_uid:
-                    event = process_punch(log.punch)
-                    log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
-                    process_log(log_entry, marker_file)
-                    # Update the marker file immediately after processing each log.
-                    update_last_uid(marker_file, log.uid)
-            print("All logs processed.")
-        except Exception as e:
-            print("Error:", e)
-        finally:
-            if conn:
-                conn.disconnect()
-                print("Disconnected from the device.")
-
-if __name__ == "__main__":
-    main()

@@ -185,6 +185,7 @@ export default function EmployePage() {
         newEmployee.nom,
         newEmployee.prenom,
         newEmployee.email,
+        newEmployee.password,
         newEmployee.date_naissance,
         newEmployee.lieu_naissance,
         newEmployee.nationalite,
@@ -226,6 +227,7 @@ export default function EmployePage() {
       setOpen(false);
       setNewEmployee(
         new Employe(
+          "",
           "",
           "",
           "",
@@ -611,6 +613,18 @@ export default function EmployePage() {
                   variant="outlined"
                   name="email"
                   value={newEmployee.email}
+                  onChange={handleInputChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Mot de passe"
+                  type="search"
+                  variant="outlined"
+                  name="password"
+                  value={newEmployee.password}
                   onChange={handleInputChange}
                   fullWidth
                 />

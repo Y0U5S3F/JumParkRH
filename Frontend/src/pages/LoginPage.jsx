@@ -78,24 +78,16 @@ export default function SignIn(props) {
         password: password,
       });
   
-      // Check if the response contains the tokens
       if (response.data.access && response.data.refresh) {
-        // Save tokens in localStorage or sessionStorage based on "Remember me" checkbox
         if (rememberMe) {
-          localStorage.setItem('access_token', response.data.access);
-          localStorage.setItem('refresh_token', response.data.refresh);
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
         } else {
-          sessionStorage.setItem('access_token', response.data.access);
-          sessionStorage.setItem('refresh_token', response.data.refresh);
-        }
-  
-        // Log to check if the tokens are being stored
-        console.log('Access Token:', response.data.access);
-        console.log('Refresh Token:', response.data.refresh);
-  
-        // Redirect user to dashboard or protected route
-        navigate('/'); // Modify this route as necessary
-      } else {
+            sessionStorage.setItem('access_token', response.data.access);
+            sessionStorage.setItem('refresh_token', response.data.refresh);
+        }    
+        navigate('/');
+    } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {

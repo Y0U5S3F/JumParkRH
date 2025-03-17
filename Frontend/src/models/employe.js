@@ -1,6 +1,6 @@
 class Employe {
   constructor(
-    matricule = "", nom = "", prenom = "", email = "", date_de_naissance = "", lieu_de_naissance = "",
+    matricule = "", nom = "", prenom = "", email = "", password="", date_de_naissance = "", lieu_de_naissance = "",
     nationalite = "", genre_legal = "", situation_familiale = "", CIN = "",uid = "",num_telephone = "", adresse = "",
     ville = "", code_postal = "", nom_urgence = "", num_telephone_urgence = "", role = "", departement_id = "",
     service_id = "",salaire_base = "",cnss = "",compte_bancaire = "", rib_bancaire = ""
@@ -9,6 +9,7 @@ class Employe {
     this.nom = nom;
     this.prenom = prenom;
     this.email = email;
+    this.password = password;
     this.date_de_naissance = date_de_naissance;
     this.lieu_de_naissance = lieu_de_naissance;
     this.nationalite = nationalite;
