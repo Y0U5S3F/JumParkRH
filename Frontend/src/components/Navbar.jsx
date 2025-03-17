@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
   Box,
@@ -34,6 +34,7 @@ import {
   Payments,
 } from "@mui/icons-material";
 import gymParkLogo from "../../public/logos/gympark.svg";
+import {jwtDecode} from "jwt-decode";
 
 const DRAWER_WIDTH = 240;
 
@@ -139,6 +140,15 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const [user, setUser] = useState({ nom: "John Doe", role: "Admin" });
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setUser({ nom: decodedToken.nom, role: decodedToken.role });
+    }
+  }, []);
 
   const isActive = (path) => location.pathname === path;
 
@@ -285,12 +295,12 @@ export default function Navbar() {
         >
           <Box sx={{ display: "flex", alignItems: "center" ,}}>
             <Avatar alt="User Avatar"   sx={{ width: 37, height: 37,  bgcolor: (theme) => theme.palette.primary.main}}
-size="small "src="/path/to/avatar.jpg" />
+size="small "src="/path/to/avatar.jpg" >{user.role}</Avatar>
             <Box sx={{ ml: 2 }}>
               <Typography variant="body1" sx={{color: (theme) => theme.palette.text.primary}} fontWeight={700}>
-                John Doe
+                {user.nom}
               </Typography>
-              <Typography variant="body2" sx={{color: (theme) => theme.palette.text.secondary}}>Admin</Typography>
+              <Typography variant="body2" sx={{color: (theme) => theme.palette.text.secondary}}>{user.role}</Typography>
             </Box>
           </Box>
           <IconButton onClick={handleLogout}>

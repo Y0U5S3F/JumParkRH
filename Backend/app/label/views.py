@@ -1,8 +1,7 @@
 import sys
 import os
 from .ZKTeco.zk_pointage import update_last_uid, read_last_uid, fetch_devices, process_punch, process_log
-sys.path.insert(1,os.path.abspath(".ZKTeco/pyzk"))
-from zk import ZK
+from .ZKTeco.pyzk.zk import ZK
 from rest_framework import generics
 from rest_framework.response import Response
 from django.http import StreamingHttpResponse
