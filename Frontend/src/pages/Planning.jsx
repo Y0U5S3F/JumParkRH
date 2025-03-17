@@ -27,7 +27,7 @@ import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
 import AddIcon from '@mui/icons-material/Add';
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import { Event } from "@mui/icons-material";
+import { CloudDownloadRounded, Event } from "@mui/icons-material";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -123,8 +123,6 @@ export default function SimpleCalendar() {
         try {
           // Retrieve the access token from local storage
           const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
-          ;
-    
           // Fetch labels with the Authorization header
           const response = await fetch(
             "http://127.0.0.1:8000/api/label/labels/?stream=true",
@@ -344,6 +342,28 @@ export default function SimpleCalendar() {
     }
   };
 
+  const handleImportPresence = async () => {
+    try {
+      const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
+      if (!token) {
+        console.error("Access token not found");
+        return;
+      }
+  
+      const response = await axios.get("http://127.0.0.1:8000/api/label/zk_auto_import/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log("Response:", response.data);
+      // Refresh the page after the request finishes
+      window.location.reload();
+    } catch (error) {
+      console.error("Error importing presence:", error);
+    }
+  };
+
   return (
     <Container className={classes.container} maxWidth={false}>
       <Box className={classes.topBar}>
@@ -353,6 +373,22 @@ export default function SimpleCalendar() {
             Planning
           </Typography>
         </Box>
+        <Box display="flex" gap={2}>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<CloudDownloadRounded />}
+          sx={{
+            "&:hover": {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: "white",
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={handleImportPresence}
+        >
+        Importer
+        </Button>
         <Button
           size="medium"
           variant="outlined"
@@ -368,6 +404,7 @@ export default function SimpleCalendar() {
         >
           Ajouter une Présence
         </Button>
+        </Box>
       </Box>
       <Box className={classes.calendar}>
         {/* <StyledSchedulerFrame> */}
