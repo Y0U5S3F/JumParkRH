@@ -1,9 +1,6 @@
 import csv
 import requests
-import sys
 import os
-sys.path.insert(1,os.path.abspath("./pyzk"))
-from zk import ZK
 
 # Constants
 DEVICE_API_URL = "http://127.0.0.1:8000/api/appareil/appareils/"
