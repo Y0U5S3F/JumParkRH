@@ -39,19 +39,22 @@ class EmployeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EmployeSerializer
     lookup_field = 'matricule'
 
-    def update(self, instance, validated_data):
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        data = request.data.copy()
+
         # Check if the password is being updated
-        if 'password' in validated_data:
-            password = validated_data.pop('password')
+        if 'password' in data:
+            password = data.pop('password')
             if password:  # Only update the password if it's not null or empty
-                instance.password = make_password(password)
+                data['password'] = make_password(password)
 
-        # Update other fields
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
 
-        instance.save()
-        return instance
+        return Response(serializer.data)
 
 
 class EmployeMinimalListView(generics.ListAPIView):
