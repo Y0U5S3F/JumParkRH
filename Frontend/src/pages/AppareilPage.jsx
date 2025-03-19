@@ -4,6 +4,8 @@ import {
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
+import CloseIcon from '@mui/icons-material/Close';
+
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 
 import {
@@ -52,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 350,
-    backgroundColor: "black",
+    height: 320,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -103,6 +105,7 @@ export default function AppareilPage() {
   const [editAppareil, setEditAppareil] = useState(new Appareil("", "", "", ""));
   const [openEditModal, setOpenEditModal] = useState(false);
   const [open, setOpen] = useState(false);
+ 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [appareilToDelete, setAppareilToDelete] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
@@ -155,29 +158,33 @@ export default function AppareilPage() {
     setOpenEditModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
+    setAppareilToDelete(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+  const confirmDeleteAppareil = async () => {
     try {
-      await deleteAppareil(id);
-      console.log("Deleted appareil with id:", id);
-      setAppareils((prev) => prev.filter((appareil) => appareil.id !== id));
+      await deleteAppareil(appareilToDelete);
       setSnackbar({
         open: true,
         severity: "success",
         message: "Appareil supprimé avec succès!",
       });
+      setAppareils((prev) => prev.filter((appareil) => appareil.id !== appareilToDelete));
     } catch (error) {
-      console.error("Error deleting appareil:", error);
       setSnackbar({
         open: true,
         severity: "error",
         message: "Erreur lors de la suppression de l'appareil.",
       });
+    } finally {
+      setOpenDeleteDialog(false);
+      setAppareilToDelete(null);
     }
-    setOpenDeleteDialog(false);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
   };
 
   const handleAddAppareil = async () => {
@@ -333,17 +340,23 @@ export default function AppareilPage() {
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de l'appareil
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
+
+<Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+  Ajouter Appareil
+</Typography>
+<CloseIcon onClick={()=> setOpen(false)} sx={{
+'&:hover': {
+  backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+  borderRadius: '50%', // Circular shape
+},
+}}/>
+</Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de l'appareil
-            </Typography>
+            
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -355,7 +368,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Adresse IP"
@@ -367,7 +380,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Port"
@@ -379,7 +392,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -416,17 +429,24 @@ export default function AppareilPage() {
       {/* Edit Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de l'appareil
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
+
+<Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+  Ajouter Appareil
+</Typography>
+<CloseIcon onClick={()=> setOpenEditModal(false)} sx={{
+'&:hover': {
+  backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+  borderRadius: '50%', // Circular shape
+},
+}}/>
+</Box>
+          
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de l'appareil
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
+
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -438,7 +458,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Adresse IP"
@@ -450,7 +470,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
                   label="Port"
@@ -462,7 +482,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -541,6 +561,25 @@ export default function AppareilPage() {
         }}
       />
 
+<Dialog
+  open={openDeleteDialog}
+  onClose={() => setOpenDeleteDialog(false)}
+>
+  <DialogTitle>Confirmer la suppression</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir supprimer cet appareil ?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+      Annuler
+    </Button>
+    <Button onClick={confirmDeleteAppareil} color="primary" autoFocus>
+      Oui
+    </Button>
+  </DialogActions>
+</Dialog>
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}

@@ -6,6 +6,8 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
 import CircularProgress from "@mui/material/CircularProgress";
+import CloseIcon from '@mui/icons-material/Close';
+
 import {
   Container,
   Button,
@@ -49,12 +51,11 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "95%",
-    maxWidth: "800px",
-    height: "85vh",
-    maxHeight: "400px",
-    backgroundColor: "black",
+    width: "1000px",
+    height: "400px",
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
+    border: `1px solid ${theme.palette.primary.main}`,
     padding: "20px",
     borderRadius: "8px",
     display: "flex",
@@ -254,8 +255,8 @@ export default function SimpleCalendar() {
   }, []);
 
   const handleItemClick = (item) => {
-    setSelectedItem(item);
-    setOpenViewModal(true);
+    // setSelectedItem(item);
+    // setOpenViewModal(true);
   };
 
   const handlePresenceChange = (e) => {
@@ -436,7 +437,6 @@ export default function SimpleCalendar() {
           <Scheduler
             isLoading={isLoading}
             data={schedulerData}
-            onItemClick={handleItemClick}
             onTileClick={(clickedTile) => {
               console.log("clickedTile", clickedTile);
               setSelectedTile(clickedTile);
@@ -458,17 +458,23 @@ export default function SimpleCalendar() {
         onClose={() => setOpenPresenceModal(false)}
       >
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de la présence
+                    <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+            Ajouter présence
           </Typography>
+          <CloseIcon onClick={()=> setOpenPresenceModal(false)} sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+                      borderRadius: '50%', // Circular shape
+                    },
+                  }}/>
+          </Box>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de la présence
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+            
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -487,7 +493,7 @@ export default function SimpleCalendar() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(option) =>
@@ -507,7 +513,7 @@ export default function SimpleCalendar() {
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Date"
@@ -533,7 +539,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Date"
@@ -559,7 +565,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Pause"
@@ -585,7 +591,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Pause"
@@ -632,19 +638,25 @@ export default function SimpleCalendar() {
       {/* Update Presence Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
+                    <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          
           {/* Form Inputs for the selected tile */}
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de la présence
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+            Modifier présence
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpenViewModal(false)} sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+                      borderRadius: '50%', // Circular shape
+                    },
+                  }}/>
+          </Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de la présence
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
+
               {/* Example for start and end date inputs */}
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Date"
@@ -672,7 +684,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Date"
@@ -701,7 +713,7 @@ export default function SimpleCalendar() {
               </Grid>
 
               {/* Example for pause start and end */}
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Pause"
@@ -729,7 +741,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Pause"
@@ -758,7 +770,7 @@ export default function SimpleCalendar() {
               </Grid>
 
               {/* Status and Label */}
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <Autocomplete
                   value={selectedTile?.status || ""}
                   onChange={(event, newValue) =>

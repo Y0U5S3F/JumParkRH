@@ -5,6 +5,8 @@ import {
   updateDepartement,
   deleteDepartment,
 } from "../service/DepartementService"; // Import services
+import CloseIcon from "@mui/icons-material/Close";
+
 import Departement from "../models/departement";
 import {
   DataGrid,
@@ -23,6 +25,11 @@ import {
   Typography,
   Divider,
   Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -49,8 +56,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 300,
-    backgroundColor: "black",
+    height: 250,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -89,9 +96,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Department() {
   const [departements, setDepartements] = useState([]);
-  const [editDepartement, setEditDepartement] = useState(new Departement("", ""));
+  const [editDepartement, setEditDepartement] = useState(
+    new Departement("", "")
+  );
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
@@ -155,7 +166,9 @@ export default function Department() {
         message: "Département mis à jour avec succès!",
       });
       setDepartements((prev) =>
-        prev.map((dept) => (dept.id === editDepartement.id ? editDepartement : dept))
+        prev.map((dept) =>
+          dept.id === editDepartement.id ? editDepartement : dept
+        )
       );
       setOpenEditModal(false);
       setRefresh((prev) => !prev);
@@ -220,6 +233,7 @@ export default function Department() {
         message: "Échec de la suppression du département.",
       });
     }
+    setOpenDeleteDialog(false);
   };
 
   const handleCloseSnackbar = () => {
@@ -235,7 +249,12 @@ export default function Department() {
       width: 100,
       renderCell: (params) => (
         <>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
+          <IconButton
+            onClick={() => {
+              setDepartmentToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
@@ -275,14 +294,21 @@ export default function Department() {
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Ajouter un nouveau département
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du département
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+              Ajouter département
             </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -320,17 +346,15 @@ export default function Department() {
       {/* Update Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Modifier le département
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+              Modifier département
+            </Typography>
+          </Box>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du département
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -340,6 +364,7 @@ export default function Department() {
                   value={editDepartement.nom}
                   onChange={handleInputModifyChange}
                   fullWidth
+                  margin="dense"
                 />
               </Grid>
             </Grid>
@@ -361,6 +386,31 @@ export default function Department() {
           </Box>
         </Box>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer ce département ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+            Annuler
+          </Button>
+          <Button
+            onClick={() => handleDelete(departmentToDelete)}
+            color="primary"
+            autoFocus
+          >
+            Oui
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <DataGrid
         apiRef={apiRef}

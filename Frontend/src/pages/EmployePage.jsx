@@ -12,6 +12,11 @@ import {
   
 } from "@mui/icons-material";
 import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  DialogTitle,
   Container,
   TextField,
   Button,
@@ -108,6 +113,8 @@ export default function EmployePage() {
   const [services, setServices] = useState([]);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
@@ -169,6 +176,16 @@ export default function EmployePage() {
     } catch (error) {
       console.error("Error deleting employee:", error);
     }
+  };
+
+  const handleOpenDeleteDialog = (employee) => {
+    setEmployeeToDelete(employee);
+    setOpenDeleteDialog(true);
+  };
+  
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+    setEmployeeToDelete(null);
   };
 
   const handleAddEmployee = async () => {
@@ -288,6 +305,31 @@ export default function EmployePage() {
     }
   };
 
+
+
+const handleConfirmDelete = async () => {
+  try {
+    await deleteEmployee(employeeToDelete.matricule); // Call the service
+    setEmployees((prev) =>
+      prev.filter((employee) => employee.matricule !== employeeToDelete.matricule)
+    );
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Employé supprimé avec succès!",
+    });
+  } catch (error) {
+    console.error("Error deleting employee:", error);
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Erreur lors de la suppression de l'employé.",
+    });
+  } finally {
+    handleCloseDeleteDialog();
+  }
+};
+
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -342,9 +384,9 @@ export default function EmployePage() {
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon /> {/* Add Edit icon */}
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
-            <DeleteIcon />
-          </IconButton>
+          <IconButton onClick={() => handleOpenDeleteDialog(params.row)}>
+  <DeleteIcon />
+</IconButton>
         </div>
       ),
     },
@@ -380,13 +422,21 @@ export default function EmployePage() {
       {/* View Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
+
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
             Détails de l'employé
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpen(false)} sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+            borderRadius: '50%', // Circular shape
+          },
+        }}/>
+          </Box>
           {selectedEmployee && (
             <Box className={classes.contentContainer}>
-              <Typography variant="body1" color="white" gutterBottom>
+              <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}}fontWeight={600}  gutterBottom>
                 Informations personnelles
               </Typography>
               <Divider sx={{ mb: 2 }} />
@@ -451,7 +501,7 @@ export default function EmployePage() {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" color="white" gutterBottom>
+                <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}} fontWeight={600}color="white" gutterBottom>
                   Informations personnelles
                 </Typography>
               </Box>
@@ -482,7 +532,7 @@ export default function EmployePage() {
               </Grid>
               
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" color="white" gutterBottom>
+                <Typography sx={{color: (theme) => theme.palette.primary.main}}variant="body1" fontWeight={600}color="white" gutterBottom>
                   Contact D'urgence
                 </Typography>
               </Box>
@@ -502,7 +552,7 @@ export default function EmployePage() {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" color="white" gutterBottom>
+                <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}}fontWeight={600} gutterBottom>
                   Position
                 </Typography>
               </Box>
@@ -525,7 +575,7 @@ export default function EmployePage() {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" color="white" gutterBottom>
+                <Typography sx={{color: (theme) => theme.palette.primary.main}}variant="body1" fontWeight={600}  gutterBottom>
                   Informations Banquaire
                 </Typography>
               </Box>
@@ -977,15 +1027,47 @@ export default function EmployePage() {
         </Box>
       </Modal>
 
+      <Dialog
+  open={openDeleteDialog}
+  onClose={handleCloseDeleteDialog}
+>
+  <DialogTitle>Confirmer la suppression</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir supprimer cet employé ?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={handleCloseDeleteDialog} color="primary">
+      Annuler
+    </Button>
+    <Button
+      onClick={handleConfirmDelete}
+      color="primary"
+      autoFocus
+    >
+      Oui
+    </Button>
+  </DialogActions>
+</Dialog>
+
       {/* Edit Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de vos personnels
+                    <Box sx={{display:"flex",justifyContent:"space-between"}}>
+
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+            Modifier Personnel
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpen(false)} sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+            borderRadius: '50%', // Circular shape
+          },
+        }}/>
+          </Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
+            <Typography variant="body1" fontWeight={600} gutterBottom>
               Informations personnelles
             </Typography>
             <Divider sx={{ mb: 2 }} />
@@ -1139,6 +1221,7 @@ export default function EmployePage() {
             <Typography
               variant="body1"
               color="white"
+              fontWeight={600}
               sx={{ pt: 2 }}
               gutterBottom
             >
@@ -1200,6 +1283,7 @@ export default function EmployePage() {
               variant="body1"
               color="white"
               gutterBottom
+              fontWeight={600}
             >
               Contact d&apos;urgence
             </Typography>
@@ -1235,6 +1319,7 @@ export default function EmployePage() {
               variant="body1"
               color="white"
               gutterBottom
+              fontWeight={600}
             >
               Position
             </Typography>
@@ -1299,6 +1384,7 @@ export default function EmployePage() {
               sx={{ mt: 2 }}
               variant="body1"
               color="white"
+              fontWeight={600}
               gutterBottom
             >
               Information Banquaire

@@ -21,6 +21,11 @@ import {
   Alert,
   Divider,
   Grid,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -32,10 +37,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import Departement from "../models/departement";
 import Service from "../models/service";
 import AddIcon from '@mui/icons-material/Add';
-import { Business} from "@mui/icons-material";
+import { Business } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
+  container: {
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+  },
   topBar: {
     display: "flex",
     justifyContent: "space-between",
@@ -49,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 350,
-    backgroundColor: "black",
+    height: 250,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -61,10 +71,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px",
+    scrollbarWidth: "none",
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none",
     },
   },
   formContainer: {
@@ -93,10 +103,9 @@ export default function ServicePage() {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [services, setServices] = useState([]);
   const [open, setOpen] = useState(false);
-  const [openViewModal, setOpenViewModal] = useState(false);
-  const [newDepartment, setNewDepartment] = useState(new Departement("", ""));
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [serviceToDelete, setServiceToDelete] = useState(null);
   const [newService, setNewService] = useState(new Service("", ""));
-  const [selectedService, setSelectedService] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
@@ -113,6 +122,7 @@ export default function ServicePage() {
   useEffect(() => {
     document.title = pageTitle; // Update the document title
   }, [pageTitle]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -147,11 +157,6 @@ export default function ServicePage() {
     fetchData();
   }, [refresh]);
 
-  const handleView = (service) => {
-    setSelectedService(service);
-    setOpenViewModal(true);
-  };
-
   const handleEdit = (service) => {
     // Find the department ID based on the department name
     const department = departements.find((dept) => dept.nom === service.departement);
@@ -176,9 +181,20 @@ export default function ServicePage() {
       await axios.delete(`http://127.0.0.1:8000/api/service/services/${id}/`);
       console.log("Deleted service with id:", id);
       setServices((prev) => prev.filter((service) => service.id !== id));
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Service supprimé avec succès!",
+      });
     } catch (error) {
       console.error("Error deleting service:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression du service.",
+      });
     }
+    setOpenDeleteDialog(false);
   };
 
   const handleAddService = async () => {
@@ -281,7 +297,10 @@ export default function ServicePage() {
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon /> {/* Add Edit icon */}
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
+          <IconButton onClick={() => {
+            setServiceToDelete(params.row.id);
+            setOpenDeleteDialog(true);
+          }}>
             <DeleteIcon />
           </IconButton>
         </div>
@@ -315,85 +334,30 @@ export default function ServicePage() {
         </Button>
       </Box>
 
-      {/* Edit modal */}
-      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
-        <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de vos personnels
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations personnelles
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
-            <Grid container spacing={2}>
-              <Grid item xs={4}>
-                <TextField
-                  id="outlined-search"
-                  label="nom"
-                  type="search"
-                  variant="outlined"
-                  name="nom"
-                  value={editService.nom}
-                  onChange={handleInputModifyChange}
-                  fullWidth
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Département</InputLabel>
-                  <Select
-                    label="Département"
-                    name="departement"
-                    value={editService.departement}
-                    onChange={handleInputModifyChange}
-                  >
-                    {departements.map((dept) => (
-                      <MenuItem key={dept.id} value={dept.id}>
-                        {dept.nom}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box mt={3} display="flex" justifyContent="space-between">
-            <Button
-              variant="outlined"
-              onClick={() => setEditService(new Service("", ""))}
-            >
-              Réinitialiser
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateService}
-            >
-              Enregistrer
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
-
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de vos personnels
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations personnelles
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+              Ajouter service
             </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
                   id="outlined-search"
-                  label="nom"
+                  label="Nom"
                   type="search"
                   variant="outlined"
                   name="nom"
@@ -402,8 +366,7 @@ export default function ServicePage() {
                   fullWidth
                 />
               </Grid>
-
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
@@ -439,6 +402,103 @@ export default function ServicePage() {
           </Box>
         </Box>
       </Modal>
+
+      {/* Edit Modal */}
+      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+        <Box className={classes.modalStyle}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+              Modifier service
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpenEditModal(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
+            <Divider sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  id="outlined-search"
+                  label="Nom"
+                  type="search"
+                  variant="outlined"
+                  name="nom"
+                  value={editService.nom}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                  margin="dense"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <FormControl                   margin="dense"
+fullWidth variant="outlined">
+                  <InputLabel>Département</InputLabel>
+                  <Select
+                  
+                    label="Département"
+                    name="departement"
+                    value={editService.departement}
+                    onChange={handleInputModifyChange}
+                  >
+                    {departements.map((dept) => (
+                      <MenuItem key={dept.id} value={dept.id}>
+                        {dept.nom}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
+          <Box mt={3} display="flex" justifyContent="space-between">
+            <Button
+              variant="outlined"
+              onClick={() => setEditService(new Service("", ""))}
+            >
+              Réinitialiser
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUpdateService}
+            >
+              Enregistrer
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer ce service ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+            Annuler
+          </Button>
+          <Button
+            onClick={() => handleDelete(serviceToDelete)}
+            color="primary"
+            autoFocus
+          >
+            Oui
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <DataGrid
         apiRef={apiRef}

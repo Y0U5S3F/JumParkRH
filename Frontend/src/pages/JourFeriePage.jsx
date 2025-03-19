@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DataGrid,
   useGridApiRef,
@@ -11,7 +11,6 @@ import {
   Box,
   IconButton,
   Modal,
-  FormControl,
   Typography,
   Snackbar,
   Alert,
@@ -26,20 +25,22 @@ import {
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from '@mui/icons-material/Add';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
-import { Business } from "@mui/icons-material";
-import { fetchJourFeries, addJourFerie, updateJourFerie, deleteJourFerie } from "../service/JourFerieService";
+import AddIcon from "@mui/icons-material/Add";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  fetchJourFeries,
+  addJourFerie,
+  updateJourFerie,
+  deleteJourFerie,
+} from "../service/JourFerieService";
 import JourFerie from "../models/jourferie";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
-  topBar: {
+  container: {
+    padding: "20px",
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "10px",
-    padding: "5px",
+    flexDirection: "column",
   },
   modalStyle: {
     position: "absolute",
@@ -47,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 350,
-    backgroundColor: "black",
+    height: 250,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -59,23 +60,11 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px",
+    scrollbarWidth: "none",
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none",
     },
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    marginTop: "10px",
-  },
-  alertContainer: {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    zIndex: 1000,
   },
   titleContainer: {
     display: "flex",
@@ -83,49 +72,41 @@ const useStyles = makeStyles((theme) => ({
     gap: "10px",
     fontWeight: "bold",
   },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+    padding: "5px",
+  },
 }));
 
 export default function JourFeriePage() {
   const [jourFeries, setJourFeries] = useState([]);
-  const [editJourFerie, setEditJourFerie] = useState(new JourFerie("", "", "", ""));
-  const [openEditModal, setOpenEditModal] = useState(false);
+  const [editJourFerie, setEditJourFerie] = useState(new JourFerie("", "", ""));
+  const [newJourFerie, setNewJourFerie] = useState(new JourFerie("", "", ""));
   const [open, setOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [jourFerieToDelete, setJourFerieToDelete] = useState(null);
-  const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
-  const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
     open: false,
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const [loading, setLoading] = useState(true);
-  const [newJourFerie, setNewJourFerie] = useState(new JourFerie("", "", "", ""));
-
+  const [refresh, setRefresh] = useState(0);
+  const apiRef = useGridApiRef();
   const classes = useStyles();
-const [pageTitle, setPageTitle] = useState("Jour Ferie");
 
-  useEffect(() => {
-    document.title = pageTitle; // Update the document title
-  }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const jourFeriesData = await fetchJourFeries();
-        
-        // Format data for DataGrid
-        const formattedJourFeries = jourFeriesData.map((jourFerie) => ({
-          id: jourFerie.id, // Ensure each row has a unique id
-          nom: jourFerie.nom,
-          date: jourFerie.date,
-          description: jourFerie.description,
-        }));
-
-        setJourFeries(formattedJourFeries);
+        setJourFeries(jourFeriesData);
       } catch (error) {
-        console.error("Error fetching jour feries:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -134,65 +115,27 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
     fetchData();
   }, [refresh]);
 
-  const handleEdit = (jourFerie) => {
-    setEditJourFerie(jourFerie);
-    setOpenEditModal(true);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteJourFerie(id);
-      console.log("Deleted jour ferie with id:", id);
-      setJourFeries((prev) => prev.filter((jourFerie) => jourFerie.id !== id));
-      setSnackbar({
-        open: true,
-        severity: "success",
-        message: "Jour férié supprimé avec succès!",
-      });
-    } catch (error) {
-      console.error("Error deleting jour ferie:", error);
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "Erreur lors de la suppression du jour férié.",
-      });
-    }
-    setOpenDeleteDialog(false);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   const handleAddJourFerie = async () => {
     try {
-      const jourFerieToSend = {
-        nom: newJourFerie.nom,
-        date: newJourFerie.date,
-        description: newJourFerie.description,
-      };
-      console.log("Sending data:", jourFerieToSend);
-      const response = await addJourFerie(jourFerieToSend);
-      console.log("Response:", response);
+      await addJourFerie(newJourFerie);
       setSnackbar({
         open: true,
         severity: "success",
         message: "Jour férié ajouté avec succès!",
       });
       setOpen(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setNewJourFerie(new JourFerie("", "", ""));
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: `Erreur lors de l'ajout du jour férié.${error}`,
+        message: "Erreur lors de l'ajout du jour férié.",
       });
-      console.error("Error adding jour ferie:", error);
     }
   };
 
-  const handleUpdateJourFerie = async (e) => {
-    e.preventDefault();
+  const handleUpdateJourFerie = async () => {
     try {
       await updateJourFerie(editJourFerie.id, editJourFerie);
       setSnackbar({
@@ -200,51 +143,55 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
         severity: "success",
         message: "Jour férié mis à jour avec succès!",
       });
-
-      setJourFeries((prev) =>
-        prev.map((jour) => (jour.id === editJourFerie.id ? editJourFerie : jour))
-      );
-
       setOpenEditModal(false);
-      setRefresh((prev) => !prev);
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: `Échec de la mise à jour du jour férié.${error}`,
+        message: "Erreur lors de la mise à jour du jour férié.",
       });
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewJourFerie((prev) => ({ ...prev, [name]: value }));
-    console.log(newJourFerie);
-  };
-
-  const handleInputModifyChange = (e) => {
-    const { name, value } = e.target;
-    setEditJourFerie((prev) => ({ ...prev, [name]: value }));
+  const handleDeleteJourFerie = async () => {
+    try {
+      await deleteJourFerie(jourFerieToDelete);
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Jour férié supprimé avec succès!",
+      });
+      setOpenDeleteDialog(false);
+      setRefresh((prev) => prev + 1);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression du jour férié.",
+      });
+    }
   };
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nom", headerName: "Nom", flex: 1 },
     { field: "date", headerName: "Date", flex: 1 },
-    { field: "description", headerName: "Description", flex: 1.5 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 0.5,
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
-          <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+          <IconButton onClick={() => setEditJourFerie(params.row) || setOpenEditModal(true)}>
+            <EditIcon />
           </IconButton>
-          <IconButton onClick={() => {
-            setJourFerieToDelete(params.row.id);
-            setOpenDeleteDialog(true);
-          }}>
+          <IconButton
+            onClick={() => {
+              setJourFerieToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
@@ -265,69 +212,54 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
           size="medium"
           variant="outlined"
           startIcon={<AddIcon />}
-          sx={{
-            '&:hover': {
-              backgroundColor: (theme) => theme.palette.primary.main,
-              color: 'white',
-              borderColor: (theme) => theme.palette.primary.main,
-            },
-          }}
           onClick={() => setOpen(true)}
         >
           Ajouter Jour Férié
         </Button>
       </Box>
 
-      {/* Add Modal */}
+      {/* Add Jour Férié Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les informations du jour férié
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du jour férié
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              Ajouter Jour Férié
             </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)",
+                  borderRadius: "50%",
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Nom"
-                  type="search"
-                  variant="outlined"
                   name="nom"
                   value={newJourFerie.nom}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setNewJourFerie((prev) => ({ ...prev, nom: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Date"
                   type="date"
-                  variant="outlined"
                   name="date"
                   value={newJourFerie.date}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setNewJourFerie((prev) => ({ ...prev, date: e.target.value }))
+                  }
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Description"
-                  type="search"
-                  variant="outlined"
-                  name="description"
-                  value={newJourFerie.description}
-                  onChange={handleChange}
-                  fullWidth
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
             </Grid>
@@ -335,71 +267,59 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              onClick={() => setNewJourFerie(new JourFerie("", "", "", ""))}
+              onClick={() => setNewJourFerie(new JourFerie("", "", ""))}
             >
               Réinitialiser
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddJourFerie}
-            >
+            <Button variant="contained" color="primary" onClick={handleAddJourFerie}>
               Enregistrer
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Edit Modal */}
+      {/* Edit Jour Férié Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les informations du jour férié
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du jour férié
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              Modifier Jour Férié
             </Typography>
+            <CloseIcon
+              onClick={() => setOpenEditModal(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)",
+                  borderRadius: "50%",
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Nom"
-                  type="search"
-                  variant="outlined"
                   name="nom"
                   value={editJourFerie.nom}
-                  onChange={handleInputModifyChange}
+                  onChange={(e) =>
+                    setEditJourFerie((prev) => ({ ...prev, nom: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Date"
                   type="date"
-                  variant="outlined"
                   name="date"
                   value={editJourFerie.date}
-                  onChange={handleInputModifyChange}
+                  onChange={(e) =>
+                    setEditJourFerie((prev) => ({ ...prev, date: e.target.value }))
+                  }
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Description"
-                  type="search"
-                  variant="outlined"
-                  name="description"
-                  value={editJourFerie.description}
-                  onChange={handleInputModifyChange}
-                  fullWidth
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
             </Grid>
@@ -407,15 +327,11 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
           <Box mt={3} display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              onClick={() => setEditJourFerie(new JourFerie("", "", "", ""))}
+              onClick={() => setEditJourFerie(new JourFerie("", "", ""))}
             >
               Réinitialiser
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateJourFerie}
-            >
+            <Button variant="contained" color="primary" onClick={handleUpdateJourFerie}>
               Enregistrer
             </Button>
           </Box>
@@ -437,11 +353,7 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
           <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
             Annuler
           </Button>
-          <Button
-            onClick={() => handleDelete(jourFerieToDelete)}
-            color="primary"
-            autoFocus
-          >
+          <Button onClick={handleDeleteJourFerie} color="primary" autoFocus>
             Oui
           </Button>
         </DialogActions>
@@ -455,26 +367,20 @@ const [pageTitle, setPageTitle] = useState("Jour Ferie");
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
         disableMultipleRowSelection={true}
-        autosizeOptions={expand}
+        autosizeOptions={DEFAULT_GRID_AUTOSIZE_OPTIONS.expand}
         pagination
         loading={loading}
-        autosizeOnMount={true}
         pageSizeOptions={[10, 25, 100]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
       />
 
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}
         autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
         <Alert
-          onClose={handleCloseSnackbar}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           variant="filled"
         >
