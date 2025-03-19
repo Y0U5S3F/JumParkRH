@@ -32,7 +32,6 @@ const darkTheme = createTheme({
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    
   },
   components: {
     MuiCard: {
@@ -47,6 +46,14 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#161821',
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#000000', // Match the card background color
+          color: '#E2E8F0', // Ensure text color is readable
         },
       },
     },

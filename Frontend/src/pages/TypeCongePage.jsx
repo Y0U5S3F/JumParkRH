@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from '@mui/icons-material/Close';
+
 import {
   DataGrid,
   useGridApiRef,
@@ -9,6 +11,12 @@ import {
 import { updateTypeConge, fetchTypeConges, addTypeConge, deleteTypeConge } from "../service/TypeCongeService";
 import {
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+
   Button,
   TextField,
   Box,
@@ -42,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 300,
-    backgroundColor: "black",
+    height: 250,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -87,6 +95,8 @@ export default function TypeCongePage() {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [newTypeConge, setNewTypeConge] = useState(new TypeConge("", ""));
@@ -205,13 +215,29 @@ export default function TypeCongePage() {
     setEditTypeConge((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = (id) => {
+    setTypeCongeToDelete(id);
+    setOpenDeleteDialog(true);
+  };
+
+  const confirmDeleteTypeConge = async () => {
     try {
-      await deleteTypeConge(id);
-      console.log("Deleted type of leave with id:", id);
-      setRefresh((prev) => !prev); // Toggle refresh state to trigger useEffect
+      await deleteTypeConge(typeCongeToDelete);
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Type de congé supprimé avec succès!",
+      });
+      setRefresh((prev) => !prev); // Refresh the list
     } catch (error) {
-      console.error("Error deleting type of leave:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression du type de congé.",
+      });
+    } finally {
+      setOpenDeleteDialog(false);
+      setTypeCongeToDelete(null);
     }
   };
 
@@ -268,15 +294,22 @@ export default function TypeCongePage() {
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées du type de congé
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+            Ajouter type congé
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpenEditModal(false)} sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+            borderRadius: '50%', // Circular shape
+          },
+        }}/>
+          </Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du type de congé
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
+
+            
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -313,15 +346,23 @@ export default function TypeCongePage() {
       {/* Update Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées du type de congé
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          
+                    <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+                      Modifier type congé
+                    </Typography>
+                    <CloseIcon onClick={()=> setOpenEditModal(false)} sx={{
+                    '&:hover': {
+                      backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+                      borderRadius: '50%', // Circular shape
+                    },
+                  }}/>
+                    </Box>
+          
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations du type de congé
-            </Typography>
-            <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
+
+            
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -375,6 +416,25 @@ export default function TypeCongePage() {
         }}
       />
 
+<Dialog
+  open={openDeleteDialog}
+  onClose={() => setOpenDeleteDialog(false)}
+>
+  <DialogTitle>Confirmer la suppression</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir supprimer ce type de congé ?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+      Annuler
+    </Button>
+    <Button onClick={confirmDeleteTypeConge} color="primary" autoFocus>
+      Oui
+    </Button>
+  </DialogActions>
+</Dialog>
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}

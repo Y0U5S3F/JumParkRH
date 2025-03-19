@@ -29,19 +29,23 @@ import {
 import { makeStyles } from "@mui/styles";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from '@mui/icons-material/Add';
-import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';import { fetchAbsences, addAbsence, updateAbsence, deleteAbsence } from "../service/AbsenceService";
+import AddIcon from "@mui/icons-material/Add";
+import EventBusyOutlinedIcon from "@mui/icons-material/EventBusyOutlined";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  fetchAbsences,
+  addAbsence,
+  updateAbsence,
+  deleteAbsence,
+} from "../service/AbsenceService";
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import Absence from "../models/absence";
 
 const useStyles = makeStyles((theme) => ({
-  container: { padding: "20px", display: "flex", flexDirection: "column" },
-  topBar: {
+  container: {
+    padding: "20px",
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "10px",
-    padding: "5px",
+    flexDirection: "column",
   },
   modalStyle: {
     position: "absolute",
@@ -50,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     width: 1000,
     height: 350,
-    backgroundColor: "black",
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -59,34 +63,13 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   contentContainer: {
-    
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px",
+    scrollbarWidth: "none",
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none",
     },
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    marginTop: "10px",
-  },
-  alertContainer: {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    zIndex: 1000,
-  },
-  statusCertified: {
-    color: "green",
-    fontWeight: "bold",
-  },
-  statusNotCertified: {
-    color: "red",
-    fontWeight: "bold",
   },
   titleContainer: {
     display: "flex",
@@ -94,34 +77,33 @@ const useStyles = makeStyles((theme) => ({
     gap: "10px",
     fontWeight: "bold",
   },
+  topBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+    padding: "5px",
+  },
 }));
 
 export default function AbsencePage() {
   const [absences, setAbsences] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [editAbsence, setEditAbsence] = useState(new Absence("", "", "", "", false, ""));
-  const [openEditModal, setOpenEditModal] = useState(false);
+  const [newAbsence, setNewAbsence] = useState(new Absence("", "", "", "", false, ""));
   const [open, setOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [absenceToDelete, setAbsenceToDelete] = useState(null);
-  const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
-  const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
     open: false,
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const [loading, setLoading] = useState(true);
-  const [newAbsence, setNewAbsence] = useState(new Absence("", "", "", "", false, ""));
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [refresh, setRefresh] = useState(0);
+  const apiRef = useGridApiRef();
   const classes = useStyles();
-  const [pageTitle, setPageTitle] = useState("Absence");
-  
-    useEffect(() => {
-      document.title = pageTitle; // Update the document title
-    }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -129,15 +111,18 @@ export default function AbsencePage() {
       try {
         const absencesData = await fetchAbsences();
         const employeesData = await fetchMinimalEmployes();
-        
-        // Format data for DataGrid
+
         const formattedAbsences = absencesData.map((absence) => ({
-          id: absence.id, // Ensure each row has a unique id
+          id: absence.id,
           nom: absence.nom,
           date: absence.date,
           raison: absence.raison,
           certifie: absence.certifie ? "Certifié" : "Non Certifié",
-          employe_name: employeesData.find(emp => emp.matricule === absence.employe)?.nom + " " + employeesData.find(emp => emp.matricule === absence.employe)?.prenom || "N/A",
+          employe_name:
+            employeesData.find((emp) => emp.matricule === absence.employe)?.nom +
+              " " +
+              employeesData.find((emp) => emp.matricule === absence.employe)?.prenom ||
+            "N/A",
           employe: absence.employe,
         }));
 
@@ -153,124 +138,62 @@ export default function AbsencePage() {
     fetchData();
   }, [refresh]);
 
-  const handleEdit = (absence) => {
-    setEditAbsence({
-      ...absence,
-      certifie: absence.certifie === "Certifié",
-    });
-    setOpenEditModal(true);
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteAbsence(id);
-      console.log("Deleted absence with id:", id);
-      setAbsences((prev) => prev.filter((absence) => absence.id !== id));
-      setSnackbar({
-        open: true,
-        severity: "success",
-        message: "Absence supprimée avec succès!",
-      });
-    } catch (error) {
-      console.error("Error deleting absence:", error);
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "Erreur lors de la suppression de l'absence.",
-      });
-    }
-    setOpenDeleteDialog(false);
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
-  };
-
   const handleAddAbsence = async () => {
     try {
-      const absenceToSend = {
-        nom: newAbsence.nom,
-        date: newAbsence.date,
-        raison: newAbsence.raison,
-        certifie: newAbsence.certifie,
-        employe: newAbsence.employe,
-      };
-      console.log("Sending data:", absenceToSend);
-      const response = await addAbsence(absenceToSend);
-      console.log("Response:", response);
+      await addAbsence(newAbsence);
       setSnackbar({
         open: true,
         severity: "success",
         message: "Absence ajoutée avec succès!",
       });
       setOpen(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setNewAbsence(new Absence("", "", "", "", false, ""));
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: `Erreur lors de l'ajout de l'absence.${error}`,
+        message: "Erreur lors de l'ajout de l'absence.",
       });
-      console.error("Error adding absence:", error);
     }
   };
 
-  const handleUpdateAbsence = async (e) => {
-    e.preventDefault();
+  const handleUpdateAbsence = async () => {
     try {
-      const absenceToSend = {
-        id: editAbsence.id,
-        nom: editAbsence.nom,
-        date: editAbsence.date,
-        raison: editAbsence.raison,
-        certifie: editAbsence.certifie,
-        employe: editAbsence.employe,
-      }
-      console.log(absenceToSend)
-      await updateAbsence(absenceToSend.id, absenceToSend);
+      await updateAbsence(editAbsence.id, editAbsence);
       setSnackbar({
         open: true,
         severity: "success",
         message: "Absence mise à jour avec succès!",
       });
-
-      setAbsences((prev) =>
-        prev.map((abs) => (abs.id === editAbsence.id ? editAbsence : abs))
-      );
-
       setOpenEditModal(false);
-      setRefresh((prev) => !prev);
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: `Échec de la mise à jour de l'absence.${error}`,
+        message: "Erreur lors de la mise à jour de l'absence.",
       });
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewAbsence((prev) => ({ ...prev, [name]: value }));
-    console.log(newAbsence);
-  };
-
-  const handleCheckboxChange = (e) => {
-    const { name, checked } = e.target;
-    setNewAbsence((prev) => ({ ...prev, [name]: checked }));
-    console.log(newAbsence);
-  };
-
-  const handleInputModifyChange = (e) => {
-    const { name, value } = e.target;
-    setEditAbsence((prev) => ({ ...prev, [name]: value }));
-    console.log(editAbsence);
-  };
-
-  const handleCheckboxModifyChange = (e) => {
-    const { name, checked } = e.target;
-    setEditAbsence((prev) => ({ ...prev, [name]: checked }));
-    console.log(editAbsence);
+  const handleDeleteAbsence = async () => {
+    try {
+      await deleteAbsence(absenceToDelete);
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Absence supprimée avec succès!",
+      });
+      setOpenDeleteDialog(false);
+      setRefresh((prev) => prev + 1);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression de l'absence.",
+      });
+    }
   };
 
   const columns = [
@@ -278,18 +201,7 @@ export default function AbsencePage() {
     { field: "nom", headerName: "Nom", flex: 1 },
     { field: "date", headerName: "Date", flex: 1 },
     { field: "raison", headerName: "Raison", flex: 1 },
-    {
-      field: "certifie",
-      headerName: "Certifié",
-      flex: 1,
-      renderCell: (params) => (
-        <span
-          className={params.value === "Certifié" ? classes.statusCertified : classes.statusNotCertified}
-        >
-          {params.value}
-        </span>
-      ),
-    },
+    { field: "certifie", headerName: "Certifié", flex: 1 },
     { field: "employe_name", headerName: "Employé", flex: 1 },
     {
       field: "actions",
@@ -297,13 +209,15 @@ export default function AbsencePage() {
       flex: 0.5,
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
-          <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+          <IconButton onClick={() => setEditAbsence(params.row) || setOpenEditModal(true)}>
+            <EditIcon />
           </IconButton>
-          <IconButton onClick={() => {
-            setAbsenceToDelete(params.row.id);
-            setOpenDeleteDialog(true);
-          }}>
+          <IconButton
+            onClick={() => {
+              setAbsenceToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
@@ -315,7 +229,7 @@ export default function AbsencePage() {
     <Container className={classes.container}>
       <Box className={classes.topBar}>
         <Box className={classes.titleContainer}>
-        <EventBusyOutlinedIcon/>
+          <EventBusyOutlinedIcon />
           <Typography variant="h6" fontWeight="bold">
             Absences
           </Typography>
@@ -324,104 +238,100 @@ export default function AbsencePage() {
           size="medium"
           variant="outlined"
           startIcon={<AddIcon />}
-          sx={{
-            '&:hover': {
-              backgroundColor: (theme) => theme.palette.primary.main,
-              color: 'white',
-              borderColor: (theme) => theme.palette.primary.main,
-            },
-          }}
           onClick={() => setOpen(true)}
         >
           Ajouter Absence
         </Button>
       </Box>
 
-      {/* Add Modal */}
+      {/* Add Absence Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les coordonnées de l'absence
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de l'absence
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb:2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              Ajouter Absence
             </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)",
+                  borderRadius: "50%",
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Nom"
-                  type="search"
-                  variant="outlined"
                   name="nom"
                   value={newAbsence.nom}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setNewAbsence((prev) => ({ ...prev, nom: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Date"
                   type="date"
-                  variant="outlined"
                   name="date"
                   value={newAbsence.date}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setNewAbsence((prev) => ({ ...prev, date: e.target.value }))
+                  }
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Raison"
-                  type="search"
-                  variant="outlined"
                   name="raison"
                   value={newAbsence.raison}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    setNewAbsence((prev) => ({ ...prev, raison: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              
+              <Grid item xs={6}>
+                <Autocomplete
+                  options={employees}
+                  getOptionLabel={(option) =>
+                    `${option.nom} ${option.prenom} (${option.matricule})`
+                  }
+                  onChange={(event, newValue) =>
+                    setNewAbsence((prev) => ({
+                      ...prev,
+                      employe: newValue?.matricule || "",
+                    }))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Employé" variant="outlined" />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6}>
                 <FormControlLabel
                   control={
                     <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
                       checked={newAbsence.certifie}
-                      onChange={handleCheckboxChange}
-                      name="certifie"
-                      color="primary"
+                      onChange={(e) =>
+                        setNewAbsence((prev) => ({
+                          ...prev,
+                          certifie: e.target.checked,
+                        }))
+                      }
                     />
                   }
                   label="Certifié"
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Autocomplete
-                  options={employees}
-                  getOptionLabel={(option) => `${option.nom} ${option.prenom} (${option.matricule})`}
-                  onInputChange={(event, value) => setSearchTerm(value)}
-                  onChange={(event, newValue) => {
-                    handleChange({
-                      target: {
-                        name: "employe",
-                        value: newValue?.matricule || "",
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Employé"
-                      variant="outlined"
-                    />
-                  )}
                 />
               </Grid>
             </Grid>
@@ -433,102 +343,106 @@ export default function AbsencePage() {
             >
               Réinitialiser
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddAbsence}
-            >
+            <Button variant="contained" color="primary" onClick={handleAddAbsence}>
               Enregistrer
             </Button>
           </Box>
         </Box>
       </Modal>
 
-      {/* Edit Modal */}
+      {/* Edit Absence Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez modifier les coordonnées de l'absence
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations de l'absence
+          <Box sx={{ display: "flex", justifyContent: "space-between",mb:2 }}>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
+              Modifier Absence
             </Typography>
+            <CloseIcon
+              onClick={() => setOpenEditModal(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)",
+                  borderRadius: "50%",
+                },
+              }}
+            />
+          </Box>
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Nom"
-                  type="search"
-                  variant="outlined"
                   name="nom"
                   value={editAbsence.nom}
-                  onChange={handleInputModifyChange}
+                  onChange={(e) =>
+                    setEditAbsence((prev) => ({ ...prev, nom: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Date"
                   type="date"
-                  variant="outlined"
                   name="date"
                   value={editAbsence.date}
-                  onChange={handleInputModifyChange}
+                  onChange={(e) =>
+                    setEditAbsence((prev) => ({ ...prev, date: e.target.value }))
+                  }
                   fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                  InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <TextField
-                  id="outlined-search"
                   label="Raison"
-                  type="search"
-                  variant="outlined"
                   name="raison"
                   value={editAbsence.raison}
-                  onChange={handleInputModifyChange}
+                  onChange={(e) =>
+                    setEditAbsence((prev) => ({ ...prev, raison: e.target.value }))
+                  }
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              
+              <Grid item xs={6}>
+                <Autocomplete
+                  options={employees}
+                  getOptionLabel={(option) =>
+                    `${option.nom} ${option.prenom} (${option.matricule})`
+                  }
+                  value={
+                    employees.find((emp) => emp.matricule === editAbsence.employe) ||
+                    null
+                  }
+                  onChange={(event, newValue) =>
+                    setEditAbsence((prev) => ({
+                      ...prev,
+                      employe: newValue?.matricule || "",
+                    }))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Employé" variant="outlined" />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6}>
                 <FormControlLabel
                   control={
                     <Checkbox
+                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+
                       checked={editAbsence.certifie}
-                      onChange={handleCheckboxModifyChange}
-                      name="certifie"
-                      color="primary"
+                      onChange={(e) =>
+                        setEditAbsence((prev) => ({
+                          ...prev,
+                          certifie: e.target.checked,
+                        }))
+                      }
                     />
                   }
                   label="Certifié"
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <Autocomplete
-                  options={employees}
-                  getOptionLabel={(option) => `${option.nom} ${option.prenom} (${option.matricule})`}
-                  value={employees.find((emp) => emp.matricule === editAbsence.employe) || null}
-                  onChange={(event, newValue) => {
-                    handleInputModifyChange({
-                      target: {
-                        name: "employe",
-                        value: newValue?.matricule || "",
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Employé"
-                      variant="outlined"
-                    />
-                  )}
                 />
               </Grid>
             </Grid>
@@ -540,11 +454,7 @@ export default function AbsencePage() {
             >
               Réinitialiser
             </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdateAbsence}
-            >
+            <Button variant="contained" color="primary" onClick={handleUpdateAbsence}>
               Enregistrer
             </Button>
           </Box>
@@ -566,11 +476,7 @@ export default function AbsencePage() {
           <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
             Annuler
           </Button>
-          <Button
-            onClick={() => handleDelete(absenceToDelete)}
-            color="primary"
-            autoFocus
-          >
+          <Button onClick={handleDeleteAbsence} color="primary" autoFocus>
             Oui
           </Button>
         </DialogActions>
@@ -584,28 +490,20 @@ export default function AbsencePage() {
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
         disableMultipleRowSelection={true}
-        autosizeOptions={expand}
+        autosizeOptions={DEFAULT_GRID_AUTOSIZE_OPTIONS.expand}
         pagination
         loading={loading}
-        autosizeOnMount={true}
         pageSizeOptions={[10, 25, 100]}
-        initialState={{
-          pagination: {
-            paginationModel: { pageSize: 10, page: 0 },
-          },
-        }}
       />
 
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}
-
-      
         autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
         <Alert
-          onClose={handleCloseSnackbar}
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           variant="filled"
         >

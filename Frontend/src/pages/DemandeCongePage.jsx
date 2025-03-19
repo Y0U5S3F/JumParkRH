@@ -5,6 +5,8 @@ import {
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
+import CloseIcon from "@mui/icons-material/Close";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -13,6 +15,11 @@ import { addConge, updateConge } from "../service/CongeService";
 import {
   Container,
   TextField,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  DialogTitle,
   Button,
   Box,
   IconButton,
@@ -38,20 +45,20 @@ import Service from "../models/service";
 import { fetchConges, deleteConge } from "../service/CongeService";
 import Conge from "../models/conge";
 import { fetchTypeConges } from "../service/TypeCongeService";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { Payments } from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
-  
+
   modalStyle: {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 1000,
-    height: 350,
-    backgroundColor: "black",
+    height: 400,
+    backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
     border: `1px solid ${theme.palette.primary.main}`,
@@ -117,10 +124,10 @@ export default function DemandeCongePage() {
 
   const classes = useStyles();
   const [pageTitle, setPageTitle] = useState("Demande congé");
-  
-    useEffect(() => {
-      document.title = pageTitle; // Update the document title
-    }, [pageTitle]);
+
+  useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,11 +138,11 @@ export default function DemandeCongePage() {
           fetchMinimalEmployes(),
           fetchTypeConges(),
         ]);
-  
+
         setConges(congesData);
         setEmployees(employeesData);
         setTypeConges(typeCongesData);
-  
+
         console.log("Congés:", congesData);
         console.log("Employés:", employeesData);
         console.log("Types de Congé:", typeCongesData);
@@ -150,10 +157,9 @@ export default function DemandeCongePage() {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [refresh]);
-  
 
   const filteredEmployees = employees.filter((emp) =>
     [emp.nom, emp.prenom, emp.matricule].some((field) =>
@@ -185,7 +191,9 @@ export default function DemandeCongePage() {
   };
 
   const handleEdit = (conge) => {
-    const typeConge = typeConges.find(type => type.nom === conge.typeConge_nom);
+    const typeConge = typeConges.find(
+      (type) => type.nom === conge.typeConge_nom
+    );
     setEditConge({
       ...conge,
       typeconge: typeConge ? typeConge.id : "",
@@ -215,9 +223,8 @@ export default function DemandeCongePage() {
         });
         return;
       }
-  
+
       const congeToUpdate = {
-        
         employe: editConge.employe,
         startDate: editConge.startDate,
         endDate: editConge.endDate,
@@ -225,15 +232,15 @@ export default function DemandeCongePage() {
         status: editConge.status,
         notes: editConge.notes,
       };
-  
+
       await updateConge(editConge.id, congeToUpdate);
-  
+
       setSnackbar({
         open: true,
         severity: "success",
         message: "Congé updated successfully!",
       });
-  
+
       setOpenEdit(false);
       setRefresh((prev) => prev + 1); // Trigger re-fetch
     } catch (error) {
@@ -251,68 +258,67 @@ export default function DemandeCongePage() {
     console.log(editConge);
   };
   const handleAddConge = async () => {
-  console.log(newConge); // Debugging
-  try {
-    // Ensure all required fields are provided
-    if (
-      !newConge.employe ||
-      !newConge.startDate ||
-      !newConge.endDate ||
-      !newConge.status
-    ) {
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "All fields are required.",
-      });
-      return;
-    }
     console.log(newConge); // Debugging
-    const congeToSend = {
-      employe: newConge.employe,
-      startDate: newConge.startDate,
-      endDate: newConge.endDate,
-      typeconge: newConge.typeconge,
-      status: newConge.status, // Use "accepte" here when applicable
-      notes: newConge.notes,
-    };
+    try {
+      // Ensure all required fields are provided
+      if (
+        !newConge.employe ||
+        !newConge.startDate ||
+        !newConge.endDate ||
+        !newConge.status
+      ) {
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "All fields are required.",
+        });
+        return;
+      }
+      console.log(newConge); // Debugging
+      const congeToSend = {
+        employe: newConge.employe,
+        startDate: newConge.startDate,
+        endDate: newConge.endDate,
+        typeconge: newConge.typeconge,
+        status: newConge.status, // Use "accepte" here when applicable
+        notes: newConge.notes,
+      };
 
-    const response = await addConge(congeToSend);
-    console.log(congeToSend); // Debugging
+      const response = await addConge(congeToSend);
+      console.log(congeToSend); // Debugging
 
-    if (response) {
-      setSnackbar({
-        open: true,
-        severity: "success",
-        message: "Congé added successfully!",
+      if (response) {
+        setSnackbar({
+          open: true,
+          severity: "success",
+          message: "Congé added successfully!",
+        });
+      } else {
+        setSnackbar({
+          open: true,
+          severity: "error",
+          message: "Failed to add congé.",
+        });
+      }
+
+      setOpen(false);
+      // Reset newConge with consistent key names
+      setNewConge({
+        employe: "",
+        startDate: "",
+        endDate: "",
+        typeconge: "",
+        status: "en cours",
+        notes: "",
       });
-    } else {
+    } catch (error) {
       setSnackbar({
         open: true,
         severity: "error",
-        message: "Failed to add congé.",
+        message: "Error adding conge.",
       });
     }
-
-    setOpen(false);
-    // Reset newConge with consistent key names
-    setNewConge({
-      employe: "",
-      startDate: "",
-      endDate: "",
-      typeconge: "",
-      status: "en cours",
-      notes: ""
-    });
-  } catch (error) {
-    setSnackbar({
-      open: true,
-      severity: "error",
-      message: "Error adding conge.",
-    });
-  }
-};
-
+  };
 
   const columns = [
     { field: "id", headerName: "ID", flex: 1 },
@@ -353,9 +359,9 @@ export default function DemandeCongePage() {
           variant="outlined"
           startIcon={<AddIcon />}
           sx={{
-            '&:hover': {
+            "&:hover": {
               backgroundColor: (theme) => theme.palette.primary.main,
-              color: 'white',
+              color: "white",
               borderColor: (theme) => theme.palette.primary.main,
             },
           }}
@@ -375,15 +381,29 @@ export default function DemandeCongePage() {
         }}
       >
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les informations du congé
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-          <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations sur le congé
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Ajouter demande
             </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
+          </Box>
+
+          <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
+
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <Autocomplete
@@ -426,8 +446,23 @@ export default function DemandeCongePage() {
                   </Select>
                 </FormControl>
               </Grid>
-
               <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Statut</InputLabel>
+                  <Select
+                    label="Statut"
+                    value={newConge.status}
+                    onChange={handleInputChange}
+                    name="status"
+                  >
+                    <MenuItem value="en cours">En Cours</MenuItem>
+                    <MenuItem value="accepte">Accepté</MenuItem>
+                    <MenuItem value="refuse">Refusé</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -446,7 +481,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -463,21 +498,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Statut</InputLabel>
-                  <Select
-                    label="Statut"
-                    value={newConge.status}
-                    onChange={handleInputChange}
-                    name="status"
-                  >
-                    <MenuItem value="en cours">En Cours</MenuItem>
-                    <MenuItem value="accepte">Accepté</MenuItem>
-                    <MenuItem value="refuse">Refusé</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   label="Notes"
@@ -517,14 +538,21 @@ export default function DemandeCongePage() {
         }}
       >
         <Box className={classes.modalStyle}>
-          <Typography variant="h6" gutterBottom>
-            Veuillez saisir les informations du congé
+        <Box sx={{display:"flex",justifyContent:"space-between"}}>
+          
+          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
+            Ajouter demande
           </Typography>
-          <Divider sx={{ mb: 2 }} />
+          <CloseIcon onClick={()=> setOpen(false)} sx={{
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
+            borderRadius: '50%', // Circular shape
+          },
+        }}/>
+          </Box>
+          
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" gutterBottom>
-              Informations sur le congé
-            </Typography>
+            
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={4}>
@@ -570,6 +598,21 @@ export default function DemandeCongePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Statut</InputLabel>
+                  <Select
+                    label="Statut"
+                    value={editConge.status}
+                    onChange={handleInputModifyChange}
+                    name="status"
+                  >
+                    <MenuItem value="en cours">En Cours</MenuItem>
+                    <MenuItem value="accepte">Accepté</MenuItem>
+                    <MenuItem value="refuse">Refusé</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -588,14 +631,12 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
                     label="Date de fin"
-                    value={
-                      editConge.endDate ? dayjs(editConge.endDate) : null
-                    }
+                    value={editConge.endDate ? dayjs(editConge.endDate) : null}
                     onChange={(date) =>
                       handleInputModifyChange({
                         target: {
@@ -607,21 +648,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
-                <FormControl fullWidth variant="outlined">
-                  <InputLabel>Statut</InputLabel>
-                  <Select
-                    label="Statut"
-                    value={editConge.status}
-                    onChange={handleInputModifyChange}
-                    name="status"
-                  >
-                    <MenuItem value="en cours">En Cours</MenuItem>
-                    <MenuItem value="accepte">Accepté</MenuItem>
-                    <MenuItem value="refuse">Refusé</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
+              
               <Grid item xs={12}>
                 <TextField
                   label="Notes"

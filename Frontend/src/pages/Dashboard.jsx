@@ -10,6 +10,7 @@ import {
   CardContent,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import PeopleIcon from "@mui/icons-material/People";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -30,7 +31,7 @@ const absenceData = [
 ];
 
 // Reusable Summary Card Component
-const SummaryCard = ({ title, value, subValue, icon }) => {
+const SummaryCard = ({ title, value, subValue, icon, loading }) => {
   return (
     <Card
       sx={{
@@ -69,27 +70,31 @@ const SummaryCard = ({ title, value, subValue, icon }) => {
           >
             {title}
           </Typography>
-          <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: "bold",
-              }}
-            >
-              {value}
-            </Typography>
-            {subValue && (
+          {loading ? (
+            <CircularProgress color="primary" />
+          ) : (
+            <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
               <Typography
-                variant="body2"
+                variant="h5"
                 sx={{
-                  fontSize: "0.7rem",
-                  color: (theme) => theme.palette.text.secondary, // Set color to primary main
+                  fontWeight: "bold",
                 }}
               >
-                {subValue}
+                {value}
               </Typography>
-            )}
-          </Box>
+              {subValue && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: "0.7rem",
+                    color: (theme) => theme.palette.text.secondary, // Set color to primary main
+                  }}
+                >
+                  {subValue}
+                </Typography>
+              )}
+            </Box>
+          )}
         </Box>
 
         {/* Icon Box */}
@@ -107,7 +112,7 @@ const SummaryCard = ({ title, value, subValue, icon }) => {
   );
 };
 
-const PieChartCard = ({ data }) => {
+const PieChartCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
@@ -134,32 +139,37 @@ const PieChartCard = ({ data }) => {
         >
           Répartition des employés par département
         </Typography>
-        <PieChart
-          series={[
-            {
-              data: data.map((item, index) => ({
-                id: index,
-                value: item.total,
-                label: item.departement__nom,
-                color: [
-                  "rgba(252, 184, 89, 0.8)", // Warm Yellow with 20% opacity
-                  "rgba(169, 223, 216, 0.8)", // Soft Teal with 20% opacity
-                  "rgba(40, 174, 243, 0.8)", // Bright Blue with 20% opacity
-                  "rgba(242, 200, 237, 0.8)", // Pastel Pink with 20% opacity
-                  "rgba(242, 109, 91, 0.8)", // Deep Coral with 20% opacity
-                  "rgba(199, 162, 255, 0.8)", // Muted Lavender with 20% opacity
-                ][index % 6], // Cycle through colors
-              })),
-            },
-          ]}
-          width={400}
-          height={200}
-        />
+        {loading ? (
+          <CircularProgress color="primary" />
+        ) : (
+          <PieChart
+            series={[
+              {
+                data: data.map((item, index) => ({
+                  id: index,
+                  value: item.total,
+                  label: item.departement__nom,
+                  color: [
+                    "rgba(252, 184, 89, 0.8)", // Warm Yellow with 20% opacity
+                    "rgba(169, 223, 216, 0.8)", // Soft Teal with 20% opacity
+                    "rgba(40, 174, 243, 0.8)", // Bright Blue with 20% opacity
+                    "rgba(242, 200, 237, 0.8)", // Pastel Pink with 20% opacity
+                    "rgba(242, 109, 91, 0.8)", // Deep Coral with 20% opacity
+                    "rgba(199, 162, 255, 0.8)", // Muted Lavender with 20% opacity
+                  ][index % 6], // Cycle through colors
+                })),
+              },
+            ]}
+            width={400}
+            height={200}
+          />
+        )}
       </CardContent>
     </Card>
   );
 };
-const BarChartCard = ({ data }) => {
+
+const BarChartCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
@@ -186,21 +196,25 @@ const BarChartCard = ({ data }) => {
         >
           Employés les plus absents
         </Typography>
-        <BarChart
-          dataset={data}
-          xAxis={[{ scaleType: "band", dataKey: "name" }]}
-          series={[
-            { dataKey: "absences", label: "Absences", color: "#FCB859" },
-          ]}
-          height={200}
-          width={350}
-        />
+        {loading ? (
+          <CircularProgress color="primary" />
+        ) : (
+          <BarChart
+            dataset={data}
+            xAxis={[{ scaleType: "band", dataKey: "name" }]}
+            series={[
+              { dataKey: "absences", label: "Absences", color: "#FCB859" },
+            ]}
+            height={200}
+            width={350}
+          />
+        )}
       </CardContent>
     </Card>
   );
 };
 
-const BirthdaysCard = ({ data }) => {
+const BirthdaysCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
@@ -234,7 +248,9 @@ const BirthdaysCard = ({ data }) => {
         >
           Anniversaires ce mois-ci
         </Typography>
-        {data.length > 0 ? (
+        {loading ? (
+          <CircularProgress color="primary" />
+        ) : data.length > 0 ? (
           data.map((birthday, index) => (
             <Box key={index} sx={{ mb: 1 }}>
               <Typography variant="h6" fontWeight="bold">
@@ -269,6 +285,7 @@ export default function Dashboard() {
   useEffect(() => {
     document.title = pageTitle; // Update the document title
   }, [pageTitle]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -371,6 +388,7 @@ export default function Dashboard() {
                   }}
                 />
               }
+              loading={loading}
             />
           </Grid>
           <Grid item xs={3}>
@@ -388,13 +406,18 @@ export default function Dashboard() {
                   }}
                 />
               }
+              loading={loading}
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
               title="Congés en attente"
               value={
-                dashboardData.statistiques?.pendingvacation || "Chargement..."
+                dashboardData.statistiques?.pendingvacation !== undefined
+                  ? dashboardData.statistiques.pendingvacation
+                  : loading
+                  ? "Chargement..."
+                  : "0"
               }
               subValue="demandes"
               icon={
@@ -405,17 +428,21 @@ export default function Dashboard() {
                   }}
                 />
               }
+              loading={loading}
             />
           </Grid>
           <Grid item xs={3}>
             <SummaryCard
               title="Prochain jour férié"
               value={
-                dashboardData.statistiques?.nextpublicholiday
+                dashboardData.statistiques?.nextpublicholiday &&
+                dashboardData.statistiques.nextpublicholiday !== "No upcoming holidays"
                   ? dayjs(dashboardData.statistiques.nextpublicholiday).format(
                       "D MMM"
                     )
-                  : "Chargement..."
+                  : loading
+                  ? "Chargement..."
+                  : "Aucun"
               }
               icon={
                 <CelebrationIcon
@@ -425,18 +452,19 @@ export default function Dashboard() {
                   }}
                 />
               }
+              loading={loading}
             />
           </Grid>
         </Grid>
         <Grid container spacing={3}>
           <Grid item xs={5}>
-            <PieChartCard data={dashboardData.employedistribution || []} />
+            <PieChartCard data={dashboardData.employedistribution || []} loading={loading} />
           </Grid>
           <Grid item xs={4}>
-            <BarChartCard data={absenceData} />
+            <BarChartCard data={absenceData} loading={loading} />
           </Grid>
           <Grid item xs={3}>
-            <BirthdaysCard data={dashboardData.birthdays_this_month || []} />
+            <BirthdaysCard data={dashboardData.birthdays_this_month || []} loading={loading} />
           </Grid>
         </Grid>
         <Grid item xs={12}>
