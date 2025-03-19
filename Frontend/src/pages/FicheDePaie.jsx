@@ -6,7 +6,6 @@ import {
 } from "@mui/x-data-grid";
 import DescriptionIcon from "@mui/icons-material/Description";
 import CloseIcon from '@mui/icons-material/Close';
-
 import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -77,10 +76,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px", 
+    scrollbarWidth: "none", 
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none", 
     },
   },
 
@@ -334,13 +333,13 @@ export default function FicheDePaiePage() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteSalaire(id); // Call the delete function with the passed id
+      await deleteSalaire(id); 
       setSnackbar({
         open: true,
         severity: "success",
         message: "Salaire supprimé avec succès!",
       });
-      setSalaires((prev) => prev.filter((salaire) => salaire.id !== id)); // Update state
+      setSalaires((prev) => prev.filter((salaire) => salaire.id !== id)); 
     } catch (error) {
       console.error("Error deleting salaire:", error);
       setSnackbar({

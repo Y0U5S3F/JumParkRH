@@ -6,6 +6,6 @@ urlpatterns = [
     path('employes/minimal/', EmployeMinimalListView.as_view(), name='employe-minimal-list'),
     path('employes/minimal/<str:matricule>/', EmployeMinimalDetailView.as_view(), name='employe-minimal-detail'),
     path('employes/<str:matricule>/', EmployeRetrieveUpdateDestroyView.as_view(), name='employe-retrieve-update-destroy'),
-    path('login/', EmployeLoginView.as_view(), name='custom_login'),
+    path('login/', EmployeLoginView.as_view(), name='custom-login'),
 ]
 

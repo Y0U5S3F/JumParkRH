@@ -8,6 +8,8 @@ from employe.filters import EmployeFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
+from django.contrib.auth.hashers import make_password
+
 
 class EmployeListCreateView(generics.ListCreateAPIView):
     queryset = Employe.objects.all().order_by('matricule')
@@ -36,6 +38,23 @@ class EmployeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Employe.objects.all()
     serializer_class = EmployeSerializer
     lookup_field = 'matricule'
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        data = request.data.copy()
+
+        # Check if the password is being updated
+        if 'password' in data:
+            password = data.pop('password')
+            if password:  # Only update the password if it's not null or empty
+                data['password'] = make_password(password)
+
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
 
 
 class EmployeMinimalListView(generics.ListAPIView):
@@ -68,7 +87,6 @@ class EmployeLoginView(APIView):
         if employe.departement.id != 2:
             return Response({"error": "Access denied. Invalid department."}, status=status.HTTP_403_FORBIDDEN)
 
-        # Generate tokens if everything is valid
         tokens = employe.get_tokens()
 
         return Response(tokens)

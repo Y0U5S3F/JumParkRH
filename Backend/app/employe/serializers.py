@@ -23,7 +23,7 @@ class EmployeSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    password = serializers.CharField(write_only=True, required=True)  # Password should be write-only
+    password = serializers.CharField(write_only=True, required=False)  # Password is optional for updates
 
     class Meta:
         model = Employe
@@ -44,6 +44,19 @@ class EmployeSerializer(serializers.ModelSerializer):
         validated_data["password"] = make_password(password)
 
         return Employe.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # Check if the password is being updated
+        if 'password' in validated_data:
+            password = validated_data.pop('password')
+            instance.password = make_password(password)  # Hash the new password
+
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
     
 class EmployeMinimalSerializer(serializers.ModelSerializer):
     class Meta:
