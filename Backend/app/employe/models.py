@@ -154,10 +154,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
             models.Index(fields=['service']),
         ]
 
-
-
     def get_tokens(self):
-        # Use the custom token class to create the refresh token
         refresh = CustomRefreshToken.for_user(self)
         
         return {
