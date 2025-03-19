@@ -1121,6 +1121,18 @@ const handleConfirmDelete = async () => {
                 />
               </Grid>
               <Grid item xs={4}>
+                <TextField
+                  id="outlined-search"
+                  label="Mot de Passe"
+                  type="search"
+                  variant="outlined"
+                  name="password"
+                  value={editEmployee.password}
+                  onChange={handleInputModifyChange}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}

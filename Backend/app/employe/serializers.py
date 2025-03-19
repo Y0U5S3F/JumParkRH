@@ -37,21 +37,17 @@ class EmployeSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        password = validated_data.pop("password")  # Extract password
-        validated_data["created_at"] = now()  # Ensure created_at is set
-        
-        # Hash the password securely
-        validated_data["password"] = make_password(password)
-
+        password = validated_data.pop("password", None)
+        validated_data["created_at"] = now()
+        if password:
+            validated_data["password"] = make_password(password)
         return Employe.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        # Check if the password is being updated
         if 'password' in validated_data:
             password = validated_data.pop('password')
-            instance.password = make_password(password)  # Hash the new password
+            instance.password = make_password(password)
 
-        # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
