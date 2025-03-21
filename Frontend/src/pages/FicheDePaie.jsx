@@ -36,7 +36,6 @@ import {
   Paper,
   Grid,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import { fetchEmployeeSalaryInfo } from "../service/FicheDePaieService";
@@ -44,6 +43,7 @@ import {
   addSalaire,
   fetchSalaires,
   downloadSalaire,
+  updateSalaire,
   deleteSalaire,
 } from "../service/SalaireService"; // Import addSalaire function
 import FicheDePaie from "../models/ficheDePaie";
@@ -116,9 +116,13 @@ export default function FicheDePaiePage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [ficheDePaieData, setFicheDePaieData] = useState(new FicheDePaie());
   const classes = useStyles();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+const [ficheDePaieToDelete, setFicheDePaieToDelete] = useState(null);
   const apiRef = useGridApiRef();
   const [loading, setLoading] = useState(true);
   const [salaires, setSalaires] = useState([]);
+  const [openEditModal, setOpenEditModal] = useState(false); // State to manage edit modal
+const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selected row data
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -153,6 +157,10 @@ export default function FicheDePaiePage() {
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
+  const handleEdit = (row) => {
+    setSelectedFicheDePaie(row); // Set the selected row data
+    setOpenEditModal(true); // Open the edit modal
+  };
 
   const columns = [
     { field: "id", headerName: "id", flex: 0.5 },
@@ -170,11 +178,15 @@ export default function FicheDePaiePage() {
       flex: 0.6,
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
-          <IconButton onClick={() => console.log("edit", params.row.id)}>
+          <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
-            <DeleteIcon />
+          <IconButton
+          onClick={() => {
+            setFicheDePaieToDelete(params.row.id); // Set the ID of the fiche de paie to delete
+            setOpenDeleteDialog(true); // Open the delete dialog
+          }}
+        >            <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => handleDownload(params.row.id)}>
             <DownloadIcon />
@@ -230,6 +242,14 @@ export default function FicheDePaiePage() {
     }
   };
 
+  const handleUpdateInputChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedFicheDePaie((prevData) => {
+      const updatedData = { ...prevData, [name]: value };
+      return calculateSalary(updatedData); // Recalculate salary after updating the field
+    });
+  };
+
   const calculateSalary = (data) => {
     const salaire_base = parseFloat(data.salaire_base);
     const jour_heure_travaille = parseFloat(data.jour_heure_travaille);
@@ -243,7 +263,7 @@ export default function FicheDePaiePage() {
     const taux_heure_base = salaire_base / 208;
     const jour_travaille = Math.floor(jour_heure_travaille / 8);
 
-    if (jour_heure_travaille < 208) {
+    if (jour_heure_travaille < 208) {updateSalaire
       const heures_manquantes = 208 - jour_heure_travaille;
       data.salaire = salaire_base - heures_manquantes * taux_heure_base;
     } else if (jour_heure_travaille > 208) {
@@ -331,21 +351,95 @@ export default function FicheDePaiePage() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteFicheDePaie = async () => {
     try {
-      await deleteSalaire(id); 
+      await deleteSalaire(ficheDePaieToDelete); // Call the delete API
       setSnackbar({
         open: true,
         severity: "success",
-        message: "Salaire supprimé avec succès!",
+        message: "Fiche de paie supprimée avec succès!",
       });
-      setSalaires((prev) => prev.filter((salaire) => salaire.id !== id)); 
+      setSalaires((prev) =>
+        prev.filter((salaire) => salaire.id !== ficheDePaieToDelete)
+      ); // Remove the deleted item from the state
+      setOpenDeleteDialog(false); // Close the dialog
     } catch (error) {
-      console.error("Error deleting salaire:", error);
+      console.error("Error deleting fiche de paie:", error);
       setSnackbar({
         open: true,
         severity: "error",
-        message: "Erreur lors de la suppression du salaire.",
+        message: "Erreur lors de la suppression de la fiche de paie.",
+      });
+    }
+  };
+  const handleUpdateFicheDePaie = async () => {
+    try {
+      // Prepare the updated data to send to the API
+      const updatedSalaireData = {
+        employe: selectedFicheDePaie.employe, // Matricule of the employee
+        salaire_base: parseFloat(selectedFicheDePaie.salaire_base).toFixed(2),
+        jour_heure_travaille: parseFloat(
+          selectedFicheDePaie.jour_heure_travaille
+        ).toFixed(2),
+        salaire: parseFloat(selectedFicheDePaie.salaire).toFixed(2),
+        taux_heure_sup: parseFloat(selectedFicheDePaie.taux_heure_sup).toFixed(2),
+        heures_sup: parseFloat(selectedFicheDePaie.heures_sup).toFixed(2),
+        prix_tot_sup: parseFloat(selectedFicheDePaie.prix_tot_sup).toFixed(2),
+        prime_transport: parseFloat(selectedFicheDePaie.prime_transport).toFixed(
+          2
+        ),
+        prime_presence: parseFloat(selectedFicheDePaie.prime_presence).toFixed(2),
+        acompte: parseFloat(selectedFicheDePaie.acompte).toFixed(2),
+        impots: parseFloat(selectedFicheDePaie.impots).toFixed(2),
+        apoint: parseFloat(selectedFicheDePaie.apoint).toFixed(2),
+        css: parseFloat(selectedFicheDePaie.css).toFixed(2),
+        cnss: parseFloat(selectedFicheDePaie.cnss).toFixed(2),
+        jour_ferie: selectedFicheDePaie.jour_ferie,
+        prix_jour_ferie: parseFloat(selectedFicheDePaie.prix_jour_ferie).toFixed(
+          2
+        ),
+        prix_tot_ferie: parseFloat(selectedFicheDePaie.prix_tot_ferie).toFixed(2),
+        conge_paye: selectedFicheDePaie.conge_paye,
+        jour_abcense: selectedFicheDePaie.jour_abcense,
+        prix_conge_paye: parseFloat(
+          selectedFicheDePaie.prix_conge_paye
+        ).toFixed(2),
+        prix_tot_conge: parseFloat(selectedFicheDePaie.prix_tot_conge).toFixed(2),
+        salaire_brut: parseFloat(selectedFicheDePaie.salaire_brut).toFixed(2),
+        salaire_imposable: parseFloat(
+          selectedFicheDePaie.salaire_imposable
+        ).toFixed(2),
+        salaire_net: parseFloat(selectedFicheDePaie.salaire_net).toFixed(2),
+        mode_paiement: selectedFicheDePaie.mode_paiement,
+      };
+  
+      // Call the updateSalaire API
+      await updateSalaire(selectedFicheDePaie.id, updatedSalaireData);
+  
+      // Show success message
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Fiche de paie mise à jour avec succès!",
+      });
+  
+      // Update the local state with the updated data
+      setSalaires((prev) =>
+        prev.map((salaire) =>
+          salaire.id === selectedFicheDePaie.id ? selectedFicheDePaie : salaire
+        )
+      );
+  
+      // Close the modal
+      setOpenEditModal(false);
+    } catch (error) {
+      console.error("Error updating fiche de paie:", error);
+  
+      // Show error message
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la mise à jour de la fiche de paie.",
       });
     }
   };
@@ -691,6 +785,338 @@ export default function FicheDePaiePage() {
         </Box>
       </Modal>
 
+      <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
+  <Box className={classes.modalStyle}>
+    <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Typography
+        variant="h5"
+        fontWeight="bold"
+        sx={{ mb: 3 }}
+        gutterBottom
+      >
+        Modifier Fiche de Paie
+      </Typography>
+      <CloseIcon
+        onClick={() => setOpenEditModal(false)}
+        sx={{
+          "&:hover": {
+            backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+            borderRadius: "50%", // Circular shape
+          },
+        }}
+      />
+    </Box>
+    <Box className={classes.contentContainer}>
+      <Divider sx={{ mb: 2 }} />
+      <Grid container spacing={2}>
+        {/* Employé */}
+        <Grid item xs={12}>
+          <Autocomplete
+            size="small"
+            options={employees}
+            getOptionLabel={(option) =>
+              `${option.nom} ${option.prenom} (${option.matricule})`
+            }
+            value={employees.find(
+              (emp) => emp.matricule === selectedFicheDePaie?.employe
+            )}
+            onChange={(event, newValue) =>
+              setSelectedFicheDePaie((prev) => ({
+                ...prev,
+                employe: newValue?.matricule || "",
+              }))
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Employé"
+                variant="outlined"
+                fullWidth
+              />
+            )}
+          />
+        </Grid>
+
+        {/* Salaire Base & Temps */}
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Salaire de base"
+            fullWidth
+            variant="outlined"
+            name="salaire_base"
+            value={selectedFicheDePaie?.salaire_base || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Jour/Heure travaillée"
+            fullWidth
+            variant="outlined"
+            name="jour_heure_travaille"
+            value={selectedFicheDePaie?.jour_heure_travaille || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Salaire"
+            fullWidth
+            variant="outlined"
+            name="salaire"
+            value={selectedFicheDePaie?.salaire || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+
+        {/* Heures Supplémentaires */}
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prix Heure Supplémentaire"
+            fullWidth
+            variant="outlined"
+            name="taux_heure_sup"
+            value={selectedFicheDePaie?.taux_heure_sup || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Nombre d'heures supp."
+            fullWidth
+            variant="outlined"
+            name="heures_sup"
+            value={selectedFicheDePaie?.heures_sup || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prix Total Supplémentaires"
+            fullWidth
+            variant="outlined"
+            name="prix_tot_sup"
+            value={selectedFicheDePaie?.prix_tot_sup || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+
+        {/* Primes et Deductions */}
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prime de présence"
+            fullWidth
+            variant="outlined"
+            name="prime_presence"
+            value={selectedFicheDePaie?.prime_presence || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prime de transport"
+            fullWidth
+            variant="outlined"
+            name="prime_transport"
+            value={selectedFicheDePaie?.prime_transport || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Acompte"
+            fullWidth
+            variant="outlined"
+            name="acompte"
+            value={selectedFicheDePaie?.acompte || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Impôts"
+            fullWidth
+            variant="outlined"
+            name="impots"
+            value={selectedFicheDePaie?.impots || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Apoint"
+            fullWidth
+            variant="outlined"
+            name="apoint"
+            value={selectedFicheDePaie?.apoint || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+
+        {/* Mode de paiement */}
+        <Grid item xs={4}>
+          <FormControl size="small" fullWidth>
+            <InputLabel>Mode de paiement</InputLabel>
+            <Select
+              label="Mode de paiement"
+              name="mode_paiement"
+              value={selectedFicheDePaie?.mode_paiement || ""}
+              onChange={handleUpdateInputChange}
+            >
+              <MenuItem value="virement bancaire">Virement Bancaire</MenuItem>
+              <MenuItem value="cheque">Chèque</MenuItem>
+              <MenuItem value="espece">Espèces</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        {/* CNSS & CSS */}
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            CNSS: {selectedFicheDePaie?.cnss || "0.00"}
+          </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body1">
+            CSS: {selectedFicheDePaie?.css || "0.00"}
+          </Typography>
+        </Grid>
+
+        {/* Congés et Jours Fériés */}
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Jours fériés"
+            fullWidth
+            variant="outlined"
+            name="jour_ferie"
+            value={selectedFicheDePaie?.jour_ferie || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prix jours fériés"
+            fullWidth
+            variant="outlined"
+            name="prix_jour_ferie"
+            value={selectedFicheDePaie?.prix_jour_ferie || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Total jours fériés"
+            fullWidth
+            variant="outlined"
+            name="prix_tot_ferie"
+            value={selectedFicheDePaie?.prix_tot_ferie || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Congés payés"
+            fullWidth
+            variant="outlined"
+            name="conge_paye"
+            value={selectedFicheDePaie?.conge_paye || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Prix congés payés"
+            fullWidth
+            variant="outlined"
+            name="prix_conge_paye"
+            value={selectedFicheDePaie?.prix_conge_paye || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Total congés payés"
+            fullWidth
+            variant="outlined"
+            name="prix_tot_conge"
+            value={selectedFicheDePaie?.prix_tot_conge || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+
+        {/* Absences */}
+        <Grid item xs={4}>
+          <Typography variant="body1">
+            Jours absence: {selectedFicheDePaie?.jour_abcense || "0.00"}
+          </Typography>
+        </Grid>
+      </Grid>
+    </Box>
+    <Box className={classes.actionContainer}>
+    <Box className={classes.boxLeft}>
+              Total: {parseFloat(selectedFicheDePaie?.salaire_net).toFixed(2)||""}€
+            </Box>
+            <Box className={classes.boxRight}>
+      <Button
+        variant="outlined"
+        color="secondary"
+        onClick={() => setOpenEditModal(false)}
+      >
+        Annuler
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => handleUpdateFicheDePaie()}
+      >
+        Enregistrer
+      </Button>
+      </Box>
+    </Box>
+  </Box>
+</Modal>
+<Dialog
+  open={openDeleteDialog}
+  onClose={() => setOpenDeleteDialog(false)}
+>
+  <DialogTitle>Confirmer la suppression</DialogTitle>
+  <DialogContent>
+    <DialogContentText>
+      Êtes-vous sûr de vouloir supprimer cette fiche de paie ?
+    </DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+      Annuler
+    </Button>
+    <Button
+      onClick={async () => {
+        await handleDeleteFicheDePaie();
+      }}
+      color="primary"
+      autoFocus
+    >
+      Oui
+    </Button>
+  </DialogActions>
+</Dialog>
       <DataGrid
         apiRef={apiRef}
         rows={salaires}
