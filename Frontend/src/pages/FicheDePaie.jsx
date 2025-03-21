@@ -257,13 +257,12 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     const prix_jour_ferie = parseFloat(data.prix_jour_ferie);
     const prix_conge_paye = parseFloat(data.prix_conge_paye);
     const acompte = parseFloat(data.acompte);
-    const impots = parseFloat(data.impots);
     const apoint = parseFloat(data.apoint);
-
+  
     const taux_heure_base = salaire_base / 208;
     const jour_travaille = Math.floor(jour_heure_travaille / 8);
-
-    if (jour_heure_travaille < 208) {updateSalaire
+  
+    if (jour_heure_travaille < 208) {
       const heures_manquantes = 208 - jour_heure_travaille;
       data.salaire = salaire_base - heures_manquantes * taux_heure_base;
     } else if (jour_heure_travaille > 208) {
@@ -274,7 +273,7 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     } else {
       data.salaire = salaire_base;
     }
-
+  
     data.prime_presence = jour_travaille * (13.339 / jour_travaille) || 0;
     data.prime_transport = jour_travaille * (71.253 / jour_travaille) || 0;
     data.prix_tot_ferie = data.jour_ferie * prix_jour_ferie;
@@ -288,9 +287,33 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     data.cnss = data.salaire_brut * 0.0968;
     data.salaire_imposable = data.salaire_brut - data.cnss;
     data.css = data.salaire_imposable * 0.005;
+  
+    // Calculate annual salary
+    const annual_salary = salaire_base * 12;
+  
+    // Calculate impots based on annual salary
+    if (annual_salary <= 5000) {
+      data.impots = 0;
+    } else if (annual_salary <= 10000) {
+      data.impots = data.salaire_imposable * 0.15;
+    } else if (annual_salary <= 20000) {
+      data.impots = data.salaire_imposable * 0.25;
+    } else if (annual_salary <= 30000) {
+      data.impots = data.salaire_imposable * 0.30;
+    } else if (annual_salary <= 40000) {
+      data.impots = data.salaire_imposable * 0.33;
+    } else if (annual_salary <= 50000) {
+      data.impots = data.salaire_imposable * 0.36;
+    } else if (annual_salary <= 70000) {
+      data.impots = data.salaire_imposable * 0.38;
+    } else {
+      data.impots = data.salaire_imposable * 0.38;
+    }
+  
+    // Calculate net salary
     data.salaire_net =
-      data.salaire_imposable - (acompte + impots + apoint + data.css);
-
+      data.salaire_imposable - (acompte + data.impots + apoint + data.css);
+  
     return data;
   };
 
