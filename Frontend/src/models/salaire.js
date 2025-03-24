@@ -1,6 +1,6 @@
 class Salaire {
   constructor(id = "", employe = "", salaire_base = 0.00, jour_heure_travaille = 0.00, salaire = 0.00, taux_heure_sup = 0.00, heures_sup = 0.00,
-      prix_tot_sup = 0.00, prime_transport = 0.00, prime_presence = 0.00, acompte = 0.00, impots = 0.00, apoint = 0.00, css = 0.00, cnss = 0.00,
+      prix_tot_sup = 0.00, prime_transport = 0.00, prime_presence = 0.00, acompte = 0.00, impots = 0.00, appointplus = 0.00, appointmoins = 0.00, css = 0.00, cnss = 0.00,
       jour_ferie = 0, prix_jour_ferie = 0.00, prix_tot_ferie = 0.00, conge_paye = 0, jour_absence = 0, prix_conge_paye = 0.00, prix_tot_conge = 0.00,
       salaire_brut = 0.00, salaire_imposable = 0.00, salaire_net = 0.00, mode_paiement = "virement bancaire", created_at = "") {
       this.id = id;
@@ -15,7 +15,8 @@ class Salaire {
       this.prime_presence = prime_presence;
       this.acompte = acompte;
       this.impots = impots;
-      this.apoint = apoint;
+      this.appointplus = appointplus;
+      this.appointmoins = appointmoins;
       this.css = css;
       this.cnss = cnss;
       this.jour_ferie = jour_ferie;
