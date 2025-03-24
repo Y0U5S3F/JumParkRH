@@ -9,6 +9,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
 import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   Container,
@@ -27,6 +28,11 @@ import {
   Select,
   Typography,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 
 import { fetchMinimalEmployes } from "../service/EmployeService";
@@ -283,7 +289,7 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     data.css = data.salaire_imposable * 0.005;
     data.impots = calculerImpot(data.salaire_imposable);
     data.salaire_net =
-        data.salaire_imposable - (acompte + data.impots + appointplus - appointmoins + data.css);
+        data.salaire_imposable - (acompte + data.impots - appointplus + appointmoins + data.css);
     return data;
 };
 
@@ -328,47 +334,64 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
 };
 
 
-  const handleDownloadClick = async () => {
-    const salaireData = {
-      employe: ficheDePaieData.employe.matricule,
-      salaire_base: parseFloat(ficheDePaieData.salaire_base).toFixed(2),
-      jour_heure_travaille: parseFloat(
-        ficheDePaieData.jour_heure_travaille
-      ).toFixed(2),
-      salaire: parseFloat(ficheDePaieData.salaire).toFixed(2),
-      taux_heure_sup: parseFloat(ficheDePaieData.taux_heure_sup).toFixed(2),
-      heures_sup: parseFloat(ficheDePaieData.heures_sup).toFixed(2),
-      prix_tot_sup: parseFloat(ficheDePaieData.prix_tot_sup).toFixed(2),
-      prime_transport: parseFloat(ficheDePaieData.prime_transport).toFixed(2),
-      prime_presence: parseFloat(ficheDePaieData.prime_presence).toFixed(2),
-      acompte: parseFloat(ficheDePaieData.acompte).toFixed(2),
-      impots: parseFloat(ficheDePaieData.impots).toFixed(2),
-      appointplus: parseFloat(ficheDePaieData.appointplus).toFixed(2),
-      appointmoins: parseFloat(ficheDePaieData.appointmoins).toFixed(2),
-      css: parseFloat(ficheDePaieData.css).toFixed(2),
-      cnss: parseFloat(ficheDePaieData.cnss).toFixed(2),
-      jour_ferie: ficheDePaieData.jour_ferie,
-      prix_jour_ferie: parseFloat(ficheDePaieData.prix_jour_ferie).toFixed(2),
-      prix_tot_ferie: parseFloat(ficheDePaieData.prix_tot_ferie).toFixed(2),
-      conge_paye: ficheDePaieData.conge_paye,
-      jour_abcense: ficheDePaieData.jour_abcense,
-      prix_conge_paye: parseFloat(ficheDePaieData.prix_conge_paye).toFixed(2),
-      prix_tot_conge: parseFloat(ficheDePaieData.prix_tot_conge).toFixed(2),
-      salaire_brut: parseFloat(ficheDePaieData.salaire_brut).toFixed(2),
-      salaire_imposable: parseFloat(ficheDePaieData.salaire_imposable).toFixed(
-        2
-      ),
-      salaire_net: parseFloat(ficheDePaieData.salaire_net).toFixed(2),
-      mode_paiement: ficheDePaieData.mode_paiement,
-    };
-    console.log("Données de salaire à ajouter:", salaireData);
-    try {
-      await addSalaire(salaireData);
-      console.log("Salaire ajouté avec succès");
-    } catch (error) {
+const handleAddSalaire = async () => {
+  const salaireData = {
+    employe: ficheDePaieData.employe?.matricule || "", // Ensure matricule is provided
+    salaire_base: parseFloat(ficheDePaieData.salaire_base || 0).toFixed(2),
+    jour_heure_travaille: parseFloat(
+      ficheDePaieData.jour_heure_travaille || 0
+    ).toFixed(2),
+    salaire: parseFloat(ficheDePaieData.salaire || 0).toFixed(2),
+    taux_heure_sup: Math.min(parseFloat(ficheDePaieData.taux_heure_sup || 0), 999.99).toFixed(2), // Ensure it's within range
+    heures_sup: parseFloat(ficheDePaieData.heures_sup || 0).toFixed(2),
+    prix_tot_sup: parseFloat(ficheDePaieData.prix_tot_sup || 0).toFixed(2),
+    prime_transport: parseFloat(ficheDePaieData.prime_transport || 0).toFixed(2),
+    prime_presence: parseFloat(ficheDePaieData.prime_presence || 0).toFixed(2),
+    acompte: parseFloat(ficheDePaieData.acompte || 0).toFixed(2),
+    impots: parseFloat(ficheDePaieData.impots || 0).toFixed(2),
+    appointplus: parseFloat(ficheDePaieData.appointplus || 0).toFixed(2),
+    appointmoins: parseFloat(ficheDePaieData.appointmoins || 0).toFixed(2),
+    css: parseFloat(ficheDePaieData.css || 0).toFixed(2),
+    cnss: parseFloat(ficheDePaieData.cnss || 0).toFixed(2),
+    jour_ferie: ficheDePaieData.jour_ferie || 0,
+    prix_jour_ferie: parseFloat(ficheDePaieData.prix_jour_ferie || 0).toFixed(2),
+    prix_tot_ferie: parseFloat(ficheDePaieData.prix_tot_ferie || 0).toFixed(2),
+    conge_paye: ficheDePaieData.conge_paye || 0,
+    jour_abcense: ficheDePaieData.jour_abcense || 0,
+    prix_conge_paye: parseFloat(ficheDePaieData.prix_conge_paye || 0).toFixed(2),
+    prix_tot_conge: parseFloat(ficheDePaieData.prix_tot_conge || 0).toFixed(2),
+    salaire_brut: parseFloat(ficheDePaieData.salaire_brut || 0).toFixed(2),
+    salaire_imposable: parseFloat(
+      ficheDePaieData.salaire_imposable || 0
+    ).toFixed(2),
+    salaire_net: parseFloat(ficheDePaieData.salaire_net || 0).toFixed(2),
+    mode_paiement: ficheDePaieData.mode_paiement || "virement bancaire", // Default to "virement bancaire"
+  };
+
+  console.log("Payload being sent:", salaireData);
+
+  try {
+    await addSalaire(salaireData);
+    console.log("Salaire ajouté avec succès");
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Fiche de paie ajoutée avec succès!",
+    });
+    setOpen(false); // Close the modal
+  } catch (error) {
+    if (error.response) {
+      console.error("Server response:", error.response.data); // Log server's error response
+    } else {
       console.error("Erreur lors de l'ajout du salaire:", error);
     }
-  };
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Erreur lors de l'ajout de la fiche de paie.",
+    });
+  }
+};
 
   const handleDownload = async (salaireId) => {
     try {
@@ -418,7 +441,8 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
         prime_presence: parseFloat(selectedFicheDePaie.prime_presence).toFixed(2),
         acompte: parseFloat(selectedFicheDePaie.acompte).toFixed(2),
         impots: parseFloat(selectedFicheDePaie.impots).toFixed(2),
-        apoint: parseFloat(selectedFicheDePaie.apoint).toFixed(2),
+        appointplus: parseFloat(selectedFicheDePaie.appointplus).toFixed(2),
+        appointmoins: parseFloat(selectedFicheDePaie.appointmoins).toFixed(2),
         css: parseFloat(selectedFicheDePaie.css).toFixed(2),
         cnss: parseFloat(selectedFicheDePaie.cnss).toFixed(2),
         jour_ferie: selectedFicheDePaie.jour_ferie,
@@ -814,9 +838,9 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleDownloadClick}
+                onClick={handleAddSalaire}
               >
-                Télécharger
+                Ajouter
               </Button>
             </Box>
           </Box>
@@ -993,11 +1017,22 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
         <Grid item xs={4}>
           <TextField
             size="small"
-            label="Apoint"
+            label="Appoint +"
             fullWidth
             variant="outlined"
-            name="apoint"
-            value={selectedFicheDePaie?.apoint || ""}
+            name="appointplus"
+            value={selectedFicheDePaie?.appointplus || ""}
+            onChange={handleUpdateInputChange}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            label="Appoint -"
+            fullWidth
+            variant="outlined"
+            name="appointmoins"
+            value={selectedFicheDePaie?.appointmoins || ""}
             onChange={handleUpdateInputChange}
           />
         </Grid>
