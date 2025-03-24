@@ -10,6 +10,9 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import IconButton from '@mui/material/IconButton';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import darkTheme from '../theme/Theme'; // Adjust the import path as necessary
 import gymParkLogo from '../../public/logos/gympark.svg';
@@ -56,6 +59,7 @@ export default function SignIn(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate(); // for redirecting after login
 
   const handleSubmit = async (event) => {
@@ -176,20 +180,42 @@ export default function SignIn(props) {
             <FormControl>
               <FormLabel htmlFor="password" sx={{ mb: '3px' }}>Password</FormLabel>
               <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type="password"
-                size="small"
-                id="password"
-                autoComplete="current-password"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-              />
+  error={passwordError}
+  helperText={passwordErrorMessage}
+  name="password"
+  placeholder="••••••"
+  type={showPassword ? "text" : "password"} // Toggle between text and password
+  size="small"
+  id="password"
+  autoComplete="current-password"
+  required
+  fullWidth
+  variant="outlined"
+  color={passwordError ? 'error' : 'primary'}
+  InputProps={{
+    endAdornment: (
+      <IconButton
+        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+        edge="end"
+        sx={{
+          color: 'inherit', // Ensure the icon inherits the input's color
+        }}
+      >
+        {showPassword ? <VisibilityOff /> : <Visibility />}
+      </IconButton>
+    ),
+  }}
+  sx={{
+    '&:-webkit-autofill': {
+      WebkitBoxShadow: '0 0 0 100px rgba(0, 0, 255, 0.1) inset', // Blue background
+      WebkitTextFillColor: 'blue', // Blue text
+      transition: 'background-color 5000s ease-in-out 0s',
+    },
+    '& .MuiInputAdornment-root': {
+      color: 'blue', // Ensure the icon matches the autofill color
+    },
+  }}
+/>
             </FormControl>
             <FormControlLabel
               control={<Checkbox name="remember" value="true" color="primary" />}
