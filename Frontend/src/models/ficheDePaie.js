@@ -11,7 +11,8 @@ class FicheDePaie {
       prime_presence = 0,
       acompte = 0,
       impots = 0,
-      apoint = 0,
+      appointplus = 0,
+      appointmoins = 0,
       css = 0,
       cnss = 0,
       jour_ferie = 0,
@@ -37,7 +38,8 @@ class FicheDePaie {
       this.prime_presence = prime_presence;
       this.acompte = acompte;
       this.impots = impots;
-      this.apoint = apoint;
+      this.appointplus = appointplus;
+      this.appointmoins = appointmoins;
       this.css = css;
       this.cnss = cnss;
       this.jour_ferie = jour_ferie;

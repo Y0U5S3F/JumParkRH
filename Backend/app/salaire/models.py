@@ -25,7 +25,8 @@ class Salaire(models.Model):
     prime_presence = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Prime de présence")
     acompte = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Acompte")
     impots = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Impôts")
-    apoint = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Apoint")
+    appointplus = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Apoint +")
+    appointmoins = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Apoint -")
     css = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="CSS")
     cnss = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="CNSS")
     

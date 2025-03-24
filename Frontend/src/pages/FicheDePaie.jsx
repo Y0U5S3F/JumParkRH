@@ -5,8 +5,6 @@ import {
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
 import DescriptionIcon from "@mui/icons-material/Description";
-import CloseIcon from '@mui/icons-material/Close';
-import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -14,11 +12,6 @@ import AddIcon from "@mui/icons-material/Add";
 
 import {
   Container,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  DialogTitle,
   TextField,
   Button,
   Box,
@@ -33,7 +26,6 @@ import {
   Alert,
   Select,
   Typography,
-  Paper,
   Grid,
 } from "@mui/material";
 
@@ -213,7 +205,8 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
           salaryInfo.prime_presence,
           salaryInfo.acompte,
           salaryInfo.impots,
-          salaryInfo.apoint,
+          salaryInfo.appointplus,
+          salaryInfo.appointmoins,
           salaryInfo.css,
           salaryInfo.cnss,
           salaryInfo.jour_ferie,
@@ -257,21 +250,21 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     const prix_jour_ferie = parseFloat(data.prix_jour_ferie);
     const prix_conge_paye = parseFloat(data.prix_conge_paye);
     const acompte = parseFloat(data.acompte);
-    const apoint = parseFloat(data.apoint);
-  
+    const appointplus = parseFloat(data.appointplus);
+    const appointmoins = parseFloat(data.appointmoins);
     const taux_heure_base = salaire_base / 208;
     const jour_travaille = Math.floor(jour_heure_travaille / 8);
   
     if (jour_heure_travaille < 208) {
-      const heures_manquantes = 208 - jour_heure_travaille;
-      data.salaire = salaire_base - heures_manquantes * taux_heure_base;
+        const heures_manquantes = 208 - jour_heure_travaille;
+        data.salaire = salaire_base - heures_manquantes * taux_heure_base;
     } else if (jour_heure_travaille > 208) {
-      const heures_sup = jour_heure_travaille - 208;
-      data.heures_sup = heures_sup;
-      data.prix_tot_sup = heures_sup * taux_heure_sup;
-      data.salaire = salaire_base + data.prix_tot_sup;
+        const heures_sup = jour_heure_travaille - 208;
+        data.heures_sup = heures_sup;
+        data.prix_tot_sup = heures_sup * taux_heure_sup;
+        data.salaire = salaire_base + data.prix_tot_sup;
     } else {
-      data.salaire = salaire_base;
+        data.salaire = salaire_base;
     }
   
     data.prime_presence = jour_travaille * (13.339 / jour_travaille) || 0;
@@ -279,44 +272,23 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
     data.prix_tot_ferie = data.jour_ferie * prix_jour_ferie;
     data.prix_tot_conge = data.conge_paye * prix_conge_paye;
     data.salaire_brut =
-      data.salaire +
-      data.prime_presence +
-      data.prime_transport +
-      data.prix_tot_ferie +
-      data.prix_tot_conge;
+        data.salaire +
+        data.prime_presence +
+        data.prime_transport +
+        data.prix_tot_ferie +
+        data.prix_tot_conge;
+    
     data.cnss = data.salaire_brut * 0.0968;
     data.salaire_imposable = data.salaire_brut - data.cnss;
     data.css = data.salaire_imposable * 0.005;
-  
-    // Calculate annual salary
-    const annual_salary = salaire_base * 12;
-  
-    // Calculate impots based on annual salary
-    if (annual_salary <= 5000) {
-      data.impots = 0;
-    } else if (annual_salary <= 10000) {
-      data.impots = data.salaire_imposable * 0.15;
-    } else if (annual_salary <= 20000) {
-      data.impots = data.salaire_imposable * 0.25;
-    } else if (annual_salary <= 30000) {
-      data.impots = data.salaire_imposable * 0.30;
-    } else if (annual_salary <= 40000) {
-      data.impots = data.salaire_imposable * 0.33;
-    } else if (annual_salary <= 50000) {
-      data.impots = data.salaire_imposable * 0.36;
-    } else if (annual_salary <= 70000) {
-      data.impots = data.salaire_imposable * 0.38;
-    } else {
-      data.impots = data.salaire_imposable * 0.38;
-    }
-  
-    // Calculate net salary
+    data.impots = calculerImpot(data.salaire_imposable);
     data.salaire_net =
-      data.salaire_imposable - (acompte + data.impots + apoint + data.css);
-  
+        data.salaire_imposable - (acompte + data.impots + appointplus - appointmoins + data.css);
     return data;
-  };
+};
 
+
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFicheDePaieData((prevData) => {
@@ -324,6 +296,37 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
       return calculateSalary(updatedData);
     });
   };
+
+  const calculerImpot = (salaire_imposable) => {
+    const tranches = [
+        { limite: 5000, taux: 0 },
+        { limite: 10000, taux: 0.15 },
+        { limite: 20000, taux: 0.25 },
+        { limite: 30000, taux: 0.30 },
+        { limite: 40000, taux: 0.33 },
+        { limite: 50000, taux: 0.36 },
+        { limite: 70000, taux: 0.38 },
+        { limite: Infinity, taux: 0.40 }
+    ];
+
+    let impot = 0;
+    let limite_precedente = 0;
+
+    for (let i = 0; i < tranches.length; i++) {
+        let { limite, taux } = tranches[i];
+
+        if (salaire_imposable > limite_precedente) {
+            let montant_imposable = Math.min(salaire_imposable, limite) - limite_precedente;
+            impot += montant_imposable * taux;
+            limite_precedente = limite;
+        } else {
+            break;
+        }
+    }
+
+    return impot;
+};
+
 
   const handleDownloadClick = async () => {
     const salaireData = {
@@ -340,7 +343,8 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
       prime_presence: parseFloat(ficheDePaieData.prime_presence).toFixed(2),
       acompte: parseFloat(ficheDePaieData.acompte).toFixed(2),
       impots: parseFloat(ficheDePaieData.impots).toFixed(2),
-      apoint: parseFloat(ficheDePaieData.apoint).toFixed(2),
+      appointplus: parseFloat(ficheDePaieData.appointplus).toFixed(2),
+      appointmoins: parseFloat(ficheDePaieData.appointmoins).toFixed(2),
       css: parseFloat(ficheDePaieData.css).toFixed(2),
       cnss: parseFloat(ficheDePaieData.cnss).toFixed(2),
       jour_ferie: ficheDePaieData.jour_ferie,
@@ -664,11 +668,22 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
               <Grid item xs={4}>
                 <TextField
                   size="small"
-                  label="Apoint"
+                  label="Appoint +"
                   fullWidth
                   variant="outlined"
-                  name="apoint"
-                  value={parseFloat(ficheDePaieData.apoint).toFixed(2)}
+                  name="appointplus"
+                  value={parseFloat(ficheDePaieData.appointplus).toFixed(2)}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  size="small"
+                  label="Appoint -"
+                  fullWidth
+                  variant="outlined"
+                  name="appointmoins"
+                  value={parseFloat(ficheDePaieData.appointmoins).toFixed(2)}
                   onChange={handleInputChange}
                 />
               </Grid>
@@ -692,12 +707,12 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
               </Grid>
 
               {/* CNSS & CSS */}
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography variant="body1">
                   CNSS: {parseFloat(ficheDePaieData.cnss).toFixed(2)}
                 </Typography>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 <Typography variant="body1">
                   CSS: {parseFloat(ficheDePaieData.css).toFixed(2)}
                 </Typography>
