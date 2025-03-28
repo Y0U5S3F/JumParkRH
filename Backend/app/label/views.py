@@ -127,6 +127,46 @@ def auto_import_labels(request):
         if not devices:
             return Response({"detail": "No devices found."}, status=status.HTTP_404_NOT_FOUND)
         
+        token = request.headers.get('Authorization')
+        for device in devices:
+            DEVICE_IP = device['ip']
+            DEVICE_PORT = device['port']
+            marker_file = f"logs_{DEVICE_IP.replace('.', '_')}_{DEVICE_PORT}.csv"
+            zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
+            conn = None
+            try:
+                conn = zk.connect()
+                print(f"Connected to Device {DEVICE_IP}:{DEVICE_PORT}")
+                attendance_logs = conn.get_attendance()
+                last_uid = read_last_uid(marker_file)
+
+                # Process each new log entry.
+                for log in attendance_logs:
+                    if log.uid > last_uid:
+                        event = process_punch(log.punch)
+                        log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
+                        process_log(log_entry, marker_file, token)
+                        update_last_uid(marker_file, log.uid)
+                print("All logs processed.")
+            except Exception as e:
+                print(e)
+                return Response({"detail": f"Error importing labels from {DEVICE_IP}:{DEVICE_PORT}."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            finally:
+                if conn:
+                    conn.disconnect()
+                    print("Disconnected from the device.")
+        
+        return Response({"detail": "Labels imported successfully."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({"detail": "An error occurred while importing labels."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+##def auto_import_labels(request):
+    try:
+        devices = fetch_devices(request)
+        if not devices:
+            return Response({"detail": "No devices found."}, status=status.HTTP_404_NOT_FOUND)
+        
         for device in devices:
             DEVICE_IP = device['ip']
             DEVICE_PORT = device['port']
@@ -157,4 +197,4 @@ def auto_import_labels(request):
         
         return Response({"detail": "Labels imported successfully."}, status=status.HTTP_200_OK)
     except Exception as e:
-        return Response({"detail": "An error occurred while importing labels."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"detail": "An error occurred while importing labels."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)##
