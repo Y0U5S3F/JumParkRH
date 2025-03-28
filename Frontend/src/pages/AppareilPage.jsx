@@ -38,6 +38,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Business } from "@mui/icons-material";
 import { fetchAppareils, addAppareil, updateAppareil, toggleAppareilStatus, deleteAppareil } from "../service/AppareilService";
 import Appareil from "../models/appareil";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -321,6 +322,8 @@ export default function AppareilPage() {
             Appareils
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -336,6 +339,8 @@ export default function AppareilPage() {
         >
           Ajouter Appareil
         </Button>
+        <ThemeToggle/>
+        </Box>
       </Box>
 
       {/* Add Modal */}

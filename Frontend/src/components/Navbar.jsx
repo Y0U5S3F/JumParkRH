@@ -34,7 +34,6 @@ import {
   Event,
   Payments,
 } from "@mui/icons-material";
-import gymParkLogo from "../../public/logos/gympark.svg";
 import {jwtDecode} from "jwt-decode";
 
 const DRAWER_WIDTH = 240;
@@ -140,6 +139,7 @@ export default function Navbar() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
+  
   const location = useLocation();
   const [user, setUser] = useState({ nom: "John Doe", role: "Admin" });
 
@@ -169,8 +169,11 @@ export default function Navbar() {
         <DrawerHeader>
           {isOpen && (
             <Link to="/">
-              <img src={gymParkLogo} alt="GymPark Logo" />
-            </Link>
+<img 
+                src={theme.logo.main} // Use the logo from theme
+                alt="GymPark Logo"
+                
+              />            </Link>
           )}
           <IconButton 
             onClick={handleToggleDrawer}
@@ -287,6 +290,7 @@ export default function Navbar() {
                 </ListItemButton>
               </ListItem>
             ))}
+            <Divider variant="middle"  sx={{ my: 1 }} />
           </List>
         ))}
 

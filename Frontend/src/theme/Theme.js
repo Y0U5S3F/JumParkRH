@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material/styles';
+import logoWhite from '../../public/logos/LogoWhite.svg';
 
+import logoBlack from '../../public/logos/LogoBlack.svg';
 const shadows = {
   dark: {
     sm: '0 1px 3px rgba(0, 0, 0, 0.2)',
@@ -57,6 +59,9 @@ const darkTheme = createTheme({
       main: 'rgba(199, 162, 255)', // Soft Purple with 20% opacity
       contrastText: '#000000', // Ensures contrast for readability
     },
+  },
+  logo: {
+    main: logoWhite, // Use white logo for dark theme
   },
   
   typography: {
@@ -159,9 +164,13 @@ const whiteTheme = createTheme({
       contrastText: '#ffffff',
     },
   },
+  logo: {
+    main: logoBlack, // Use black logo for light theme
+  },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+
   shadows: shadows.light,
   components: {
     MuiCard: {

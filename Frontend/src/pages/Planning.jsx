@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Scheduler } from "react-employe-attendance-scheduler";
 import "react-employe-attendance-scheduler/dist/style.css";
 import dayjs from "dayjs";
+import ThemeToggle from "../components/ThemeToggle";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from '@mui/icons-material/Close';
+import { useThemeToggle } from "../App"; // Add this import
+
 
 import {
   Container,
@@ -67,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "85vh",
     overflow: "hidden",
-    border: `1px solid rgb(70, 69, 69)`,
+    border: `1px solid ${theme.palette.secondary.main}`,
     borderRadius: "12px",
     margin: "0 auto",
   },
@@ -114,12 +117,20 @@ export default function SimpleCalendar() {
     severity: "",
     message: "",
   });
+  const [schedulerKey, setSchedulerKey] = useState(0); // Add this line
+
   const [isImportingPresence, setIsImportingPresence] = useState(false);
   const [pageTitle, setPageTitle] = useState("Planning");
+  const { isDarkMode } = useThemeToggle(); // Add this line to get theme state
+
   
     useEffect(() => {
       document.title = pageTitle; // Update the document title
     }, [pageTitle]);
+    useEffect(() => {
+      // This will force the Scheduler to completely re-render when theme changes
+      setSchedulerKey(prevKey => prevKey + 1);
+    }, [isDarkMode]);
 
 
     useEffect(() => {
@@ -431,11 +442,15 @@ export default function SimpleCalendar() {
         >
           Ajouter une Présence
         </Button>
+          <ThemeToggle></ThemeToggle>
+        
         </Box>
       </Box>
       <Box className={classes.calendar}>
         {/* <StyledSchedulerFrame> */}
           <Scheduler
+                    key={schedulerKey} // Add this key prop
+
             isLoading={isLoading}
             data={schedulerData}
             onTileClick={(clickedTile) => {
@@ -448,7 +463,7 @@ export default function SimpleCalendar() {
               maxRecordsPerPage: 100,
               maxRecordsPerTile: 3,
               filterButtonState: false,
-              defaultTheme: "dark",
+              defaultTheme: isDarkMode ? "dark" : "light", // Updated to use isDarkMode
             }}
           />
         {/* </StyledSchedulerFrame> */}

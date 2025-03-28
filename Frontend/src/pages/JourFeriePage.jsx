@@ -35,6 +35,7 @@ import {
   deleteJourFerie,
 } from "../service/JourFerieService";
 import JourFerie from "../models/jourferie";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -208,6 +209,8 @@ export default function JourFeriePage() {
             Jours Fériés
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -216,6 +219,7 @@ export default function JourFeriePage() {
         >
           Ajouter Jour Férié
         </Button>
+<ThemeToggle/>        </Box>
       </Box>
 
       {/* Add Jour Férié Modal */}

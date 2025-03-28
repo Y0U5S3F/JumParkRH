@@ -46,6 +46,7 @@ import {
 } from "../service/SalaireService"; // Import addSalaire function
 import FicheDePaie from "../models/ficheDePaie";
 import { makeStyles } from "@mui/styles";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -514,6 +515,8 @@ const handleAddSalaire = async () => {
             Fiche de Paie
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -529,6 +532,8 @@ const handleAddSalaire = async () => {
         >
           Ajouter Fiche de Paie
         </Button>
+        <ThemeToggle/>
+        </Box>
       </Box>
 
       <Modal open={open} onClose={() => setOpen(false)}>

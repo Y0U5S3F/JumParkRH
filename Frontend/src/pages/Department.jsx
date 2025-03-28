@@ -36,6 +36,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
 import Apartment from "@mui/icons-material/Apartment";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -274,6 +275,7 @@ export default function Department() {
             Départements
           </Typography>
         </Box>
+        <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
         <Button
           size="medium"
           variant="outlined"
@@ -289,6 +291,8 @@ export default function Department() {
         >
           Ajouter Département
         </Button>
+        <ThemeToggle></ThemeToggle>
+        </Box>
       </Box>
 
       {/* Add Modal */}

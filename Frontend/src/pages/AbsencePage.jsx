@@ -40,6 +40,7 @@ import {
 } from "../service/AbsenceService";
 import { fetchMinimalEmployes } from "../service/EmployeService";
 import Absence from "../models/absence";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -234,6 +235,8 @@ export default function AbsencePage() {
             Absences
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -242,6 +245,8 @@ export default function AbsencePage() {
         >
           Ajouter Absence
         </Button>
+        <ThemeToggle ></ThemeToggle>
+        </Box>
       </Box>
 
       {/* Add Absence Modal */}

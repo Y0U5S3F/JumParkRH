@@ -47,6 +47,7 @@ import Conge from "../models/conge";
 import { fetchTypeConges } from "../service/TypeCongeService";
 import AddIcon from "@mui/icons-material/Add";
 import { Payments } from "@mui/icons-material";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -365,6 +366,7 @@ export default function DemandeCongePage() {
             Demandes de Congé
           </Typography>
         </Box>
+        <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
         <Button
           size="medium"
           variant="outlined"
@@ -380,6 +382,8 @@ export default function DemandeCongePage() {
         >
           Ajouter Congé
         </Button>
+        <ThemeToggle></ThemeToggle>
+        </Box>
       </Box>
 
       {/* Add Conge */}

@@ -11,6 +11,8 @@ import {
   People,
   
 } from "@mui/icons-material";
+import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
+
 import {
   Dialog,
   DialogContent,
@@ -408,6 +410,7 @@ const handleConfirmDelete = async () => {
                   Personnel
                 </Typography>
               </Box>
+              <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
               <Button
               size="medium"
   variant="outlined"
@@ -423,6 +426,10 @@ const handleConfirmDelete = async () => {
 >
   Ajouter Employé
 </Button>
+        <ThemeToggle  />
+              </Box>
+              
+
             </Box>
 
       {/* View Modal */}

@@ -34,6 +34,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from '@mui/icons-material/Add';
 import { Business } from "@mui/icons-material";
 import TypeConge from "../models/typeConge";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: { padding: "20px", display: "flex", flexDirection: "column" },
@@ -274,6 +275,8 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
             Types de Congé
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -289,6 +292,8 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         >
           Ajouter Type de Congé
         </Button>
+        <ThemeToggle />
+        </Box>
       </Box>
 
       {/* Add Modal */}
