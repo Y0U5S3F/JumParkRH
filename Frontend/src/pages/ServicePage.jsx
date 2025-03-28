@@ -186,6 +186,8 @@ export default function ServicePage() {
         severity: "success",
         message: "Service supprimé avec succès!",
       });
+      setRefresh((prev) => prev + 1);
+
     } catch (error) {
       console.error("Error deleting service:", error);
       setSnackbar({

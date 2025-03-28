@@ -120,6 +120,8 @@ const [ficheDePaieToDelete, setFicheDePaieToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const [salaires, setSalaires] = useState([]);
   const [openEditModal, setOpenEditModal] = useState(false); // State to manage edit modal
+    const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  
 const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selected row data
 
   const [snackbar, setSnackbar] = useState({
@@ -150,7 +152,7 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
       }
     };
     fetchData();
-  }, []);
+  }, [refresh]);
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -378,7 +380,10 @@ const handleAddSalaire = async () => {
       severity: "success",
       message: "Fiche de paie ajoutée avec succès!",
     });
+    setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+
     setOpen(false); // Close the modal
+    
   } catch (error) {
     if (error.response) {
       console.error("Server response:", error.response.data); // Log server's error response
@@ -412,7 +417,10 @@ const handleAddSalaire = async () => {
       setSalaires((prev) =>
         prev.filter((salaire) => salaire.id !== ficheDePaieToDelete)
       ); // Remove the deleted item from the state
+      setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+
       setOpenDeleteDialog(false); // Close the dialog
+
     } catch (error) {
       console.error("Error deleting fiche de paie:", error);
       setSnackbar({
@@ -482,6 +490,8 @@ const handleAddSalaire = async () => {
       );
   
       // Close the modal
+      setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+
       setOpenEditModal(false);
     } catch (error) {
       console.error("Error updating fiche de paie:", error);

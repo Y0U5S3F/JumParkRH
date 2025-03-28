@@ -102,6 +102,7 @@ export default function SimpleCalendar() {
   const [openViewModal, setOpenViewModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null); // State for selected item
   const classes = useStyles();
+  
   const [newPresence, setNewPresence] = useState(
     new LabelData(null, null, null, null, null, null, null)
   ); // State for new presence
@@ -239,7 +240,7 @@ export default function SimpleCalendar() {
       };
     
       fetchLabels();
-    }, []);
+    }, [refresh]);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -796,9 +797,19 @@ export default function SimpleCalendar() {
             </Grid>
           </Box>
           <Box className={classes.topBar}>
-          <Button variant="outlined" color="secondary" onClick={handleDeletePresence}>
-    Supprimer
-  </Button>
+          <Button 
+  variant="outlined" 
+  color="secondary" 
+  onClick={handleDeletePresence}
+  sx={{
+    '&:hover': {
+      color: (theme) => theme.palette.primary.main,
+      borderColor: (theme) => theme.palette.primary.main,
+    },
+  }}
+>
+  Supprimer
+</Button>
             <Button variant="contained" onClick={handleUpdatePresence}>
               Enregistrer
             </Button>

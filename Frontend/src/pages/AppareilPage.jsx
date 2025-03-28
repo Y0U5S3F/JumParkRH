@@ -175,6 +175,7 @@ export default function AppareilPage() {
         message: "Appareil supprimé avec succès!",
       });
       setAppareils((prev) => prev.filter((appareil) => appareil.id !== appareilToDelete));
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       setSnackbar({
         open: true,

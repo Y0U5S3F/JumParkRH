@@ -241,12 +241,12 @@ export default function Department() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", width: 100 },
-    { field: "nom", headerName: "Nom", width: 950 },
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "nom", headerName: "Nom", flex: 7 },
     {
       field: "actions",
       headerName: "Actions",
-      width: 100,
+      flex: 1,
       renderCell: (params) => (
         <>
           <IconButton

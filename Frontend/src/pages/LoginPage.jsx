@@ -14,11 +14,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import { styled, ThemeProvider } from '@mui/material/styles';
-import darkTheme from '../theme/Theme'; // Adjust the import path as necessary
+import { useThemeToggle } from "../App"; // Import theme context
+import { darkTheme, whiteTheme } from '../theme/Theme'; // Import both themes
 import gymParkLogo from '../../public/logos/gympark.svg';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For redirecting after login
 import Loading from '../components/Loading'; // Import the Loading component
+import ThemeToggle from '../components/ThemeToggle'; // Import the theme toggle
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -29,25 +31,24 @@ const Card = styled(MuiCard)(({ theme }) => ({
   gap: theme.spacing(2),
   margin: 'auto',
   backgroundColor: theme.palette.background.paper,
+  color: theme.palette.text.primary,
   [theme.breakpoints.up('sm')]: {
     maxWidth: '450px',
   },
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
+  boxShadow: theme.palette.mode === 'dark' 
+    ? '0 5px 15px 0px rgba(0, 0, 0, 0.5), 0 15px 35px -5px rgba(0, 0, 0, 0.1)'
+    : '0 5px 15px 0px rgba(0, 0, 0, 0.05), 0 15px 35px -5px rgba(0, 0, 0, 0.05)',
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
   minHeight: '100%',
   padding: theme.spacing(2),
-  backgroundColor: theme.palette.background.paper,
+  backgroundColor: theme.palette.background.default,
   backgroundImage: 'url(/Jumpark-bg.png)',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
+  position: 'relative', // For positioning the theme toggle
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
   },
@@ -60,6 +61,7 @@ export default function SignIn(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const { isDarkMode } = useThemeToggle(); // Get current theme mode
   const navigate = useNavigate(); // for redirecting after login
 
   const handleSubmit = async (event) => {
@@ -133,10 +135,15 @@ export default function SignIn(props) {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={isDarkMode ? darkTheme : whiteTheme}>
       <CssBaseline enableColorScheme />
       {isLoading && <Loading />} {/* Show Loading component when isLoading is true */}
       <SignInContainer direction="column" justifyContent="space-between">
+        {/* Theme Toggle in top-right corner */}
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <ThemeToggle />
+        </Box>
+        
         <Card variant="outlined">
           <Box sx={{ display: 'flex' }}>
             <img src={gymParkLogo} alt="GymPark Logo" style={{ maxWidth: '100%', height: '15px' }} />
@@ -144,7 +151,12 @@ export default function SignIn(props) {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', fontWeight: 'bold' }}
+            sx={{ 
+              width: '100%', 
+              fontSize: 'clamp(2rem, 10vw, 2.15rem)', 
+              fontWeight: 'bold',
+              color: theme => theme.palette.text.primary 
+            }}
           >
             Sign in
           </Typography>
@@ -160,7 +172,7 @@ export default function SignIn(props) {
             }}
           >
             <FormControl>
-              <FormLabel htmlFor="email" sx={{ mb: '3px' }}>Email</FormLabel>
+              <FormLabel htmlFor="email" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Email</FormLabel>
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
@@ -178,54 +190,56 @@ export default function SignIn(props) {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor="password" sx={{ mb: '3px' }}>Password</FormLabel>
+              <FormLabel htmlFor="password" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Password</FormLabel>
               <TextField
-  error={passwordError}
-  helperText={passwordErrorMessage}
-  name="password"
-  placeholder="••••••"
-  type={showPassword ? "text" : "password"} // Toggle between text and password
-  size="small"
-  id="password"
-  autoComplete="current-password"
-  required
-  fullWidth
-  variant="outlined"
-  color={passwordError ? 'error' : 'primary'}
-  InputProps={{
-    endAdornment: (
-      <IconButton
-        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
-        edge="end"
-        sx={{
-          color: 'inherit', // Ensure the icon inherits the input's color
-        }}
-      >
-        {showPassword ? <VisibilityOff /> : <Visibility />}
-      </IconButton>
-    ),
-  }}
-  sx={{
-    '&:-webkit-autofill': {
-      WebkitBoxShadow: '0 0 0 100px rgba(0, 0, 255, 0.1) inset', // Blue background
-      WebkitTextFillColor: 'blue', // Blue text
-      transition: 'background-color 5000s ease-in-out 0s',
-    },
-    '& .MuiInputAdornment-root': {
-      color: 'blue', // Ensure the icon matches the autofill color
-    },
-  }}
-/>
+                error={passwordError}
+                helperText={passwordErrorMessage}
+                name="password"
+                placeholder="••••••"
+                type={showPassword ? "text" : "password"} // Toggle between text and password
+                size="small"
+                id="password"
+                autoComplete="current-password"
+                required
+                fullWidth
+                variant="outlined"
+                color={passwordError ? 'error' : 'primary'}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+                      edge="end"
+                      sx={{
+                        color: 'inherit', // Ensure the icon inherits the input's color
+                      }}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  ),
+                }}
+                sx={{
+                  '&:-webkit-autofill': {
+                    WebkitBoxShadow: theme => `0 0 0 100px ${theme.palette.mode === 'dark' ? 'rgba(33, 34, 44, 0.8)' : 'rgba(248, 250, 252, 0.8)'} inset`,
+                    WebkitTextFillColor: theme => theme.palette.text.primary,
+                    transition: 'background-color 5000s ease-in-out 0s',
+                  },
+                }}
+              />
             </FormControl>
             <FormControlLabel
               control={<Checkbox name="remember" value="true" color="primary" />}
-              label="Remember me"
+              label={<Typography color="text.secondary">Remember me</Typography>}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               disabled={isLoading}
+              color="primary"
+              sx={{
+                py: 1.5,
+                fontWeight: 600,
+              }}
             >
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>

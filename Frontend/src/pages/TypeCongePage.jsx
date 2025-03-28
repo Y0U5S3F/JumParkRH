@@ -246,12 +246,12 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
   };
 
   const columns = [
-    { field: "id", headerName: "id", width: 100 },
-    { field: "nom", headerName: "Nom", width: 950 },
+    { field: "id", headerName: "id", flex: 1 },
+    { field: "nom", headerName: "Nom", flex: 7 },
     {
       field: "actions",
       headerName: "Actions",
-      width: 100,
+      flex: 1,
       renderCell: (params) => (
         <>
           <IconButton onClick={() => handleDelete(params.row.id)}>

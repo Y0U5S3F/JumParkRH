@@ -234,6 +234,8 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
           severity: "success",
           message: "Employee added successfully!",
         });
+        setRefresh((prev) => prev + 1);
+
       } else {
         setSnackbar({
           open: true,
@@ -242,6 +244,7 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
         });
       }
 
+      
       setOpen(false);
       setNewEmployee(
         new Employe(
@@ -318,6 +321,7 @@ const handleConfirmDelete = async () => {
       severity: "success",
       message: "Employé supprimé avec succès!",
     });
+    
   } catch (error) {
     console.error("Error deleting employee:", error);
     setSnackbar({
@@ -325,6 +329,8 @@ const handleConfirmDelete = async () => {
       severity: "error",
       message: "Erreur lors de la suppression de l'employé.",
     });
+    setRefresh((prev) => prev + 1);
+
   } finally {
     handleCloseDeleteDialog();
   }

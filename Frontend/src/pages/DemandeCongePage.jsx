@@ -109,6 +109,8 @@ export default function DemandeCongePage() {
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const [open, setOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [congeToDelete, setCongeToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchEditTerm, setSearchEditTerm] = useState("");
   const apiRef = useGridApiRef();
@@ -171,21 +173,23 @@ export default function DemandeCongePage() {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  const handleDeleteConge = async (congeId) => {
+  // Update the handleDeleteConge function
+  const handleDeleteConge = async () => {
     try {
-      await deleteConge(congeId); // Call the service
-      setConges((prev) => prev.filter((conge) => conge.id !== congeId));
+      await deleteConge(congeToDelete); // Call the service with the ID stored in state
       setSnackbar({
         open: true,
         severity: "success",
-        message: "Congé deleted successfully!",
+        message: "Congé supprimé avec succès!",
       });
+      setOpenDeleteDialog(false);
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       console.error("Error deleting congé:", error);
       setSnackbar({
         open: true,
         severity: "error",
-        message: "Error deleting congé.",
+        message: "Erreur lors de la suppression du congé.",
       });
     }
   };
@@ -302,6 +306,8 @@ export default function DemandeCongePage() {
       }
 
       setOpen(false);
+      setRefresh((prev) => prev + 1);
+
       // Reset newConge with consistent key names
       setNewConge({
         employe: "",
@@ -337,7 +343,12 @@ export default function DemandeCongePage() {
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
-          <IconButton onClick={() => handleDeleteConge(params.row.id)}>
+          <IconButton
+            onClick={() => {
+              setCongeToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
@@ -538,21 +549,27 @@ export default function DemandeCongePage() {
         }}
       >
         <Box className={classes.modalStyle}>
-        <Box sx={{display:"flex",justifyContent:"space-between"}}>
-          
-          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
-            Ajouter demande
-          </Typography>
-          <CloseIcon onClick={()=> setOpen(false)} sx={{
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-            borderRadius: '50%', // Circular shape
-          },
-        }}/>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Ajouter demande
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
           </Box>
-          
+
           <Box className={classes.contentContainer}>
-            
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={4}>
@@ -648,7 +665,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              
+
               <Grid item xs={12}>
                 <TextField
                   label="Notes"
@@ -699,6 +716,27 @@ export default function DemandeCongePage() {
         }}
         // checkboxSelection={false}
       />
+
+      {/* Add this Delete Confirmation Dialog before the DataGrid component */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer cette demande de congé ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={handleDeleteConge} color="primary" autoFocus>
+            Oui
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
