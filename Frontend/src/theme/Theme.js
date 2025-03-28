@@ -1,5 +1,8 @@
 import { createTheme } from '@mui/material/styles';
 import logoWhite from '../../public/logos/LogoWhite.svg';
+import darkBackground from '../../public/dark-bg.png'; // Import dark background
+import lightBackground from '../../public/white-bg.png'; // Import light background
+
 
 import logoBlack from '../../public/logos/LogoBlack.svg';
 const shadows = {
@@ -62,6 +65,10 @@ const darkTheme = createTheme({
   },
   logo: {
     main: logoWhite, // Use white logo for dark theme
+  },
+  backgroundImage: {
+    main: darkBackground,
+    
   },
   
   typography: {
@@ -172,6 +179,9 @@ const whiteTheme = createTheme({
   },
 
   shadows: shadows.light,
+  backgroundImage: {
+    main: lightBackground,
+  },
   components: {
     MuiCard: {
       styleOverrides: {

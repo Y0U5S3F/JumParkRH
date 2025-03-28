@@ -16,11 +16,12 @@ import IconButton from '@mui/material/IconButton';
 import { styled, ThemeProvider } from '@mui/material/styles';
 import { useThemeToggle } from "../App"; // Import theme context
 import { darkTheme, whiteTheme } from '../theme/Theme'; // Import both themes
-import gymParkLogo from '../../public/logos/gympark.svg';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // For redirecting after login
 import Loading from '../components/Loading'; // Import the Loading component
 import ThemeToggle from '../components/ThemeToggle'; // Import the theme toggle
+
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -45,7 +46,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   minHeight: '100%',
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.default,
-  backgroundImage: 'url(/Jumpark-bg.png)',
+  backgroundImage: `url(${theme.backgroundImage.main})`, // Use theme background image
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   position: 'relative', // For positioning the theme toggle
@@ -145,9 +146,13 @@ export default function SignIn(props) {
         </Box>
         
         <Card variant="outlined">
-          <Box sx={{ display: 'flex' }}>
-            <img src={gymParkLogo} alt="GymPark Logo" style={{ maxWidth: '100%', height: '15px' }} />
-          </Box>
+        <Box sx={{ display: 'flex' }}>
+  <img 
+    src={isDarkMode ? darkTheme.logo.main : whiteTheme.logo.main} 
+    alt="GymPark Logo" 
+    style={{ maxWidth: '100%', height: '15px' }} 
+  />
+</Box>
           <Typography
             component="h1"
             variant="h4"
