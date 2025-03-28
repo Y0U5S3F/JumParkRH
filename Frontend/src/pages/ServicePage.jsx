@@ -30,9 +30,8 @@ import {
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { updateService } from "../service/ServiceService";
+import { updateService, addService, fetchServices, deleteService } from "../service/ServiceService";
 import { fetchDepartements } from "../service/DepartementService";
-import { fetchServices } from "../service/ServiceService";
 import EditIcon from "@mui/icons-material/Edit";
 import Departement from "../models/departement";
 import Service from "../models/service";
@@ -178,23 +177,27 @@ export default function ServicePage() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/service/services/${id}/`);
-      console.log("Deleted service with id:", id);
-      setServices((prev) => prev.filter((service) => service.id !== id));
+      // Use the deleteService function from ServiceService.js
+      await deleteService(id);
+  
+      // Handle success
       setSnackbar({
         open: true,
         severity: "success",
         message: "Service supprimé avec succès!",
       });
+      setRefresh((prev) => !prev); // Refresh service list
     } catch (error) {
+      // Handle error
       console.error("Error deleting service:", error);
       setSnackbar({
         open: true,
         severity: "error",
         message: "Erreur lors de la suppression du service.",
       });
+    } finally {
+      setOpenDeleteDialog(false); // Close the delete confirmation dialog
     }
-    setOpenDeleteDialog(false);
   };
 
   const handleAddService = async () => {
@@ -207,36 +210,27 @@ export default function ServicePage() {
         });
         return;
       }
-
+  
       // Create service object
       const serviceToSend = {
         nom: newService.nom,
         departement: newService.departement, // Send department ID
       };
-
-      // Send POST request
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/service/services/",
-        serviceToSend
-      );
-
-      if (response.status === 201) {
-        setSnackbar({
-          open: true,
-          severity: "success",
-          message: "Service ajouté avec succès !",
-        });
-        setOpen(false); // Close modal
-        setNewService({ nom: "", departement: "" }); // Reset form
-        setRefresh((prev) => !prev); // Refresh service list
-      } else {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "Échec de l'ajout du service.",
-        });
-      }
+  
+      // Use the addService function from ServiceService.js
+      const response = await addService(serviceToSend);
+  
+      // Handle success
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Service ajouté avec succès !",
+      });
+      setOpen(false); // Close modal
+      setNewService({ nom: "", departement: "" }); // Reset form
+      setRefresh((prev) => !prev); // Refresh service list
     } catch (error) {
+      // Handle error
       console.error("Erreur lors de l'ajout du service:", error);
       setSnackbar({
         open: true,
@@ -245,7 +239,6 @@ export default function ServicePage() {
       });
     }
   };
-
   const handleUpdateService = async (e) => {
     e.preventDefault();
     try {
