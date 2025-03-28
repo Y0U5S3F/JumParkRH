@@ -38,6 +38,7 @@ import Service from "../models/service";
 import AddIcon from '@mui/icons-material/Add';
 import { Business } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
+import ThemeToggle from "../components/ThemeToggle";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -186,7 +187,7 @@ export default function ServicePage() {
         severity: "success",
         message: "Service supprimé avec succès!",
       });
-      setRefresh((prev) => !prev); // Refresh service list
+      setRefresh((prev) => prev + 1);
     } catch (error) {
       // Handle error
       console.error("Error deleting service:", error);
@@ -310,6 +311,8 @@ export default function ServicePage() {
             Services
           </Typography>
         </Box>
+                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        
         <Button
           size="medium"
           variant="outlined"
@@ -325,6 +328,8 @@ export default function ServicePage() {
         >
           Ajouter Service
         </Button>
+        <ThemeToggle></ThemeToggle>
+        </Box>
       </Box>
 
       {/* Add Modal */}

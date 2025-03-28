@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
+// Change this line at the top of your file
+import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
 import {
   Container,
   Box,
@@ -35,7 +37,7 @@ const SummaryCard = ({ title, value, subValue, icon, loading }) => {
   return (
     <Card
       sx={{
-        color: "white",
+        color: (theme) => theme.palette.text.primary,
         boxShadow: 3,
         borderRadius: 2,
         display: "flex",
@@ -87,7 +89,7 @@ const SummaryCard = ({ title, value, subValue, icon, loading }) => {
                   variant="body2"
                   sx={{
                     fontSize: "0.7rem",
-                    color: (theme) => theme.palette.text.secondary, // Set color to primary main
+                    color: (theme) => theme.palette.text.tertiary, // Set color to primary main
                   }}
                 >
                   {subValue}
@@ -116,7 +118,7 @@ const PieChartCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
-        color: "white",
+        color: (theme) => theme.palette.text.primary,
         boxShadow: 3,
         borderRadius: 2,
         display: "flex",
@@ -173,7 +175,7 @@ const BarChartCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
-        color: "white",
+        color: (theme) => theme.palette.text.primary,
         boxShadow: 3,
         borderRadius: 2,
         display: "flex",
@@ -218,7 +220,7 @@ const BirthdaysCard = ({ data, loading }) => {
   return (
     <Card
       sx={{
-        color: "white",
+        color: (theme) => theme.palette.text.primary,
         boxShadow: 3,
         borderRadius: 2,
         display: "flex",
@@ -262,7 +264,7 @@ const BirthdaysCard = ({ data, loading }) => {
             </Box>
           ))
         ) : (
-          <Typography sx={{ fontSize: "0.9rem", color: "gray" }}>
+          <Typography sx={{ fontSize: "0.9rem", color: (theme) => theme.palette.text.tertiary, }}>
             Aucun anniversaire ce mois-ci
           </Typography>
         )}
@@ -360,7 +362,8 @@ export default function Dashboard() {
             Fiche de Paie
           </Typography>
         </Box>
-        <Typography
+        <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
+        {/* <Typography
           variant="h6"
           fontWeight="semi-bold"
           sx={{
@@ -369,7 +372,11 @@ export default function Dashboard() {
           }}
         >
           {dayjs().format("dddd, D MMMM YYYY")}
-        </Typography>
+        </Typography> */}
+        <ThemeToggle  />
+        </Box>
+        
+
       </Box>
       <Box className="mainContent">
         <Grid container spacing={3}>

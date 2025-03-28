@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import {
   Box,
@@ -33,7 +34,6 @@ import {
   Event,
   Payments,
 } from "@mui/icons-material";
-import gymParkLogo from "../../public/logos/gympark.svg";
 import {jwtDecode} from "jwt-decode";
 
 const DRAWER_WIDTH = 240;
@@ -139,6 +139,7 @@ export default function Navbar() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
+  
   const location = useLocation();
   const [user, setUser] = useState({ nom: "John Doe", role: "Admin" });
 
@@ -166,8 +167,18 @@ export default function Navbar() {
 
       <Drawer variant="permanent" open={isOpen}>
         <DrawerHeader>
-          {isOpen && <img src={gymParkLogo} alt="GymPark Logo" />}
-          <IconButton onClick={handleToggleDrawer}>
+          {isOpen && (
+            <Link to="/">
+<img 
+                src={theme.logo.main} // Use the logo from theme
+                alt="GymPark Logo"
+                
+              />            </Link>
+          )}
+          <IconButton 
+            onClick={handleToggleDrawer}
+            sx={{ color: theme.palette.text.primary }}
+          >
             {isOpen ? (
               theme.direction === "rtl" ? (
                 <ChevronRight />
@@ -187,7 +198,9 @@ export default function Navbar() {
             key={index}
             subheader={
               isOpen && group.subheader ? (
-                <ListSubheader>{group.subheader}</ListSubheader>
+                <ListSubheader sx={{ color: theme.palette.text.secondary }}>
+                  {group.subheader}
+                </ListSubheader>
               ) : null
             }
           >
@@ -266,10 +279,10 @@ export default function Navbar() {
                     primary={text}
                     sx={{
                       opacity: isOpen ? 1 : 0,
-                      color: isOpen ? theme.palette.common.white : "inherit",
+                      color: isOpen ? theme.palette.text.primary : "inherit",
                       ...(isOpen && {
                         "&:hover, &.Mui-selected": {
-                          color: theme.palette.background.default,
+                          color: theme.palette.background.paper,
                         },
                       }),
                     }}
@@ -277,34 +290,61 @@ export default function Navbar() {
                 </ListItemButton>
               </ListItem>
             ))}
+            <Divider variant="middle"  sx={{ my: 1 }} />
           </List>
         ))}
 
         {/* User Box */}
         <Box
           sx={{
-            position: "sticky",
+            position: isOpen ? "sticky" : "sticky",
             bottom: 0,
+            width: "100%",
             backgroundColor: theme.palette.background.paper,
             p: 2,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             zIndex: 1100,
-
+            ...(isOpen === false && {
+              position: "sticky",
+              bottom: 0,
+            }),
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center" ,}}>
-            <Avatar alt="User Avatar"   sx={{ width: 37, height: 37,  bgcolor: (theme) => theme.palette.primary.main}}
-            size="small "src="/path/to/avatar.jpg" >{user.nom[0]}</Avatar>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Avatar
+              alt="User Avatar"
+              sx={{
+                width: 37,
+                height: 37,
+                bgcolor: theme.palette.primary.main,
+              }}
+              size="small"
+              src="/path/to/avatar.jpg"
+            >
+              {user.nom[0]}
+            </Avatar>
             <Box sx={{ ml: 2 }}>
-              <Typography variant="body1" sx={{color: (theme) => theme.palette.text.primary}} fontWeight={700}>
+              <Typography
+                variant="body1"
+                sx={{ color: theme.palette.text.primary }}
+                fontWeight={700}
+              >
                 {user.nom}
               </Typography>
-              <Typography variant="body2" sx={{color: (theme) => theme.palette.text.secondary}}>{user.role}</Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                {user.role}
+              </Typography>
             </Box>
           </Box>
-          <IconButton onClick={handleLogout}>
+          <IconButton 
+            onClick={handleLogout}
+            sx={{ color: theme.palette.text.secondary }}
+          >
             <LogoutIcon />
           </IconButton>
         </Box>

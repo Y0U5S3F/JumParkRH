@@ -11,6 +11,8 @@ import {
   People,
   
 } from "@mui/icons-material";
+import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
+
 import {
   Dialog,
   DialogContent,
@@ -234,6 +236,8 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
           severity: "success",
           message: "Employee added successfully!",
         });
+        setRefresh((prev) => prev + 1);
+
       } else {
         setSnackbar({
           open: true,
@@ -242,6 +246,7 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
         });
       }
 
+      
       setOpen(false);
       setNewEmployee(
         new Employe(
@@ -318,6 +323,7 @@ const handleConfirmDelete = async () => {
       severity: "success",
       message: "Employé supprimé avec succès!",
     });
+    
   } catch (error) {
     console.error("Error deleting employee:", error);
     setSnackbar({
@@ -325,6 +331,8 @@ const handleConfirmDelete = async () => {
       severity: "error",
       message: "Erreur lors de la suppression de l'employé.",
     });
+    setRefresh((prev) => prev + 1);
+
   } finally {
     handleCloseDeleteDialog();
   }
@@ -402,6 +410,7 @@ const handleConfirmDelete = async () => {
                   Personnel
                 </Typography>
               </Box>
+              <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
               <Button
               size="medium"
   variant="outlined"
@@ -417,6 +426,10 @@ const handleConfirmDelete = async () => {
 >
   Ajouter Employé
 </Button>
+        <ThemeToggle  />
+              </Box>
+              
+
             </Box>
 
       {/* View Modal */}
