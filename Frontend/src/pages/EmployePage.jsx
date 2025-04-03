@@ -36,6 +36,7 @@ import {
   IconButton,
 } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
+import GetApp from '@mui/icons-material/GetApp';
 import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -49,6 +50,7 @@ import {
   deleteEmployee,
   addEmployee,
   updateEmployee,
+  DownloadPresence
 } from "../service/EmployeService";
 import { fetchDepartements } from "../service/DepartementService";
 import { fetchServices } from "../service/ServiceService";
@@ -68,6 +70,23 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     width: 1000,
     height: 450,
+    backgroundColor: `${theme.palette.background.default}`,
+    boxShadow: 24,
+    padding: "20px",
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: "8px",
+    display: "flex",
+    flexDirection: "column",
+  },
+  PresenceModalStyle: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400, // Adjust the width
+    maxWidth: "90%", // Ensure it doesn't exceed the viewport width
+    height: "auto", // Let the height adjust based on content
+    maxHeight: "90%", // Ensure it doesn't exceed the viewport height
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -127,6 +146,8 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const classes = useStyles();
   const [newEmployee, setNewEmployee] = useState(new Employe());
+  const [openPresenceModal, setOpenPresenceModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current date
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -347,6 +368,17 @@ const handleConfirmDelete = async () => {
     setOpenViewModal(true);
   };
 
+  const handleDownloadPresence = async () => {
+    try {
+      const reportMonth = selectedDate.format("MM");
+      const reportYear = selectedDate.format("YYYY");
+      await DownloadPresence(reportYear, reportMonth);
+      setOpenPresenceModal(false); 
+    } catch (error) {
+      console.error("Error downloading salaire:", error);
+    }
+  };
+
   const handleEdit = (employee) => {
     // Find the department ID based on the department name
     const department = departments.find(
@@ -412,26 +444,70 @@ const handleConfirmDelete = async () => {
               </Box>
               <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
               <Button
-              size="medium"
-  variant="outlined"
-  startIcon={<AddIcon />}
-  sx={{
-    '&:hover': {
-      backgroundColor: (theme) => theme.palette.primary.main,
-      color: 'white',
-      borderColor: (theme) => theme.palette.primary.main,
-    },
-  }}
-  onClick={() => setOpen(true)}
->
-  Ajouter Employé
-</Button>
+                size="medium"
+                variant="outlined"
+                startIcon={<GetApp />}
+                sx={{
+                  "&:hover": {
+                    backgroundColor: (theme) => theme.palette.primary.main,
+                    color: "white",
+                    borderColor: (theme) => theme.palette.primary.main,
+                  },
+                }}
+                onClick={() => setOpenPresenceModal(true)} // Open the modal
+              >
+                Télécharger Presence
+              </Button>
+              <Button
+                size="medium"
+                variant="outlined"
+                startIcon={<AddIcon />}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: (theme) => theme.palette.primary.main,
+                    color: 'white',
+                    borderColor: (theme) => theme.palette.primary.main,
+                  },
+                }}
+                onClick={() => setOpen(true)}
+              >
+                Ajouter Employé
+              </Button>
         <ThemeToggle  />
               </Box>
               
 
             </Box>
 
+    {/* Modal for Month and Year Selection */}
+    <Modal open={openPresenceModal} onClose={() => setOpenPresenceModal(false)}>
+      <Box className={classes.PresenceModalStyle}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Sélectionner le Mois et l'Année
+        </Typography>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            views={["year", "month"]} // Restrict to year and month selection
+            label="Mois et Année"
+            value={selectedDate}
+            onChange={(newValue) => setSelectedDate(newValue)}
+            sx={{ width: "100%", marginBottom: "20px" }}
+          />
+        </LocalizationProvider>
+        <Box display="flex" justifyContent="space-between" mt={2}>
+          <Button variant="outlined" onClick={() => setOpenPresenceModal(false)}>
+            Annuler
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleDownloadPresence}
+          >
+            Télécharger
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
       {/* View Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>

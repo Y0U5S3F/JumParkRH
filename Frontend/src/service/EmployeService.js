@@ -155,3 +155,55 @@ export const fetchEmployesStream = async (onData) => {
     console.error("Error fetching streamed employees:", error);
   }
 };
+
+export const DownloadPresence = async (reportYear,reportMonth) => {
+  try {
+    const token = getAccessToken(); // Retrieve the token
+    const url = "http://127.0.0.1:8000/api/label/monthly_report/"; // Replace with your API endpoint
+
+    const response = await axios.post(
+      url,
+      { report_month: reportMonth, report_year: reportYear }, // Send month and year in the body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the token to the headers
+        },
+        responseType: "blob", // Get response as a Blob for binary data
+      }
+    );
+
+    // Extract filename from Content-Disposition header if available
+    const contentDisposition = response.headers["content-disposition"];
+    let filename = `presence_${reportYear}_${reportMonth}.csv`;
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="(.+?)"/);
+      if (match) {
+        filename = match[1];
+      }
+    }
+
+    // Create a URL for the Blob and simulate a download link click
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: "application/csv" }));
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    // Clean up the DOM and revoke the object URL
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Fichier téléchargé avec succès!",
+    });
+  } catch (error) {
+    console.error("Error downloading presence report:", error);
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Erreur lors du téléchargement du fichier.",
+    });
+  }
+};

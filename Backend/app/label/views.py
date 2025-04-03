@@ -2,13 +2,16 @@ from .ZKTeco.zk_pointage import update_last_uid, read_last_uid, fetch_devices, p
 from .ZKTeco.pyzk.zk import ZK
 from rest_framework import generics
 from rest_framework.response import Response
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, HttpResponse, JsonResponse
 from rest_framework import status
 import json
 from .models import Label, LabelData
 from .serializers import LabelSerializer, LabelDataSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+import csv
+from django.utils.timezone import now
+from django.db.models import Sum, F, ExpressionWrapper, DurationField
 
 class LabelListCreateView(generics.ListCreateAPIView):
     queryset = Label.objects.all().order_by('id').prefetch_related('data')
@@ -198,3 +201,50 @@ def auto_import_labels(request):
         return Response({"detail": "Labels imported successfully."}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"detail": "An error occurred while importing labels."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)##
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def monthly_report(request):
+    try:
+        report_month = int(request.data.get('report_month', now().month))
+        report_year = int(request.data.get('report_year', now().year))
+
+        label_data = LabelData.objects.filter(
+            startDate__year=report_year,
+            startDate__month=report_month,
+            status="fin de service"
+        ).annotate(
+            worked_time=ExpressionWrapper(
+                (F('endDate') - F('startDate')) - (F('endPause') - F('startPause')),
+                output_field=DurationField()
+            )
+        ).values(
+            'label__employe__matricule',
+            'label__employe__nom', 
+            'label__employe__prenom'
+        ).annotate(
+            total_hours=Sum('worked_time')
+        )
+
+        filename = f"presence_{report_month}_{report_year}.csv"
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        writer = csv.writer(response)
+        writer.writerow(["Matricule", "Nom", "Prénom", "Total Heures Travaillées"])
+
+        if not label_data.exists():
+            writer.writerow(["No data", "", "", 0])
+            return response
+
+        for entry in label_data:
+            matricule = entry['label__employe__matricule']
+            nom = entry['label__employe__nom']
+            prenom = entry['label__employe__prenom']
+            total_hours = round(entry['total_hours'].total_seconds() / 3600, 2) if entry['total_hours'] else 0
+            writer.writerow([matricule, nom, prenom, total_hours])
+
+        return response
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
