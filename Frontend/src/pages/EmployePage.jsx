@@ -6,6 +6,7 @@ import {
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
 import CloseIcon from '@mui/icons-material/Close';
+import ChatBot from "../components/ChatBot"; // Import ChatBot component
 import {
   
   People,
@@ -1517,6 +1518,8 @@ const handleConfirmDelete = async () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+                  <ChatBot /> {/* Add ChatBot */}
+      
     </Container>
   );
 }

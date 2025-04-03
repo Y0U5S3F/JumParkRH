@@ -86,11 +86,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1000,
   },
   statusConnected: {
-    color: "green",
+    color: `${theme.palette.success.main}`,
     fontWeight: "bold",
   },
   statusDisconnected: {
-    color: "red",
+    color: `${theme.palette.warning.main}`,
     fontWeight: "bold",
   },
   titleContainer: {

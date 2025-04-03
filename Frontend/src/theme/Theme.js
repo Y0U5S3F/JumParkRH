@@ -24,7 +24,7 @@ const darkTheme = createTheme({
     mode: 'dark',
     background: {
       default: '#161821', // Dark navy blue background
-      paper: '#161821',   // Slightly lighter blue for cards and elements
+      paper: '#21222c',   // Slightly lighter blue for cards and elements
     },
     text: {
       primary: '#FFFFFF', // Light grayish-blue text
@@ -87,14 +87,14 @@ const darkTheme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#161821',
+          backgroundColor: '#21222c',
         },
       },
     },
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#000000', // Match the card background color
+          backgroundColor: '#21222c', // Match the card background color
           color: '#E2E8F0', // Ensure text color is readable
         },
       },
