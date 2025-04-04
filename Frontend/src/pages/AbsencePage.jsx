@@ -53,8 +53,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 350,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -198,16 +199,17 @@ export default function AbsencePage() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nom", headerName: "Nom", flex: 1 },
-    { field: "date", headerName: "Date", flex: 1 },
-    { field: "raison", headerName: "Raison", flex: 1 },
-    { field: "certifie", headerName: "Certifié", flex: 1 },
-    { field: "employe_name", headerName: "Employé", flex: 1 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 1, minWidth: 150 },
+    { field: "date", headerName: "Date", flex: 1, minWidth: 150 },
+    { field: "raison", headerName: "Raison", flex: 1, minWidth: 150 },
+    { field: "certifie", headerName: "Certifié", flex: 1, minWidth: 100 },
+    { field: "employe_name", headerName: "Employé", flex: 1, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.5,
+      flex: 0.6,
+      minWidth: 100, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => setEditAbsence(params.row) || setOpenEditModal(true)}>
@@ -269,7 +271,7 @@ export default function AbsencePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
                   name="nom"
@@ -280,7 +282,7 @@ export default function AbsencePage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Date"
                   type="date"
@@ -293,7 +295,7 @@ export default function AbsencePage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Raison"
                   name="raison"
@@ -305,7 +307,7 @@ export default function AbsencePage() {
                 />
               </Grid>
               
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(option) =>
@@ -322,7 +324,7 @@ export default function AbsencePage() {
                   )}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -375,7 +377,7 @@ export default function AbsencePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
                   name="nom"
@@ -386,7 +388,7 @@ export default function AbsencePage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Date"
                   type="date"
@@ -399,7 +401,7 @@ export default function AbsencePage() {
                   InputLabelProps={{ shrink: true }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Raison"
                   name="raison"
@@ -411,7 +413,7 @@ export default function AbsencePage() {
                 />
               </Grid>
               
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(option) =>
@@ -432,7 +434,7 @@ export default function AbsencePage() {
                   )}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -499,6 +501,7 @@ export default function AbsencePage() {
         pagination
         loading={loading}
         pageSizeOptions={[10, 25, 100]}
+        
       />
 
       <Snackbar

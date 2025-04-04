@@ -54,8 +54,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "1000px",
-    height: "400px",
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     border: `1px solid ${theme.palette.primary.main}`,
@@ -490,7 +491,7 @@ export default function SimpleCalendar() {
           <Box className={classes.contentContainer}>
             
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -509,7 +510,7 @@ export default function SimpleCalendar() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(option) =>
@@ -529,7 +530,7 @@ export default function SimpleCalendar() {
                   )}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Date"
@@ -555,7 +556,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Date"
@@ -581,7 +582,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Pause"
@@ -607,7 +608,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Pause"
@@ -672,7 +673,7 @@ export default function SimpleCalendar() {
             <Grid container spacing={2}>
 
               {/* Example for start and end date inputs */}
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Date"
@@ -700,7 +701,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Date"
@@ -729,7 +730,7 @@ export default function SimpleCalendar() {
               </Grid>
 
               {/* Example for pause start and end */}
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="Start Pause"
@@ -757,7 +758,7 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
                     label="End Pause"
@@ -786,7 +787,7 @@ export default function SimpleCalendar() {
               </Grid>
 
               {/* Status and Label */}
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <Autocomplete
                   value={selectedTile?.status || ""}
                   onChange={(event, newValue) =>

@@ -54,25 +54,27 @@ const ChatBot = () => {
       {/* Chat Popup */}
       {isOpen && (
         <Paper
-          elevation={3}
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            right: 0,
-            width: 300,
-            height: 400,
-            display: "flex",
-            flexDirection: "column",
-            borderRadius: 2,
-            overflow: "hidden",
-            backgroundColor: theme.palette.background.paper, // Sync with theme
-            color: theme.palette.text.primary, // Sync with theme
-            boxShadow: theme.shadows.lg,
-            border: `1px solid ${theme.palette.background.paper}`, // Add border with primary color
-
-             // Apply large shadow from theme
-          }}
-        >
+        elevation={3}
+        sx={{
+          position: "fixed", // Use fixed positioning to ensure it stays in view
+          bottom: 25, // Adjust the bottom position
+          right: 25, // Adjust the right position
+          width: "30vw", // Use viewport width for dynamic width
+          height: "60vh", // Use viewport height for dynamic height
+          maxWidth: "350px", // Limit the maximum width
+          maxHeight: "450px", // Limit the maximum height
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 2,
+          overflow: "hidden",
+          backgroundColor: theme.palette.background.paper, // Sync with theme
+          color: theme.palette.text.primary, // Sync with theme
+          boxShadow: theme.shadows.lg,
+          border: `1px solid ${theme.palette.divider}`, // Add a border for better visibility
+          transition: "bottom 1s ease-in-out, opacity 1s ease-in-out", // Smooth transition for position and opacity
+    opacity: isOpen ? 1 : 0, // Fade in/out effect
+        }}
+      >
           {/* Header */}
           <Box
             sx={{
@@ -84,7 +86,7 @@ const ChatBot = () => {
               p:1
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", ml:1, gap:1  }}>
+            <Box sx={{ display: "flex", alignItems: "center", ml:1, gap:1, color: theme.palette.primary.main }}>
                 <AutoAwesomeIcon />
                 <Typography variant="body1">AI Assist</Typography>
             </Box>

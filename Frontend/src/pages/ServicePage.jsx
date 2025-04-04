@@ -58,8 +58,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 250,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -279,22 +280,25 @@ export default function ServicePage() {
   };
 
   const columns = [
-    { field: "id", headerName: "id", flex: 1 },
-    { field: "nom", headerName: "Nom", flex: 2 },
-    { field: "departement", headerName: "Departement", flex: 1 },
+    { field: "id", headerName: "id", flex: 1, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 2, minWidth: 150 },
+    { field: "departement", headerName: "Departement", flex: 1, minWidth: 100 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.4,
+      flex: 0.5,
+      minWidth: 100, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon />
           </IconButton>
-          <IconButton onClick={() => {
-            setServiceToDelete(params.row.id);
-            setOpenDeleteDialog(true);
-          }}>
+          <IconButton
+            onClick={() => {
+              setServiceToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </div>
@@ -352,7 +356,7 @@ export default function ServicePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -364,7 +368,7 @@ export default function ServicePage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
@@ -421,7 +425,7 @@ export default function ServicePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -434,7 +438,7 @@ export default function ServicePage() {
                   margin="dense"
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <FormControl                   margin="dense"
 fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
