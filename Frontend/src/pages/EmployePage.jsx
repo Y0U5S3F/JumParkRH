@@ -882,6 +882,8 @@ export default function EmployePage() {
                         },
                       })
                     }
+                    format="DD/MM/YYYY" // Set the desired format
+
                   />
                 </LocalizationProvider>
               </Grid>
@@ -1657,9 +1659,7 @@ export default function EmployePage() {
       <DataGrid
         sx={{
           mt: "4px",
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
+          
         }}
         apiRef={apiRef}
         rows={employees}

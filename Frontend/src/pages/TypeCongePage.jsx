@@ -413,6 +413,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         loading={loading}
         disableMultipleRowSelection={true}
         checkboxSelection={false}
+        hideScrollbar={true}
         getRowId={(row) => row.id}
         autosizeOptions={expand}
         pagination

@@ -370,6 +370,7 @@ export default function JourFeriePage() {
         rows={jourFeries}
         columns={columns}
         pageSize={5}
+        hideScrollbar={true}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
         disableMultipleRowSelection={true}

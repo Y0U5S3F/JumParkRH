@@ -87,12 +87,23 @@ const ChatBot = () => {
             position: "fixed",
             bottom: 25,
             right: 25,
-            width: "30vw",
-            height: "60vh",
-            maxWidth: "350px",
-            maxHeight: "450px",
+            width: {
+              xs: "60vw", // 90% of the viewport width for extra-small screens
+              sm: "50vw", // 70% for small screens
+              md: "30vw", // 40% for medium screens
+              lg: "25vw", // 30% for large screens
+            },
+            height: {
+              xs: "40vh", // 50% of the viewport height for extra-small screens
+              sm: "40vh", // 60% for small screens
+              md: "60vh", // 70% for medium screens
+              lg: "50vh", // 60% for large screens
+            },
+            maxWidth: "500px", // Limit the maximum width
+            maxHeight: "600px",
             display: "flex",
             flexDirection: "column",
+            border: '1px solid ${theme.palette.background.paper}',
             borderRadius: 2,
             overflow: "hidden",
             backgroundColor: theme.palette.background.paper,
@@ -165,7 +176,7 @@ const ChatBot = () => {
           </Box>
 
           {/* Input Area */}
-          <Box sx={{ display: "flex", p: 2 }}>
+          <Box sx={{ display: "flex", p: 2 ,backgroundColor: theme.palette.background.default,}}>
             <TextField
               variant="outlined"
               size="small"

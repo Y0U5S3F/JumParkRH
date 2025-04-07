@@ -293,6 +293,8 @@ export default function AbsencePage() {
                   }
                   fullWidth
                   InputLabelProps={{ shrink: true }}
+                  format="DD/MM/YYYY" // Set the desired format
+
                 />
               </Grid>
               <Grid item md={6}xs={12}>
@@ -492,6 +494,8 @@ export default function AbsencePage() {
       <DataGrid
         apiRef={apiRef}
         rows={absences}
+        hideScrollbar={true}
+
         columns={columns}
         pageSize={5}
         checkboxSelection={false}

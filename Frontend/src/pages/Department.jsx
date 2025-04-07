@@ -428,6 +428,8 @@ export default function Department() {
         disableMultipleRowSelection={true}
         checkboxSelection={false}
         getRowId={(row) => row.id}
+        hideScrollbar={true}
+
         autosizeOptions={expand}
         pagination
         pageSizeOptions={[10, 25, 100]}

@@ -505,6 +505,8 @@ fullWidth variant="outlined">
       <DataGrid
         apiRef={apiRef}
         rows={services}
+        hideScrollbar={true}
+
         columns={columns}
         pageSize={5}
         checkboxSelection={false}

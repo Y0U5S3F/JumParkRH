@@ -706,6 +706,8 @@ export default function DemandeCongePage() {
         apiRef={apiRef}
         rows={conges}
         columns={columns}
+        hideScrollbar={true}
+
         pageSize={5}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
