@@ -20,6 +20,7 @@ const Layout = () => {
           flexGrow: 1, // Allow the content to grow and fill the remaining space
           overflowX: "hidden", // Prevent horizontal scrolling in the content area
           overflowY: "auto", // Allow vertical scrolling if content overflows
+          paddingBottom: (theme) => `calc(${theme.spacing(5)} * 2)`, // Dynamically calculate padding
         }}
       >
         <Outlet />

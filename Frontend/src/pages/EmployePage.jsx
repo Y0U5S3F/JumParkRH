@@ -1,17 +1,15 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Employe from "../models/employe";
 import {
   DataGrid,
   useGridApiRef,
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import ChatBot from "../components/ChatBot"; // Import ChatBot component
-import {
-  
-  People,
-  
-} from "@mui/icons-material";
+import { People } from "@mui/icons-material";
 import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
 
 import {
@@ -36,8 +34,8 @@ import {
   InputLabel,
   IconButton,
 } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
-import GetApp from '@mui/icons-material/GetApp';
+import AddIcon from "@mui/icons-material/Add";
+import GetApp from "@mui/icons-material/GetApp";
 import { makeStyles } from "@mui/styles";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -51,7 +49,7 @@ import {
   deleteEmployee,
   addEmployee,
   updateEmployee,
-  DownloadPresence
+  DownloadPresence,
 } from "../service/EmployeService";
 import { fetchDepartements } from "../service/DepartementService";
 import { fetchServices } from "../service/ServiceService";
@@ -129,7 +127,6 @@ const useStyles = makeStyles((theme) => ({
 export default function EmployePage() {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-
   const [employees, setEmployees] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -140,7 +137,7 @@ export default function EmployePage() {
   const [openViewModal, setOpenViewModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
   const apiRef = useGridApiRef();
   const [snackbar, setSnackbar] = useState({
@@ -150,10 +147,11 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
   });
   const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
   const classes = useStyles();
+  const [showPassword, setShowPassword] = useState(false);
   const [newEmployee, setNewEmployee] = useState(new Employe());
   const [openPresenceModal, setOpenPresenceModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current date
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewEmployee((prev) => ({ ...prev, [name]: value }));
@@ -166,10 +164,10 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
   };
 
   const [pageTitle, setPageTitle] = useState("Personnel");
-  
-    useEffect(() => {
-      document.title = pageTitle; // Update the document title
-    }, [pageTitle]);
+
+  useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -210,7 +208,7 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
     setEmployeeToDelete(employee);
     setOpenDeleteDialog(true);
   };
-  
+
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -268,7 +266,6 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
           message: "Employee added successfully!",
         });
         setRefresh((prev) => prev + 1);
-
       } else {
         setSnackbar({
           open: true,
@@ -277,7 +274,6 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
         });
       }
 
-      
       setOpen(false);
       setNewEmployee(
         new Employe(
@@ -341,33 +337,31 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
     }
   };
 
-
-
-const handleConfirmDelete = async () => {
-  try {
-    await deleteEmployee(employeeToDelete.matricule); // Call the service
-    setEmployees((prev) =>
-      prev.filter((employee) => employee.matricule !== employeeToDelete.matricule)
-    );
-    setSnackbar({
-      open: true,
-      severity: "success",
-      message: "Employé supprimé avec succès!",
-    });
-    
-  } catch (error) {
-    console.error("Error deleting employee:", error);
-    setSnackbar({
-      open: true,
-      severity: "error",
-      message: "Erreur lors de la suppression de l'employé.",
-    });
-    setRefresh((prev) => prev + 1);
-
-  } finally {
-    handleCloseDeleteDialog();
-  }
-};
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteEmployee(employeeToDelete.matricule); // Call the service
+      setEmployees((prev) =>
+        prev.filter(
+          (employee) => employee.matricule !== employeeToDelete.matricule
+        )
+      );
+      setSnackbar({
+        open: true,
+        severity: "success",
+        message: "Employé supprimé avec succès!",
+      });
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors de la suppression de l'employé.",
+      });
+      setRefresh((prev) => prev + 1);
+    } finally {
+      handleCloseDeleteDialog();
+    }
+  };
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -383,7 +377,7 @@ const handleConfirmDelete = async () => {
       const reportMonth = selectedDate.format("MM");
       const reportYear = selectedDate.format("YYYY");
       await DownloadPresence(reportYear, reportMonth);
-      setOpenPresenceModal(false); 
+      setOpenPresenceModal(false);
     } catch (error) {
       console.error("Error downloading salaire:", error);
     }
@@ -428,7 +422,13 @@ const handleConfirmDelete = async () => {
       flex: 0.5, // Ensure it takes less space but remains visible
       minWidth: 150, // Set a minimum width to ensure it is always fully visible
       renderCell: (params) => (
-        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
           <IconButton onClick={() => handleView(params.row)}>
             <VisibilityIcon />
           </IconButton>
@@ -445,98 +445,132 @@ const handleConfirmDelete = async () => {
 
   return (
     <Container className={classes.container}>
-      
       <Box className={classes.topBar}>
-            <Box className={classes.titleContainer}>
-                <People />
-                <Typography variant="h6" fontWeight="bold">
-                  Personnel
-                </Typography>
-              </Box>
-              <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
-              <Button
-                size="medium"
-                variant="outlined"
-                startIcon={<GetApp />}
-                sx={{
-                  "&:hover": {
-                    backgroundColor: (theme) => theme.palette.primary.main,
-                    color: "white",
-                    borderColor: (theme) => theme.palette.primary.main,
-                  },
-                }}
-                onClick={() => setOpenPresenceModal(true)} // Open the modal
-              >
-                Télécharger Presence
-              </Button>
-              <Button
-                size="medium"
-                variant="outlined"
-                startIcon={<AddIcon />}
-                sx={{
-                  '&:hover': {
-                    backgroundColor: (theme) => theme.palette.primary.main,
-                    color: 'white',
-                    borderColor: (theme) => theme.palette.primary.main,
-                  },
-                }}
-                onClick={() => setOpen(true)}
-              >
-                Ajouter Employé
-              </Button>
-        <ThemeToggle  />
-              </Box>
-              
-
-            </Box>
-
-    {/* Modal for Month and Year Selection */}
-    <Modal open={openPresenceModal} onClose={() => setOpenPresenceModal(false)}>
-      <Box className={classes.PresenceModalStyle}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          Sélectionner le Mois et l'Année
-        </Typography>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            views={["year", "month"]} // Restrict to year and month selection
-            label="Mois et Année"
-            value={selectedDate}
-            onChange={(newValue) => setSelectedDate(newValue)}
-            sx={{ width: "100%", marginBottom: "20px" }}
-          />
-        </LocalizationProvider>
-        <Box display="flex" justifyContent="space-between" mt={2}>
-          <Button variant="outlined" onClick={() => setOpenPresenceModal(false)}>
-            Annuler
+        <Box className={classes.titleContainer}>
+          <People />
+          <Typography variant="h6" fontWeight="bold">
+            Personnel
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <Button
+            size="medium"
+            variant="outlined"
+            startIcon={<GetApp />}
+            sx={{
+              "&:hover": {
+                backgroundColor: (theme) => theme.palette.primary.main,
+                color: "white",
+                borderColor: (theme) => theme.palette.primary.main,
+              },
+            }}
+            onClick={() => setOpenPresenceModal(true)} // Open the modal
+          >
+            Télécharger Presence
           </Button>
           <Button
-            variant="contained"
-            color="primary"
-            onClick={handleDownloadPresence}
+            size="medium"
+            variant="outlined"
+            startIcon={<AddIcon />}
+            sx={{
+              "&:hover": {
+                backgroundColor: (theme) => theme.palette.primary.main,
+                color: "white",
+                borderColor: (theme) => theme.palette.primary.main,
+              },
+            }}
+            onClick={() => setOpen(true)}
           >
-            Télécharger
+            Ajouter Employé
           </Button>
+          <ThemeToggle />
         </Box>
       </Box>
-    </Modal>
+      {/* Modal for Month and Year Selection */}
+      <Modal
+        open={openPresenceModal}
+        onClose={() => setOpenPresenceModal(false)}
+      >
+        <Box className={classes.modalStyle}>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Sélectionner le Mois et l'Année
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpenPresenceModal(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
+          </Box>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              views={["year", "month"]} // Restrict to year and month selection
+              label="Mois et Année"
+              value={selectedDate}
+              onChange={(newValue) => setSelectedDate(newValue)}
+              sx={{ width: "100%" }}
+            />
+          </LocalizationProvider>
+          <Box display="flex" justifyContent="space-between" mt={2}>
+            <Button variant="outlined" onClick={() => setSelectedDate(null)}>
+              Réinitialiser
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleDownloadPresence}
+            >
+              Télécharger
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       {/* View Modal */}
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
-        <Box sx={{display:"flex",justifyContent:"space-between"}}>
-
-          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
-            Détails de l'employé
-          </Typography>
-          <CloseIcon onClick={()=> setOpen(false)} sx={{
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-            borderRadius: '50%', // Circular shape
-          },
-        }}/>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Détails de l'employé
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
           </Box>
           {selectedEmployee && (
             <Box className={classes.contentContainer}>
-              <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}}fontWeight={600}  gutterBottom>
+              <Typography
+                variant="body1"
+                sx={{ color: (theme) => theme.palette.primary.main }}
+                fontWeight={600}
+                gutterBottom
+              >
                 Informations personnelles
               </Typography>
               <Divider sx={{ mb: 2 }} />
@@ -601,7 +635,13 @@ const handleConfirmDelete = async () => {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}} fontWeight={600}color="white" gutterBottom>
+                <Typography
+                  variant="body1"
+                  sx={{ color: (theme) => theme.palette.primary.main }}
+                  fontWeight={600}
+                  color="white"
+                  gutterBottom
+                >
                   Informations personnelles
                 </Typography>
               </Box>
@@ -630,9 +670,15 @@ const handleConfirmDelete = async () => {
                   </Typography>
                 </Grid>
               </Grid>
-              
+
               <Box sx={{ mt: 2 }}>
-                <Typography sx={{color: (theme) => theme.palette.primary.main}}variant="body1" fontWeight={600}color="white" gutterBottom>
+                <Typography
+                  sx={{ color: (theme) => theme.palette.primary.main }}
+                  variant="body1"
+                  fontWeight={600}
+                  color="white"
+                  gutterBottom
+                >
                   Contact D'urgence
                 </Typography>
               </Box>
@@ -652,7 +698,12 @@ const handleConfirmDelete = async () => {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="body1" sx={{color: (theme) => theme.palette.primary.main}}fontWeight={600} gutterBottom>
+                <Typography
+                  variant="body1"
+                  sx={{ color: (theme) => theme.palette.primary.main }}
+                  fontWeight={600}
+                  gutterBottom
+                >
                   Position
                 </Typography>
               </Box>
@@ -675,7 +726,12 @@ const handleConfirmDelete = async () => {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography sx={{color: (theme) => theme.palette.primary.main}}variant="body1" fontWeight={600}  gutterBottom>
+                <Typography
+                  sx={{ color: (theme) => theme.palette.primary.main }}
+                  variant="body1"
+                  fontWeight={600}
+                  gutterBottom
+                >
                   Informations Banquaire
                 </Typography>
               </Box>
@@ -684,7 +740,8 @@ const handleConfirmDelete = async () => {
               <Grid container sx={{}} spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
-                    <strong>Salaire de base:</strong> {selectedEmployee.salaire_base}
+                    <strong>Salaire de base:</strong>{" "}
+                    {selectedEmployee.salaire_base}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
@@ -694,12 +751,14 @@ const handleConfirmDelete = async () => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
-                    <strong>Compte Bancaire:</strong> {selectedEmployee.compte_bancaire}
+                    <strong>Compte Bancaire:</strong>{" "}
+                    {selectedEmployee.compte_bancaire}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
-                    <strong>RIB Bancaire:</strong> {selectedEmployee.rib_bancaire}
+                    <strong>RIB Bancaire:</strong>{" "}
+                    {selectedEmployee.rib_bancaire}
                   </Typography>
                 </Grid>
               </Grid>
@@ -710,23 +769,30 @@ const handleConfirmDelete = async () => {
       {/* Add Modal */}
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
-          <Box sx={{display:"flex",justifyContent:"space-between"}}>
-          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom >
-            Ajouter en employé
-          </Typography>
-          <CloseIcon onClick={()=> setOpen(false)} sx={{
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-            borderRadius: '50%', // Circular shape
-          },
-        }}/>
-          
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Ajouter en employé
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
           </Box>
           <Box className={classes.contentContainer}>
-            <Typography variant="body1" fontWeight={600} gutterBottom >
+            <Typography variant="body1" fontWeight={600} gutterBottom>
               Informations personnelles
             </Typography>
-            <Divider sx={{mb:2}}/>
+            <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
@@ -778,14 +844,24 @@ const handleConfirmDelete = async () => {
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
-                  id="outlined-search"
+                  id="outlined-password"
                   label="Mot de passe"
-                  type="search"
+                  type={showPassword ? "text" : "password"} // Toggle between text and password
                   variant="outlined"
                   name="password"
                   value={newEmployee.password}
                   onChange={handleInputChange}
                   fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -1059,7 +1135,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Salaire de base"
@@ -1126,45 +1202,43 @@ const handleConfirmDelete = async () => {
           </Box>
         </Box>
       </Modal>
-
-      <Dialog
-  open={openDeleteDialog}
-  onClose={handleCloseDeleteDialog}
->
-  <DialogTitle>Confirmer la suppression</DialogTitle>
-  <DialogContent>
-    <DialogContentText>
-      Êtes-vous sûr de vouloir supprimer cet employé ?
-    </DialogContentText>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseDeleteDialog} color="primary">
-      Annuler
-    </Button>
-    <Button
-      onClick={handleConfirmDelete}
-      color="primary"
-      autoFocus
-    >
-      Oui
-    </Button>
-  </DialogActions>
-</Dialog>
-
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirmer la suppression</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer cet employé ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+            Oui
+          </Button>
+        </DialogActions>
+      </Dialog>
       {/* Edit Modal */}
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
-                    <Box sx={{display:"flex",justifyContent:"space-between"}}>
-
-          <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
-            Modifier Personnel
-          </Typography>
-          <CloseIcon onClick={()=> setOpen(false)} sx={{
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-            borderRadius: '50%', // Circular shape
-          },
-        }}/>
+          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
+              Modifier Personnel
+            </Typography>
+            <CloseIcon
+              onClick={() => setOpen(false)}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
+                  borderRadius: "50%", // Circular shape
+                },
+              }}
+            />
           </Box>
           <Box className={classes.contentContainer}>
             <Typography variant="body1" fontWeight={600} gutterBottom>
@@ -1221,17 +1295,27 @@ const handleConfirmDelete = async () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <TextField
-                  id="outlined-search"
-                  label="Mot de Passe"
-                  type="search"
-                  variant="outlined"
-                  name="password"
-                  value={editEmployee.password}
-                  onChange={handleInputModifyChange}
-                  fullWidth
-                />
-              </Grid>
+  <TextField
+    id="outlined-password-edit"
+    label="Mot de Passe"
+    type={showPassword ? "text" : "password"} // Toggle between text and password
+    variant="outlined"
+    name="password"
+    value={editEmployee.password}
+    onChange={handleInputModifyChange}
+    fullWidth
+    InputProps={{
+      endAdornment: (
+        <IconButton
+          onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+          edge="end"
+        >
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      ),
+    }}
+  />
+</Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
@@ -1503,7 +1587,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Salaire de base"
@@ -1570,12 +1654,13 @@ const handleConfirmDelete = async () => {
           </Box>
         </Box>
       </Modal>
-                      
       <DataGrid
-      sx={{mt:"4px",
-        '& .MuiDataGrid-virtualScroller::-webkit-scrollbar': {display: 'none' }
-      }}
-      
+        sx={{
+          mt: "4px",
+          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
+            display: "none",
+          },
+        }}
         apiRef={apiRef}
         rows={employees}
         columns={columns}
@@ -1586,7 +1671,6 @@ const handleConfirmDelete = async () => {
         autosizeOptions={expand}
         pagination
         hideScrollbar={true}
-
         // autosizeOnMount
 
         pageSizeOptions={[10, 25, 100]}
@@ -1596,7 +1680,6 @@ const handleConfirmDelete = async () => {
           },
         }}
       />
-
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={snackbar.open}
@@ -1611,8 +1694,7 @@ const handleConfirmDelete = async () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-                  <ChatBot /> {/* Add ChatBot */}
-      
+      <ChatBot /> {/* Add ChatBot */}
     </Container>
   );
 }

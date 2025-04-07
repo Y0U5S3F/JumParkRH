@@ -20,6 +20,7 @@ import {
   Divider,
   Snackbar,
   Select,
+  Alert,
   MenuItem,
   FormControl,
   InputLabel,
@@ -384,6 +385,10 @@ export default function SimpleCalendar() {
       setIsImportingPresence(false); // Set loading state for importPresence to false
     }
   };
+  
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   return (
     <Container className={classes.container} maxWidth={false}>
@@ -487,9 +492,9 @@ export default function SimpleCalendar() {
                     },
                   }}/>
           </Box>
-          <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
-            
+          <Divider sx={{ mb: 2 }} />
+
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
                 <FormControl fullWidth variant="outlined">
@@ -833,6 +838,20 @@ export default function SimpleCalendar() {
           </Box>
         </Box>
       </Modal>
+      <Snackbar
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              open={snackbar.open}
+              autoHideDuration={6000}
+              onClose={handleCloseSnackbar}
+            >
+              <Alert
+                onClose={handleCloseSnackbar}
+                severity={snackbar.severity}
+                variant="filled"
+              >
+                {snackbar.message}
+              </Alert>
+            </Snackbar>
     </Container>
   );
 }
