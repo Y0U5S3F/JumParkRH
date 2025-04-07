@@ -3,7 +3,6 @@ from rest_framework import generics
 from .models import Appareil
 from .serializers import AppareilSerializer
 import psycopg2
-from psycopg2 import sql
 from openai import OpenAI
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -143,7 +142,7 @@ def AIChatBot(request):
         """Send the user query and SQL results to OpenAI for human-friendly formatting."""
         response = client.chat.completions.create(
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that humanizes SQL query results for users. YOU NEVER RETURN ANY SENSETIVE DATA LIKE PASSWORDS, EMAILS, OR ANY OTHER SENSITIVE DATA RELATIVE TO THE DATABASE LOGIN CREDENTIALS."},
+                {"role": "system", "content": "You are a helpful assistant that humanizes SQL query results for users.YOU NEVER RETURN ANY SENSETIVE DATA LIKE PASSWORDS, EMAILS, OR ANY OTHER SENSITIVE DATA RELATIVE TO THE DATABASE LOGIN CREDENTIALS."},
                 {"role": "user", "content": f"Here is the user query: '{user_query}'\n\nHere are the raw SQL results: {sql_results}\n\nPlease humanize and format the results in a user-friendly way."}
             ],
             model=MODEL_NAME,
