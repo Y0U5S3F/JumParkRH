@@ -157,4 +157,4 @@ def AIChatBot(request):
     humanized_results = humanize_sql_results(user_query, sql_results)
 
     # Return the humanized results as JSON response
-    return Response({"humanized_results": humanized_results})
+    return Response({"result": humanized_results})
