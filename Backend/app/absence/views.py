@@ -10,6 +10,10 @@ from conge.models import Conge
 from django.db.models import Count, Sum
 from jourferie.models import JourFerie
 from salaire.models import Salaire
+from datetime import timedelta
+from datetime import date
+
+from django.db.models.functions import TruncMonth
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 
@@ -70,6 +74,17 @@ def dashboard_stats(request):
         total=Sum('salaire_net')
     )["total"] or 0
 
+    five_months_ago = today.replace(day=1) - timedelta(days=150)  # Approximation for 5 months
+
+    # Total absences in the last 5 months grouped by month
+    absences_last_5_months = (
+    Absence.objects.filter(date__gte=five_months_ago, date__lte=today)
+    .annotate(month=TruncMonth('date'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+)
+
     response_data = {
         "statistiques": {
             "totalemployes": total_employes,
@@ -80,7 +95,8 @@ def dashboard_stats(request):
         },
         "employedistribution": list(employe_distribution),
         "employes_on_leave": employes_on_leave,
-        "birthdays_this_month": list(birthdays_this_month)
+        "birthdays_this_month": list(birthdays_this_month),
+                "absences_last_5_months": list(absences_last_5_months),  # Add absences data
     }
 
     return JsonResponse(response_data)

@@ -126,6 +126,7 @@ const PieChartCard = ({ data, loading }) => {
         flexDirection: "column",
         justifyContent: "center",
         height: "90%", // Set a fixed height
+        
         padding: "8px",
       }}
     >
@@ -163,7 +164,7 @@ const PieChartCard = ({ data, loading }) => {
                 })),
               },
             ]}
-            width={400}
+            width={360}
             height={200}
           />
         )}
@@ -197,7 +198,7 @@ const BarChartCard = ({ data, loading }) => {
             mb: "10px", // Reduces line spacing
           }}
         >
-          Employés les plus absents
+          Absences des 5 derniers mois
         </Typography>
         {loading ? (
           <CircularProgress color="primary" />
@@ -209,7 +210,7 @@ const BarChartCard = ({ data, loading }) => {
               { dataKey: "absences", label: "Absences", color: "#FCB859" },
             ]}
             height={200}
-            width={350}
+            width={300}
           />
         )}
       </CardContent>
@@ -463,8 +464,16 @@ export default function Dashboard() {
     <PieChartCard data={dashboardData.employedistribution || []} loading={loading} />
   </Grid>
   <Grid item xs={12} md={6} lg={4}>
-    <BarChartCard data={absenceData} loading={loading} />
-  </Grid>
+  <BarChartCard
+    data={
+      (dashboardData.absences_last_5_months || []).map((item) => ({
+        name: dayjs(item.month).format("MMMM"), // Convert month number to name
+        absences: item.total,
+      }))
+    }
+    loading={loading}
+  />
+</Grid>
   <Grid item xs={12} lg={3}>
     <BirthdaysCard data={dashboardData.birthdays_this_month || []} loading={loading} />
   </Grid>
