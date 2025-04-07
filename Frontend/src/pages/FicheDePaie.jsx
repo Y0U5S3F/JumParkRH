@@ -62,8 +62,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 450,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -164,30 +165,28 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
   };
 
   const columns = [
-    { field: "id", headerName: "id", flex: 0.5 },
-    { field: "employe", headerName: "Matricule", flex: 1 },
-    { field: "salaire_net", headerName: "Salaire Net", flex: 1 },
-    { field: "mode_paiement", headerName: "Mode de Paiement", flex: 1 },
-    {
-      field: "created_at",
-      headerName: "Date (Mois:Année)",
-      flex: 1,
-    },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "employe", headerName: "Matricule", flex: 1, minWidth: 150 },
+    { field: "salaire_net", headerName: "Salaire Net", flex: 1, minWidth: 150 },
+    { field: "mode_paiement", headerName: "Mode de Paiement", flex: 1, minWidth: 150 },
+    { field: "created_at", headerName: "Date (Mois:Année)", flex: 1, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
+      minWidth: 150, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
           <IconButton
-          onClick={() => {
-            setFicheDePaieToDelete(params.row.id); // Set the ID of the fiche de paie to delete
-            setOpenDeleteDialog(true); // Open the delete dialog
-          }}
-        >            <DeleteIcon />
+            onClick={() => {
+              setFicheDePaieToDelete(params.row.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
+            <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => handleDownload(params.row.id)}>
             <DownloadIcon />
@@ -583,7 +582,7 @@ const handleAddSalaire = async () => {
               </Grid>
 
               {/* Salaire Base & Temps */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Salaire de base"
@@ -595,7 +594,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Jour/Heure travaillée"
@@ -609,7 +608,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Salaire"
@@ -623,7 +622,7 @@ const handleAddSalaire = async () => {
               </Grid>
 
               {/* Heures Supplémentaires */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prix Heure Supplémentaire"
@@ -634,7 +633,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Nombre d'heures supp."
@@ -646,7 +645,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prix Total Supplémentaires"
@@ -660,7 +659,7 @@ const handleAddSalaire = async () => {
               </Grid>
 
               {/* Primes et Deductions */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prime de présence"
@@ -671,7 +670,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prime de transport"
@@ -682,7 +681,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Acompte"
@@ -693,7 +692,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Impôts"
@@ -704,7 +703,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Appoint +"
@@ -715,7 +714,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Appoint -"
@@ -727,7 +726,7 @@ const handleAddSalaire = async () => {
                 />
               </Grid>
               {/* Mode de paiement */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <FormControl size="small" fullWidth>
                   <InputLabel>Mode de paiement</InputLabel>
                   <Select
@@ -744,21 +743,23 @@ const handleAddSalaire = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-
+              </Grid>
+              <Grid container spacing={2} sx={{ mt: 1 }}>
               {/* CNSS & CSS */}
-              <Grid item xs={4}>
+              <Grid item md={6} xs={12}>
                 <Typography variant="body1">
                   CNSS: {parseFloat(ficheDePaieData.cnss).toFixed(2)}
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item md={6} xs={12}>
                 <Typography variant="body1">
                   CSS: {parseFloat(ficheDePaieData.css).toFixed(2)}
                 </Typography>
               </Grid>
-
+              </Grid>
+              <Grid container spacing={2} sx={{ mt: 1 }}>
               {/* Congés et Jours Fériés */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Jours fériés"
@@ -770,7 +771,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prix jours fériés"
@@ -781,7 +782,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Total jours fériés"
@@ -793,7 +794,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Congés payés"
@@ -805,7 +806,7 @@ const handleAddSalaire = async () => {
                   disabled
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Prix congés payés"
@@ -816,7 +817,7 @@ const handleAddSalaire = async () => {
                   onChange={handleInputChange}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <TextField
                   size="small"
                   label="Total congés payés"
@@ -830,7 +831,7 @@ const handleAddSalaire = async () => {
               </Grid>
 
               {/* Absences */}
-              <Grid item xs={4}>
+              <Grid item lg={4} md={6} xs={12}>
                 <Typography variant="body1">
                   Jours absence:{" "}
                   {parseFloat(ficheDePaieData.jour_abcense).toFixed(2)}
@@ -915,7 +916,7 @@ const handleAddSalaire = async () => {
         </Grid>
 
         {/* Salaire Base & Temps */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Salaire de base"
@@ -926,7 +927,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Jour/Heure travaillée"
@@ -937,7 +938,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Salaire"
@@ -950,7 +951,7 @@ const handleAddSalaire = async () => {
         </Grid>
 
         {/* Heures Supplémentaires */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prix Heure Supplémentaire"
@@ -961,7 +962,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Nombre d'heures supp."
@@ -972,7 +973,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prix Total Supplémentaires"
@@ -985,7 +986,7 @@ const handleAddSalaire = async () => {
         </Grid>
 
         {/* Primes et Deductions */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prime de présence"
@@ -996,7 +997,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prime de transport"
@@ -1007,7 +1008,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Acompte"
@@ -1018,7 +1019,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Impôts"
@@ -1029,7 +1030,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Appoint +"
@@ -1040,7 +1041,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Appoint -"
@@ -1053,7 +1054,7 @@ const handleAddSalaire = async () => {
         </Grid>
 
         {/* Mode de paiement */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <FormControl size="small" fullWidth>
             <InputLabel>Mode de paiement</InputLabel>
             <Select
@@ -1068,21 +1069,24 @@ const handleAddSalaire = async () => {
             </Select>
           </FormControl>
         </Grid>
-
+        </Grid>
+        <Grid container spacing={2} sx={{mt:1}}>
         {/* CNSS & CSS */}
-        <Grid item xs={6}>
+        <Grid item md={6} xs={12}>
           <Typography variant="body1">
             CNSS: {selectedFicheDePaie?.cnss || "0.00"}
           </Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid item md={6} xs={12}>
           <Typography variant="body1">
             CSS: {selectedFicheDePaie?.css || "0.00"}
           </Typography>
         </Grid>
+        </Grid>
+        <Grid container spacing={2} sx={{mt:1}}>
 
         {/* Congés et Jours Fériés */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12} >
           <TextField
             size="small"
             label="Jours fériés"
@@ -1093,7 +1097,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prix jours fériés"
@@ -1104,7 +1108,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Total jours fériés"
@@ -1115,7 +1119,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Congés payés"
@@ -1126,7 +1130,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Prix congés payés"
@@ -1137,7 +1141,7 @@ const handleAddSalaire = async () => {
             onChange={handleUpdateInputChange}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <TextField
             size="small"
             label="Total congés payés"
@@ -1150,7 +1154,7 @@ const handleAddSalaire = async () => {
         </Grid>
 
         {/* Absences */}
-        <Grid item xs={4}>
+        <Grid item lg={4} md={6} xs={12}>
           <Typography variant="body1">
             Jours absence: {selectedFicheDePaie?.jour_abcense || "0.00"}
           </Typography>

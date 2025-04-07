@@ -57,8 +57,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 400,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -328,17 +329,18 @@ export default function DemandeCongePage() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 1 },
-    { field: "employe_name", headerName: "Employé", flex: 1 }, // ✅ Display full name
-    { field: "typeConge_nom", headerName: "Type de Congé", flex: 1 }, // Display type_conge.nom
-    { field: "startDate", headerName: "Date Début", flex: 1 },
-    { field: "endDate", headerName: "Date Fin", flex: 1 },
-    { field: "status", headerName: "Statut", flex: 1 },
-    { field: "notes", headerName: "Notes", flex: 1 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "employe_name", headerName: "Employé", flex: 1, minWidth: 100 },
+    { field: "typeConge_nom", headerName: "Type de Congé", flex: 1, minWidth: 150 },
+    { field: "startDate", headerName: "Date Début", flex: 1, minWidth: 150 },
+    { field: "endDate", headerName: "Date Fin", flex: 1, minWidth: 150 },
+    { field: "status", headerName: "Statut", flex: 1, minWidth: 100 },
+    { field: "notes", headerName: "Notes", flex: 1, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
+      minWidth: 100, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
@@ -420,7 +422,7 @@ export default function DemandeCongePage() {
             <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <Autocomplete
                   options={filteredEmployees}
                   getOptionLabel={(option) =>
@@ -444,7 +446,7 @@ export default function DemandeCongePage() {
                   )}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Type de congé</InputLabel>
                   <Select
@@ -461,7 +463,7 @@ export default function DemandeCongePage() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -477,7 +479,7 @@ export default function DemandeCongePage() {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -496,7 +498,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item  xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -576,7 +578,7 @@ export default function DemandeCongePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <Autocomplete
                   options={employees}
                   getOptionLabel={(option) =>
@@ -601,7 +603,7 @@ export default function DemandeCongePage() {
                   }
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Type de congé</InputLabel>
                   <Select
@@ -618,7 +620,7 @@ export default function DemandeCongePage() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -633,7 +635,7 @@ export default function DemandeCongePage() {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -652,7 +654,7 @@ export default function DemandeCongePage() {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}

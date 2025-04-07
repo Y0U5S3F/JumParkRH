@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 // Change this line at the top of your file
+import ChatBot from "../components/ChatBot";
 import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
 import {
   Container,
@@ -125,6 +126,7 @@ const PieChartCard = ({ data, loading }) => {
         flexDirection: "column",
         justifyContent: "center",
         height: "90%", // Set a fixed height
+        
         padding: "8px",
       }}
     >
@@ -162,7 +164,7 @@ const PieChartCard = ({ data, loading }) => {
                 })),
               },
             ]}
-            width={400}
+            width={360}
             height={200}
           />
         )}
@@ -196,7 +198,7 @@ const BarChartCard = ({ data, loading }) => {
             mb: "10px", // Reduces line spacing
           }}
         >
-          Employés les plus absents
+          Absences des 5 derniers mois
         </Typography>
         {loading ? (
           <CircularProgress color="primary" />
@@ -208,7 +210,7 @@ const BarChartCard = ({ data, loading }) => {
               { dataKey: "absences", label: "Absences", color: "#FCB859" },
             ]}
             height={200}
-            width={350}
+            width={300}
           />
         )}
       </CardContent>
@@ -379,132 +381,135 @@ export default function Dashboard() {
 
       </Box>
       <Box className="mainContent">
-        <Grid container spacing={3}>
-          <Grid item xs={3}>
-            <SummaryCard
-              title="Total employés"
-              value={
-                dashboardData.statistiques?.totalemployes || "Chargement..."
-              }
-              subValue="employés"
-              icon={
-                <PeopleIcon
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                    fontSize: 32,
-                  }}
-                />
-              }
-              loading={loading}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <SummaryCard
-              title="Total départements"
-              value={
-                dashboardData.statistiques?.totaldepartements || "Chargement..."
-              }
-              subValue="départements"
-              icon={
-                <BusinessIcon
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                    fontSize: 32,
-                  }}
-                />
-              }
-              loading={loading}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <SummaryCard
-              title="Congés en attente"
-              value={
-                dashboardData.statistiques?.pendingvacation !== undefined
-                  ? dashboardData.statistiques.pendingvacation
-                  : loading
-                  ? "Chargement..."
-                  : "0"
-              }
-              subValue="demandes"
-              icon={
-                <EventNoteIcon
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                    fontSize: 32,
-                  }}
-                />
-              }
-              loading={loading}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <SummaryCard
-              title="Prochain jour férié"
-              value={
-                dashboardData.statistiques?.nextpublicholiday &&
-                dashboardData.statistiques.nextpublicholiday !== "No upcoming holidays"
-                  ? dayjs(dashboardData.statistiques.nextpublicholiday).format(
-                      "D MMM"
-                    )
-                  : loading
-                  ? "Chargement..."
-                  : "Aucun"
-              }
-              icon={
-                <CelebrationIcon
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                    fontSize: 32,
-                  }}
-                />
-              }
-              loading={loading}
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={3}>
-          <Grid item xs={5}>
-            <PieChartCard data={dashboardData.employedistribution || []} loading={loading} />
-          </Grid>
-          <Grid item xs={4}>
-            <BarChartCard data={absenceData} loading={loading} />
-          </Grid>
-          <Grid item xs={3}>
-            <BirthdaysCard data={dashboardData.birthdays_this_month || []} loading={loading} />
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography
-            fontWeight="semi-bold"
-            variant="body1"
-            sx={{
-              fontSize: "1rem",
-              color: (theme) => theme.palette.primary.main,
-              lineHeight: 1.2,
-              mb: "10px", // Reduces line spacing
-            }}
-          >
-            Employés en congé aujourd'hui
-          </Typography>
-          <Paper>
-            <div style={{ height: "100%", width: "100%" }}>
-              <DataGrid
-                apiRef={apiRef}
-                rows={dashboardData.employes_on_leave || []}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                autoHeight
-                disableColumnMenu
-                disableColumnSelector
-                disableSelectionOnClick
-                disableMultipleColumnsSorting
-                loading={loading}
-              />
-            </div>
-          </Paper>
-        </Grid>
+      <Grid container spacing={3}>
+  <Grid item xs={12} sm={6} md={3}>
+    <SummaryCard
+      title="Total employés"
+      value={dashboardData.statistiques?.totalemployes || "Chargement..."}
+      subValue="employés"
+      icon={
+        <PeopleIcon
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            fontSize: 32,
+          }}
+        />
+      }
+      loading={loading}
+    />
+  </Grid>
+  <Grid item xs={12} sm={6} md={3}>
+    <SummaryCard
+      title="Total départements"
+      value={dashboardData.statistiques?.totaldepartements || "Chargement..."}
+      subValue="départements"
+      icon={
+        <BusinessIcon
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            fontSize: 32,
+          }}
+        />
+      }
+      loading={loading}
+    />
+  </Grid>
+  <Grid item xs={12} sm={6} md={3}>
+    <SummaryCard
+      title="Congés en attente"
+      value={
+        dashboardData.statistiques?.pendingvacation !== undefined
+          ? dashboardData.statistiques.pendingvacation
+          : loading
+          ? "Chargement..."
+          : "0"
+      }
+      subValue="demandes"
+      icon={
+        <EventNoteIcon
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            fontSize: 32,
+          }}
+        />
+      }
+      loading={loading}
+    />
+  </Grid>
+  <Grid item xs={12} sm={6} md={3}>
+    <SummaryCard
+      title="Prochain jour férié"
+      value={
+        dashboardData.statistiques?.nextpublicholiday &&
+        dashboardData.statistiques.nextpublicholiday !== "No upcoming holidays"
+          ? dayjs(dashboardData.statistiques.nextpublicholiday).format("D MMM")
+          : loading
+          ? "Chargement..."
+          : "Aucun"
+      }
+      icon={
+        <CelebrationIcon
+          sx={{
+            color: (theme) => theme.palette.primary.main,
+            fontSize: 32,
+          }}
+        />
+      }
+      loading={loading}
+    />
+  </Grid>
+</Grid>
+<Grid container spacing={3} >
+  <Grid item xs={12} md={6} lg={5}>
+    <PieChartCard data={dashboardData.employedistribution || []} loading={loading} />
+  </Grid>
+  <Grid item xs={12} md={6} lg={4}>
+  <BarChartCard
+    data={
+      (dashboardData.absences_last_5_months || []).map((item) => ({
+        name: dayjs(item.month).format("MMMM"), // Convert month number to name
+        absences: item.total,
+      }))
+    }
+    loading={loading}
+  />
+</Grid>
+  <Grid item xs={12} lg={3}>
+    <BirthdaysCard data={dashboardData.birthdays_this_month || []} loading={loading} />
+  </Grid>
+</Grid>
+<Grid item xs={12} >
+  <Typography
+    fontWeight="semi-bold"
+    variant="body1"
+    sx={{
+      fontSize: "1rem",
+      color: (theme) => theme.palette.primary.main,
+      lineHeight: 1.2,
+      mb: "10px",
+    }}
+  >
+    Employés en congé aujourd'hui
+  </Typography>
+  <Paper>
+    <div style={{ height: "100%", width: "100%" }}>
+      <DataGrid
+        apiRef={apiRef}
+        rows={dashboardData.employes_on_leave || []}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        autoHeight
+        disableColumnMenu
+        disableColumnSelector
+        disableSelectionOnClick
+        disableMultipleColumnsSorting
+        loading={loading}
+      />
+    </div>
+  </Paper>
+</Grid>
+
       </Box>
       <Snackbar
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -520,6 +525,8 @@ export default function Dashboard() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+            
+      
     </Container>
   );
 }

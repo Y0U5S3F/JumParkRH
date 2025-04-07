@@ -50,8 +50,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 250,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -247,24 +248,26 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
   };
 
   const columns = [
-    { field: "id", headerName: "id", flex: 1 },
-    { field: "nom", headerName: "Nom", flex: 7 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 4, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      flex: 0.6,
+      minWidth: 100, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <>
           <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon />
           </IconButton>
         </>
       ),
     },
   ];
+  
 
   return (
     <Container className={classes.container}>
@@ -413,6 +416,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         getRowId={(row) => row.id}
         autosizeOptions={expand}
         pagination
+        
         pageSizeOptions={[10, 25, 100]}
         initialState={{
           pagination: {

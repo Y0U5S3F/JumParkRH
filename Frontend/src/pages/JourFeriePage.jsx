@@ -48,8 +48,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 250,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -175,13 +176,14 @@ export default function JourFeriePage() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nom", headerName: "Nom", flex: 1 },
-    { field: "date", headerName: "Date", flex: 1 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 1, minWidth: 150 },
+    { field: "date", headerName: "Date", flex: 2, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.5,
+      flex: 0.6,
+      minWidth: 150, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => setEditJourFerie(params.row) || setOpenEditModal(true)}>
@@ -242,7 +244,7 @@ export default function JourFeriePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
                   name="nom"
@@ -253,7 +255,7 @@ export default function JourFeriePage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Date"
                   type="date"
@@ -302,7 +304,7 @@ export default function JourFeriePage() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
                   name="nom"
@@ -313,7 +315,7 @@ export default function JourFeriePage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item md={6}xs={12}>
                 <TextField
                   label="Date"
                   type="date"

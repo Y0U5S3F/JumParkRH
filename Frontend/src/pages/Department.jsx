@@ -56,8 +56,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 250,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewpo
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -242,14 +243,15 @@ export default function Department() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 1 },
-    { field: "nom", headerName: "Nom", flex: 7 },
+    { field: "id", headerName: "ID", flex: 1, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 6, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      flex: 1, // Ensure it takes enough space to remain visible
+      minWidth: 100, // Set a minimum width to ensure it is always fully visible
       renderCell: (params) => (
-        <>
+        <div style={{ display: "flex", width: "100%" }}>
           <IconButton
             onClick={() => {
               setDepartmentToDelete(params.row.id);
@@ -261,7 +263,7 @@ export default function Department() {
           <IconButton onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
-        </>
+        </div>
       ),
     },
   ];
@@ -315,7 +317,7 @@ export default function Department() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={12} >
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -358,7 +360,7 @@ export default function Department() {
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={12} >
                 <TextField
                   id="outlined-search"
                   label="Nom"

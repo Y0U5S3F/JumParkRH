@@ -6,6 +6,7 @@ import {
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
 import CloseIcon from '@mui/icons-material/Close';
+import ChatBot from "../components/ChatBot"; // Import ChatBot component
 import {
   
   People,
@@ -68,8 +69,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 450,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -125,6 +127,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EmployePage() {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+
   const [employees, setEmployees] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -206,6 +211,11 @@ const [employeeToDelete, setEmployeeToDelete] = useState(null);
     setOpenDeleteDialog(true);
   };
   
+  useEffect(() => {
+    const handleResize = () => setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
     setEmployeeToDelete(null);
@@ -405,28 +415,29 @@ const handleConfirmDelete = async () => {
   };
 
   const columns = [
-    { field: "matricule", headerName: "Matricule", flex: 1 },
-    { field: "nom", headerName: "Nom", flex: 1 },
-    { field: "prenom", headerName: "Prénom", flex: 1 },
-    { field: "email", headerName: "Email", flex: 2 }, // Email might be longer
-    { field: "role", headerName: "Role", flex: 1 },
-    { field: "departement", headerName: "Département", flex: 1 },
-    { field: "service", headerName: "Service", flex: 1 },
+    { field: "matricule", headerName: "Matricule", flex: 1, minWidth: 100 },
+    { field: "nom", headerName: "Nom", flex: 1, minWidth: 100 },
+    { field: "prenom", headerName: "Prénom", flex: 1, minWidth: 100 },
+    { field: "email", headerName: "Email", flex: 2, minWidth: 150 }, // Email might be longer
+    { field: "role", headerName: "Role", flex: 1, minWidth: 100 },
+    { field: "departement", headerName: "Département", flex: 1, minWidth: 100 },
+    { field: "service", headerName: "Service", flex: 1, minWidth: 100 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1, // Ensures actions don't shrink too much
+      flex: 0.5, // Ensure it takes less space but remains visible
+      minWidth: 150, // Set a minimum width to ensure it is always fully visible
       renderCell: (params) => (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
           <IconButton onClick={() => handleView(params.row)}>
             <VisibilityIcon />
           </IconButton>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon />
           </IconButton>
           <IconButton onClick={() => handleOpenDeleteDialog(params.row)}>
-  <DeleteIcon />
-</IconButton>
+            <DeleteIcon />
+          </IconButton>
         </div>
       ),
     },
@@ -530,60 +541,60 @@ const handleConfirmDelete = async () => {
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Grid container spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Matricule:</strong> {selectedEmployee.matricule}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Nom:</strong> {selectedEmployee.nom}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Prénom:</strong> {selectedEmployee.prenom}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Email:</strong> {selectedEmployee.email}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Date de naissaince:</strong>{" "}
                     {selectedEmployee.date_de_naissance}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Lieu de naissaince:</strong>{" "}
                     {selectedEmployee.lieu_de_naissance}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Nationalite:</strong> {selectedEmployee.nationalite}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Genre légal:</strong> {selectedEmployee.genre_legal}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Situation familiale:</strong>{" "}
                     {selectedEmployee.situation_familiale}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>CIN:</strong> {selectedEmployee.CIN}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>ID de Pointage:</strong> {selectedEmployee.uid}
                   </Typography>
@@ -597,23 +608,23 @@ const handleConfirmDelete = async () => {
               <Divider sx={{ mb: 2 }} />
 
               <Grid container sx={{}} spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Numero de telephone:</strong>{" "}
                     {selectedEmployee.num_telephone}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Adresse:</strong> {selectedEmployee.adresse}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Ville:</strong> {selectedEmployee.ville}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Code Postal:</strong> {selectedEmployee.code_postal}
                   </Typography>
@@ -628,12 +639,12 @@ const handleConfirmDelete = async () => {
               <Divider sx={{ mb: 2 }} />
 
               <Grid container sx={{}} spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Nom:</strong> {selectedEmployee.nom_urgence}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Numero:</strong>{" "}
                     {selectedEmployee.num_telephone_urgence}
@@ -647,17 +658,17 @@ const handleConfirmDelete = async () => {
               </Box>
               <Divider sx={{ mb: 2 }} />
               <Grid container sx={{}} spacing={2}>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Rôle:</strong> {selectedEmployee.role}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Departement:</strong> {selectedEmployee.departement}
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Service:</strong> {selectedEmployee.service}
                   </Typography>
@@ -671,22 +682,22 @@ const handleConfirmDelete = async () => {
               <Divider sx={{ mb: 2 }} />
 
               <Grid container sx={{}} spacing={2}>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Salaire de base:</strong> {selectedEmployee.salaire_base}
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Numero CNSS:</strong> {selectedEmployee.cnss}
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>Compte Bancaire:</strong> {selectedEmployee.compte_bancaire}
                   </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
                     <strong>RIB Bancaire:</strong> {selectedEmployee.rib_bancaire}
                   </Typography>
@@ -717,7 +728,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{mb:2}}/>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Matricule"
@@ -729,7 +740,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -741,7 +752,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Prenom"
@@ -753,7 +764,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Email"
@@ -765,7 +776,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Mot de passe"
@@ -777,7 +788,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -798,7 +809,7 @@ const handleConfirmDelete = async () => {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Lieu de naissance"
@@ -810,7 +821,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nationalité"
@@ -822,7 +833,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Genre légal</InputLabel>
                   <Select
@@ -836,7 +847,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Situation familiale</InputLabel>
                   <Select
@@ -852,7 +863,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -863,7 +874,7 @@ const handleConfirmDelete = async () => {
                   inputProps={{ maxLength: 8 }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -886,7 +897,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numero de telephone"
@@ -898,7 +909,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Adresse"
@@ -910,7 +921,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Ville"
@@ -922,7 +933,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Code postal"
@@ -946,7 +957,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nom du Contact d'Urgence"
@@ -958,7 +969,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numéro de Téléphone d'Urgence"
@@ -982,7 +993,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Role</InputLabel>
                   <Select
@@ -997,7 +1008,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
@@ -1014,7 +1025,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Service</InputLabel>
                   <Select
@@ -1048,7 +1059,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Salaire de base"
@@ -1060,7 +1071,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numero CNSS"
@@ -1072,7 +1083,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Compte bancaire"
@@ -1084,7 +1095,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="RIB bancaire"
@@ -1161,7 +1172,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Matricule"
@@ -1173,7 +1184,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -1185,7 +1196,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Prenom"
@@ -1197,7 +1208,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Email"
@@ -1209,7 +1220,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Mot de Passe"
@@ -1221,7 +1232,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     sx={{ width: "100%" }}
@@ -1242,7 +1253,7 @@ const handleConfirmDelete = async () => {
                   />
                 </LocalizationProvider>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Lieu de naissance"
@@ -1254,7 +1265,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nationalité"
@@ -1266,7 +1277,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Genre légal</InputLabel>
                   <Select
@@ -1280,7 +1291,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Situation familiale</InputLabel>
                   <Select
@@ -1296,7 +1307,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -1307,7 +1318,7 @@ const handleConfirmDelete = async () => {
                   inputProps={{ maxLength: 8 }}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -1330,7 +1341,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numero de telephone"
@@ -1342,7 +1353,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Adresse"
@@ -1354,7 +1365,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Ville"
@@ -1366,7 +1377,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Code postal"
@@ -1390,7 +1401,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Nom du Contact d'Urgence"
@@ -1402,7 +1413,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numéro de Téléphone d'Urgence"
@@ -1426,7 +1437,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Role</InputLabel>
                   <Select
@@ -1441,7 +1452,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
@@ -1458,7 +1469,7 @@ const handleConfirmDelete = async () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Service</InputLabel>
                   <Select
@@ -1492,7 +1503,7 @@ const handleConfirmDelete = async () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Salaire de base"
@@ -1504,7 +1515,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Numero CNSS"
@@ -1516,7 +1527,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="Compte bancaire"
@@ -1528,7 +1539,7 @@ const handleConfirmDelete = async () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
                   label="RIB bancaire"
@@ -1561,7 +1572,10 @@ const handleConfirmDelete = async () => {
       </Modal>
                       
       <DataGrid
-      sx={{mt:"4px"}}
+      sx={{mt:"4px",
+        '& .MuiDataGrid-virtualScroller::-webkit-scrollbar': {display: 'none' }
+      }}
+      
         apiRef={apiRef}
         rows={employees}
         columns={columns}
@@ -1571,6 +1585,10 @@ const handleConfirmDelete = async () => {
         disableMultipleRowSelection={true}
         autosizeOptions={expand}
         pagination
+        hideScrollbar={true}
+
+        // autosizeOnMount
+
         pageSizeOptions={[10, 25, 100]}
         initialState={{
           pagination: {
@@ -1593,6 +1611,8 @@ const handleConfirmDelete = async () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+                  <ChatBot /> {/* Add ChatBot */}
+      
     </Container>
   );
 }

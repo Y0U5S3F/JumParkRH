@@ -54,8 +54,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1000,
-    height: 320,
+    width: "70%", // Use percentage for dynamic width
+    height: "auto", // Allow height to adjust dynamically
+    maxHeight: "70%", // Limit the height to 90% of the viewport
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -86,11 +87,11 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1000,
   },
   statusConnected: {
-    color: "green",
+    color: `${theme.palette.success.main}`,
     fontWeight: "bold",
   },
   statusDisconnected: {
-    color: "red",
+    color: `${theme.palette.warning.main}`,
     fontWeight: "bold",
   },
   titleContainer: {
@@ -275,37 +276,23 @@ export default function AppareilPage() {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nom", headerName: "Nom", flex: 1 },
-    { field: "ip", headerName: "Adresse IP", flex: 1 },
-    { field: "port", headerName: "Port", flex: 0.7 },
-    {
-      field: "status",
-      headerName: "Statut",
-      flex: 1,
-      renderCell: (params) => (
-        <span
-          className={params.value === "Connecte" ? classes.statusConnected : classes.statusDisconnected}
-          onClick={() => handleToggleStatus(params.row.id, params.value)}
-        >
-          {params.value}
-        </span>
-      ),
-    },
-    { field: "created_at", headerName: "Créé le", flex: 1.2 },
+    { field: "id", headerName: "ID", flex: 0.5, minWidth: 50 },
+    { field: "nom", headerName: "Nom", flex: 1, minWidth: 150 },
+    { field: "ip", headerName: "Adresse IP", flex: 1, minWidth: 150 },
+    { field: "port", headerName: "Port", flex: 0.7, minWidth: 100 },
+    { field: "status", headerName: "Statut", flex: 1, minWidth: 150 },
+    { field: "created_at", headerName: "Créé le", flex: 1.2, minWidth: 150 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.5,
+      flex: 0.6,
+      minWidth: 50, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon />
           </IconButton>
-          <IconButton onClick={() => {
-            setAppareilToDelete(params.row.id);
-            setOpenDeleteDialog(true);
-          }}>
+          <IconButton onClick={() => handleDelete(params.row.id)}>
             <DeleteIcon />
           </IconButton>
         </div>
@@ -362,7 +349,7 @@ export default function AppareilPage() {
             
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -374,7 +361,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Adresse IP"
@@ -386,7 +373,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Port"
@@ -398,7 +385,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
@@ -452,7 +439,7 @@ export default function AppareilPage() {
           <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Nom"
@@ -464,7 +451,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Adresse IP"
@@ -476,7 +463,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
                   label="Port"
@@ -488,7 +475,7 @@ export default function AppareilPage() {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12} md={6}>
                 <FormControl fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
