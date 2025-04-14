@@ -3,7 +3,6 @@ class JourFerie {
       this.id= id;
       this.nom = nom;
       this.date = date;
-      this.description = description;
     }
   }
   

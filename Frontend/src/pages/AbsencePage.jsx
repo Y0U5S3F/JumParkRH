@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   DataGrid,
   useGridApiRef,
@@ -141,6 +146,16 @@ export default function AbsencePage() {
   }, [refresh]);
 
   const handleAddAbsence = async () => {
+
+    if (!newAbsence.nom || !newAbsence.date || !newAbsence.employe ) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Veuillez remplir tous les champs obligatoires.",
+      });
+      return;
+    }
+
     try {
       await addAbsence(newAbsence);
       setSnackbar({
@@ -162,6 +177,7 @@ export default function AbsencePage() {
 
   const handleUpdateAbsence = async () => {
     try {
+      console.log(editAbsence);
       await updateAbsence(editAbsence.id, editAbsence);
       setSnackbar({
         open: true,
@@ -174,7 +190,7 @@ export default function AbsencePage() {
       setSnackbar({
         open: true,
         severity: "error",
-        message: "Erreur lors de la mise à jour de l'absence.",
+        message: `Erreur lors de la mise à jour de l'absence.${error}`,
       });
     }
   };
@@ -212,9 +228,17 @@ export default function AbsencePage() {
       minWidth: 100, // Ensure the Actions column is always fully visible
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
-          <IconButton onClick={() => setEditAbsence(params.row) || setOpenEditModal(true)}>
-            <EditIcon />
-          </IconButton>
+          <IconButton
+      onClick={() => {
+        setEditAbsence({
+          ...params.row,
+          certifie: params.row.certifie === "Certifié", // Convert "Certifié" to true, otherwise false
+        });
+        setOpenEditModal(true);
+      }}
+    >
+      <EditIcon />
+    </IconButton>
           <IconButton
             onClick={() => {
               setAbsenceToDelete(params.row.id);
@@ -260,12 +284,7 @@ export default function AbsencePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)",
-                  borderRadius: "50%",
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -275,6 +294,7 @@ export default function AbsencePage() {
                 <TextField
                   label="Nom"
                   name="nom"
+                  required
                   value={newAbsence.nom}
                   onChange={(e) =>
                     setNewAbsence((prev) => ({ ...prev, nom: e.target.value }))
@@ -283,19 +303,25 @@ export default function AbsencePage() {
                 />
               </Grid>
               <Grid item md={6}xs={12}>
-                <TextField
-                  label="Date"
-                  type="date"
-                  name="date"
-                  value={newAbsence.date}
-                  onChange={(e) =>
-                    setNewAbsence((prev) => ({ ...prev, date: e.target.value }))
-                  }
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                  format="DD/MM/YYYY" // Set the desired format
-
-                />
+                
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    sx={{ width: "100%" }}
+    label="Date"
+    value={newAbsence.date ? dayjs(newAbsence.date) : null}
+    onChange={(date) =>
+      setNewAbsence((prev) => ({
+        ...prev,
+        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+      }))
+    }
+    slotProps={{
+      textField: {
+        required: true,
+      },
+    }}
+  />
+</LocalizationProvider>
               </Grid>
               <Grid item md={6}xs={12}>
                 <TextField
@@ -322,14 +348,14 @@ export default function AbsencePage() {
                     }))
                   }
                   renderInput={(params) => (
-                    <TextField {...params} label="Employé" variant="outlined" />
+                    <TextField required {...params} label="Employé" variant="outlined" />
                   )}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Checkbox required
                     sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
                       checked={newAbsence.certifie}
                       onChange={(e) =>
@@ -368,12 +394,7 @@ export default function AbsencePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpenEditModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)",
-                  borderRadius: "50%",
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -382,6 +403,7 @@ export default function AbsencePage() {
               <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
+                  required
                   name="nom"
                   value={editAbsence.nom}
                   onChange={(e) =>
@@ -391,17 +413,24 @@ export default function AbsencePage() {
                 />
               </Grid>
               <Grid item md={6}xs={12}>
-                <TextField
-                  label="Date"
-                  type="date"
-                  name="date"
-                  value={editAbsence.date}
-                  onChange={(e) =>
-                    setEditAbsence((prev) => ({ ...prev, date: e.target.value }))
-                  }
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    sx={{ width: "100%" }}
+    label="Date"
+    value={editAbsence.date ? dayjs(editAbsence.date) : null}
+    onChange={(date) =>
+      setEditAbsence((prev) => ({
+        ...prev,
+        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+      }))
+    }
+    slotProps={{
+      textField: {
+        required: true,
+      },
+    }}
+  />
+</LocalizationProvider>
               </Grid>
               <Grid item md={6}xs={12}>
                 <TextField
@@ -432,14 +461,14 @@ export default function AbsencePage() {
                     }))
                   }
                   renderInput={(params) => (
-                    <TextField {...params} label="Employé" variant="outlined" />
+                    <TextField required{...params} label="Employé" variant="outlined" />
                   )}
                 />
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
-                    <Checkbox
+                    <Checkbox required
                     sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
 
                       checked={editAbsence.certifie}

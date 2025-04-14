@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
+
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   DataGrid,
   useGridApiRef,
@@ -118,6 +123,14 @@ export default function JourFeriePage() {
   }, [refresh]);
 
   const handleAddJourFerie = async () => {
+    if (!newJourFerie.nom || !newJourFerie.date) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Veuillez remplir les champs obligatoires.",
+      });
+      return;
+    }
     try {
       await addJourFerie(newJourFerie);
       setSnackbar({
@@ -233,12 +246,7 @@ export default function JourFeriePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)",
-                  borderRadius: "50%",
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -247,6 +255,7 @@ export default function JourFeriePage() {
               <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
+                  required
                   name="nom"
                   value={newJourFerie.nom}
                   onChange={(e) =>
@@ -256,17 +265,24 @@ export default function JourFeriePage() {
                 />
               </Grid>
               <Grid item md={6}xs={12}>
-                <TextField
-                  label="Date"
-                  type="date"
-                  name="date"
-                  value={newJourFerie.date}
-                  onChange={(e) =>
-                    setNewJourFerie((prev) => ({ ...prev, date: e.target.value }))
-                  }
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    sx={{ width: "100%" }}
+    label="Date"
+    value={newJourFerie.date ? dayjs(newJourFerie.date) : null}
+    onChange={(date) =>
+      setNewJourFerie((prev) => ({
+        ...prev,
+        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+      }))
+    }
+    slotProps={{
+      textField: {
+        required: true,
+      },
+    }}
+  />
+</LocalizationProvider>
               </Grid>
             </Grid>
           </Box>
@@ -293,12 +309,7 @@ export default function JourFeriePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpenEditModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)",
-                  borderRadius: "50%",
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -307,6 +318,7 @@ export default function JourFeriePage() {
               <Grid item md={6}xs={12}>
                 <TextField
                   label="Nom"
+                  required
                   name="nom"
                   value={editJourFerie.nom}
                   onChange={(e) =>
@@ -316,17 +328,25 @@ export default function JourFeriePage() {
                 />
               </Grid>
               <Grid item md={6}xs={12}>
-                <TextField
-                  label="Date"
-                  type="date"
-                  name="date"
-                  value={editJourFerie.date}
-                  onChange={(e) =>
-                    setEditJourFerie((prev) => ({ ...prev, date: e.target.value }))
-                  }
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+  <DatePicker
+    sx={{ width: "100%" }}
+    label="Date"
+    required
+    value={editJourFerie.date ? dayjs(editJourFerie.date) : null}
+    onChange={(date) =>
+      setEditJourFerie((prev) => ({
+        ...prev,
+        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+      }))
+    }
+    slotProps={{
+      textField: {
+        required: true,
+      },
+    }}
+  />
+</LocalizationProvider>
               </Grid>
             </Grid>
           </Box>
