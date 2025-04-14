@@ -147,12 +147,16 @@ def process_log(log, marker_file, token):
                 update_record(data_id, "status", "fin de service", token)
 
 def fetch_devices(request):
-    """Fetch device details from the backend API."""
+    """Fetch device details from the backend API and return only connected devices."""
     token = request.headers.get('Authorization')
     headers = {'Authorization': token}
     response = requests.get(DEVICE_API_URL, headers=headers)
+    
     if response.status_code == 200:
-        return response.json()
+        devices = response.json()
+        # Filter devices with status "connecte"
+        connected_devices = [device for device in devices if device.get("status") == "Connecte"]
+        return connected_devices
     else:
         print(f"Error fetching devices: {response.text}")
         return []

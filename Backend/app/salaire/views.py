@@ -19,6 +19,7 @@ import re
 import os
 import subprocess
 import tempfile
+from datetime import datetime
 
 # DRF views for Salaire API
 class SalaireListCreateView(generics.ListCreateAPIView):
@@ -83,10 +84,17 @@ class SalaireBaseView(APIView):
         if not label:
             return Response({"error": "Label not found for this employee"}, status=status.HTTP_404_NOT_FOUND)
 
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
         # Get only the LabelData that belongs to this Label
-        label_data_entries = LabelData.objects.filter(label=label)
+        label_data_entries = LabelData.objects.filter(
+            label=label,
+            startDate__month=current_month,
+            startDate__year=current_year
+        ).order_by('startDate')
 
-        total_hours_worked = timedelta()  # Initialize total worked hours
+        total_hours_worked = timedelta()
         total_absences = 0  # Count total absence days
 
         for entry in label_data_entries:
