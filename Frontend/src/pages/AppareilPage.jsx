@@ -539,6 +539,7 @@ export default function AppareilPage() {
         rows={appareils}
         columns={columns}
         pageSize={5}
+        hideScrollbar={true}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}
         disableMultipleRowSelection={true}

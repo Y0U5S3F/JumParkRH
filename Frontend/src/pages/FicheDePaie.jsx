@@ -1212,6 +1212,8 @@ const handleAddSalaire = async () => {
       <DataGrid
         apiRef={apiRef}
         rows={salaires}
+        hideScrollbar={true}
+
         columns={columns}
         pageSize={5}
         disableRowSelectionOnClick

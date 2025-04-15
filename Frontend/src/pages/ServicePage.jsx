@@ -30,12 +30,17 @@ import {
 import { makeStyles } from "@mui/styles";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { updateService, addService, fetchServices, deleteService } from "../service/ServiceService";
+import {
+  updateService,
+  addService,
+  fetchServices,
+  deleteService,
+} from "../service/ServiceService";
 import { fetchDepartements } from "../service/DepartementService";
 import EditIcon from "@mui/icons-material/Edit";
 import Departement from "../models/departement";
 import Service from "../models/service";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { Business } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
 import ThemeToggle from "../components/ThemeToggle";
@@ -160,7 +165,9 @@ export default function ServicePage() {
 
   const handleEdit = (service) => {
     // Find the department ID based on the department name
-    const department = departements.find((dept) => dept.nom === service.departement);
+    const department = departements.find(
+      (dept) => dept.nom === service.departement
+    );
 
     // Create a new service object with updated departement_id
     const updatedService = {
@@ -181,7 +188,7 @@ export default function ServicePage() {
     try {
       // Use the deleteService function from ServiceService.js
       await deleteService(id);
-  
+
       // Handle success
       setSnackbar({
         open: true,
@@ -212,16 +219,16 @@ export default function ServicePage() {
         });
         return;
       }
-  
+
       // Create service object
       const serviceToSend = {
         nom: newService.nom,
         departement: newService.departement, // Send department ID
       };
-  
+
       // Use the addService function from ServiceService.js
       const response = await addService(serviceToSend);
-  
+
       // Handle success
       setSnackbar({
         open: true,
@@ -315,24 +322,30 @@ export default function ServicePage() {
             Services
           </Typography>
         </Box>
-                <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
-        
-        <Button
-          size="medium"
-          variant="outlined"
-          startIcon={<AddIcon />}
+        <Box
           sx={{
-            '&:hover': {
-              backgroundColor: (theme) => theme.palette.primary.main,
-              color: 'white',
-              borderColor: (theme) => theme.palette.primary.main,
-            },
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "10px",
           }}
-          onClick={() => setOpen(true)}
         >
-          Ajouter Service
-        </Button>
-        <ThemeToggle></ThemeToggle>
+          <Button
+            size="medium"
+            variant="outlined"
+            startIcon={<AddIcon />}
+            sx={{
+              "&:hover": {
+                backgroundColor: (theme) => theme.palette.primary.main,
+                color: "white",
+                borderColor: (theme) => theme.palette.primary.main,
+              },
+            }}
+            onClick={() => setOpen(true)}
+          >
+            Ajouter Service
+          </Button>
+          <ThemeToggle></ThemeToggle>
         </Box>
       </Box>
 
@@ -340,17 +353,17 @@ export default function ServicePage() {
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
               Ajouter service
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -360,6 +373,7 @@ export default function ServicePage() {
                 <TextField
                   id="outlined-search"
                   label="Nom"
+                  required
                   type="search"
                   variant="outlined"
                   name="nom"
@@ -369,7 +383,7 @@ export default function ServicePage() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
                     label="Département"
@@ -409,17 +423,17 @@ export default function ServicePage() {
       <Modal open={openEditModal} onClose={() => setOpenEditModal(false)}>
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
               Modifier service
             </Typography>
             <CloseIcon
               onClick={() => setOpenEditModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -429,6 +443,7 @@ export default function ServicePage() {
                 <TextField
                   id="outlined-search"
                   label="Nom"
+                  required
                   type="search"
                   variant="outlined"
                   name="nom"
@@ -439,14 +454,18 @@ export default function ServicePage() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <FormControl                   margin="dense"
-fullWidth variant="outlined">
+                <FormControl
+                  required
+                  margin="dense"
+                  fullWidth
+                  variant="outlined"
+                >
                   <InputLabel>Département</InputLabel>
                   <Select
-                  
                     label="Département"
                     name="departement"
                     value={editService.departement}
+                    required
                     onChange={handleInputModifyChange}
                   >
                     {departements.map((dept) => (
@@ -505,6 +524,7 @@ fullWidth variant="outlined">
       <DataGrid
         apiRef={apiRef}
         rows={services}
+        hideScrollbar={true}
         columns={columns}
         pageSize={5}
         checkboxSelection={false}

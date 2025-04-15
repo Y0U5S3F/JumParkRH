@@ -280,6 +280,41 @@ export default function SimpleCalendar() {
   };
 
   const handleAddPresence = async () => {
+    // Validation logic based on status
+  const requiredFieldsMap = {
+    présent: ["startDate"],
+    "en pause": ["startDate", "startPause"],
+    "fin de service": ["startDate", "endDate"],
+  };
+
+  // Always required fields
+  const alwaysRequiredFields = ["status", "matricule"];
+
+  // Combine required fields based on status
+  const missingFields = [
+    ...alwaysRequiredFields,
+    ...(requiredFieldsMap[newPresence.status] || []),
+  ].filter((field) => !newPresence[field]);
+
+  if (missingFields.length > 0) {
+    const fieldNames = {
+      status: "Statut",
+      matricule: "Employé",
+      startDate: "Date de début",
+      startPause: "Début de pause",
+      endDate: "Date de fin",
+    };
+
+    const missingFieldNames = missingFields
+      .map((field) => fieldNames[field])
+      .join(", ");
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: `Veuillez remplir les champs obligatoires: ${missingFieldNames}.`,
+    });
+    return;
+  }
     try {
       const presenceToSend = {
         startDate: newPresence.startDate,
@@ -310,6 +345,7 @@ export default function SimpleCalendar() {
   };
 
   const handleUpdatePresence = async () => {
+    
     try {
       const presenceToUpdate = {
         startDate: selectedTile.startDate,
@@ -431,7 +467,7 @@ export default function SimpleCalendar() {
           }}
           onClick={handleImportPresence}
         >
-        Importer
+        Importer présence
         </Button>
         <Button
           size="medium"
@@ -485,19 +521,14 @@ export default function SimpleCalendar() {
           <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
             Ajouter présence
           </Typography>
-          <CloseIcon onClick={()=> setOpenPresenceModal(false)} sx={{
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-                      borderRadius: '50%', // Circular shape
-                    },
-                  }}/>
+          <CloseIcon onClick={()=> setOpenPresenceModal(false)} />
           </Box>
           <Box className={classes.contentContainer}>
           <Divider sx={{ mb: 2 }} />
 
             <Grid container spacing={2}>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
                     label="Statut"
@@ -516,7 +547,7 @@ export default function SimpleCalendar() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete
+                <Autocomplete required
                   options={employees}
                   getOptionLabel={(option) =>
                     `${option.nom} ${option.prenom} (${option.matricule})`
@@ -531,7 +562,7 @@ export default function SimpleCalendar() {
                     });
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Employé" variant="outlined" />
+                    <TextField required {...params} label="Employé" variant="outlined" />
                   )}
                 />
               </Grid>
@@ -817,7 +848,7 @@ export default function SimpleCalendar() {
               </Grid>
             </Grid>
           </Box>
-          <Box className={classes.topBar}>
+          <Box mt={3} display="flex" justifyContent="space-between">
           <Button 
   variant="outlined" 
   color="secondary" 

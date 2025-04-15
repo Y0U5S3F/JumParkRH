@@ -321,6 +321,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                required
                   id="outlined-search"
                   label="Nom"
                   type="search"
@@ -375,6 +376,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
               <Grid item xs={12}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Nom"
                   type="search"
                   variant="outlined"
@@ -413,6 +415,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         loading={loading}
         disableMultipleRowSelection={true}
         checkboxSelection={false}
+        hideScrollbar={true}
         getRowId={(row) => row.id}
         autosizeOptions={expand}
         pagination

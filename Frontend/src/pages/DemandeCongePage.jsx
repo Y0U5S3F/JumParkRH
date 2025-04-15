@@ -271,12 +271,12 @@ export default function DemandeCongePage() {
         !newConge.employe ||
         !newConge.startDate ||
         !newConge.endDate ||
-        !newConge.status
+        !newConge.status || !newConge.typeconge
       ) {
         setSnackbar({
           open: true,
           severity: "error",
-          message: "All fields are required.",
+          message: "Veuillez remplir les champs obligatoires.",
         });
         return;
       }
@@ -409,12 +409,7 @@ export default function DemandeCongePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
 
@@ -440,6 +435,7 @@ export default function DemandeCongePage() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
+                      required 
                       label="Search Employee"
                       variant="outlined"
                     />
@@ -447,7 +443,7 @@ export default function DemandeCongePage() {
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Type de congé</InputLabel>
                   <Select
                     label="Type de congé"
@@ -464,7 +460,7 @@ export default function DemandeCongePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
                     label="Statut"
@@ -484,6 +480,7 @@ export default function DemandeCongePage() {
                   <DatePicker
                     sx={{ width: "100%" }}
                     label="Date de début"
+                    required
                     value={
                       newConge.startDate ? dayjs(newConge.startDate) : null
                     }
@@ -495,6 +492,11 @@ export default function DemandeCongePage() {
                         },
                       })
                     }
+                    slotProps={{
+                      textField: {
+                        required: true,
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -512,6 +514,11 @@ export default function DemandeCongePage() {
                         },
                       })
                     }
+                    slotProps={{
+                      textField: {
+                        required: true,
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -565,13 +572,8 @@ export default function DemandeCongePage() {
               Ajouter demande
             </Typography>
             <CloseIcon
-              onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              onClick={() => setOpenEdit(false)}
+              
             />
           </Box>
 
@@ -596,7 +598,7 @@ export default function DemandeCongePage() {
                     }));
                   }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Employé" />
+                    <TextField {...params} required label="Employé" />
                   )}
                   isOptionEqualToValue={(option, value) =>
                     option.matricule === value.matricule
@@ -604,7 +606,7 @@ export default function DemandeCongePage() {
                 />
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Type de congé</InputLabel>
                   <Select
                     label="Type de congé"
@@ -621,7 +623,7 @@ export default function DemandeCongePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
                     label="Statut"
@@ -651,6 +653,11 @@ export default function DemandeCongePage() {
                         },
                       })
                     }
+                    slotProps={{
+                      textField: {
+                        required: true,
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -668,6 +675,11 @@ export default function DemandeCongePage() {
                         },
                       })
                     }
+                    slotProps={{
+                      textField: {
+                        required: true,
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>
@@ -706,6 +718,8 @@ export default function DemandeCongePage() {
         apiRef={apiRef}
         rows={conges}
         columns={columns}
+        hideScrollbar={true}
+
         pageSize={5}
         checkboxSelection={false}
         disableRowSelectionOnClick={true}

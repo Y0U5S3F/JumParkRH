@@ -306,12 +306,7 @@ export default function Department() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
@@ -321,6 +316,7 @@ export default function Department() {
                 <TextField
                   id="outlined-search"
                   label="Nom"
+                  required
                   type="search"
                   variant="outlined"
                   name="nom"
@@ -356,6 +352,10 @@ export default function Department() {
             <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
               Modifier département
             </Typography>
+
+            <CloseIcon
+              onClick={() => setOpenEditModal(false)}
+               />
           </Box>
           <Divider sx={{ mb: 2 }} />
           <Box className={classes.contentContainer}>
@@ -365,6 +365,7 @@ export default function Department() {
                   id="outlined-search"
                   label="Nom"
                   type="search"
+                  required
                   variant="outlined"
                   name="nom"
                   value={editDepartement.nom}
@@ -428,6 +429,8 @@ export default function Department() {
         disableMultipleRowSelection={true}
         checkboxSelection={false}
         getRowId={(row) => row.id}
+        hideScrollbar={true}
+
         autosizeOptions={expand}
         pagination
         pageSizeOptions={[10, 25, 100]}

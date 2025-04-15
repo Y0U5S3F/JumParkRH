@@ -220,15 +220,37 @@ export default function EmployePage() {
   };
 
   const handleAddEmployee = async () => {
+    const requiredFields = [
+      "matricule",
+      "nom",
+      "prenom",
+      "email",
+      "role",
+      "genre",
+      "situation_familiale",
+      "cin",
+      "telephone",
+      "contact_urgence_nom",
+      "contact_urgence_telephone",
+      "salaire_base",
+      "departement_id",
+      "service_id",
+    ];
+  
+    // Check for missing fields
+    const missingFields = requiredFields.filter((field) => !newEmployee[field]);
+  
+    if (missingFields.length > 0) {
+      // Show snackbar with a message in French
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Veuillez remplir tous les champs obligatoires.",
+      });
+      return;
+    }
     try {
-      if (!newEmployee.departement_id || !newEmployee.service_id) {
-        setSnackbar({
-          open: true,
-          severity: "error",
-          message: "Department and Service fields are required.",
-        });
-        return;
-      }
+      
       const employeeToSend = new Employe(
         newEmployee.matricule,
         newEmployee.nom,
@@ -510,14 +532,11 @@ export default function EmployePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpenPresenceModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
+                    <Divider sx={{ mb: 2 }} />
+          
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               views={["year", "month"]} // Restrict to year and month selection
@@ -555,12 +574,7 @@ export default function EmployePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           {selectedEmployee && (
@@ -780,23 +794,19 @@ export default function EmployePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
             <Typography variant="body1" fontWeight={600} gutterBottom>
-              Informations personnelles
+              Informations d'identité
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Matricule"
                   type="search"
                   variant="outlined"
@@ -810,6 +820,7 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-search"
                   label="Nom"
+                  required
                   type="search"
                   variant="outlined"
                   name="nom"
@@ -823,6 +834,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Prenom"
                   type="search"
+                  required
                   name="prenom"
                   value={newEmployee.prenom}
                   onChange={handleInputChange}
@@ -835,6 +847,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Email"
                   type="search"
+                  required
                   variant="outlined"
                   name="email"
                   value={newEmployee.email}
@@ -882,6 +895,8 @@ export default function EmployePage() {
                         },
                       })
                     }
+                    format="DD/MM/YYYY" // Set the desired format
+
                   />
                 </LocalizationProvider>
               </Grid>
@@ -910,7 +925,7 @@ export default function EmployePage() {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Genre légal</InputLabel>
                   <Select
                     label="Genre légal"
@@ -924,7 +939,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Situation familiale</InputLabel>
                   <Select
                     label="Situation familiale"
@@ -945,6 +960,7 @@ export default function EmployePage() {
                   variant="outlined"
                   label="CIN"
                   name="cin"
+                  required
                   value={newEmployee.cin}
                   onChange={handleInputChange}
                   inputProps={{ maxLength: 8 }}
@@ -965,11 +981,10 @@ export default function EmployePage() {
             <Typography
               variant="body1"
               fontWeight={600}
-              color="white"
               sx={{ pt: 2 }}
               gutterBottom
             >
-              Informations personnelles
+              Coordonnées personnelles
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -977,6 +992,7 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-search"
                   label="Numero de telephone"
+                  required
                   type="search"
                   name="telephone"
                   value={newEmployee.telephone}
@@ -1026,7 +1042,6 @@ export default function EmployePage() {
               sx={{ mt: 2 }}
               variant="body1"
               fontWeight={600}
-              color="white"
               gutterBottom
             >
               Contact d&apos;urgence
@@ -1038,6 +1053,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Nom du Contact d'Urgence"
                   name="contact_urgence_nom"
+                  required
                   value={newEmployee.contact_urgence_nom}
                   onChange={handleInputChange}
                   type="search"
@@ -1048,6 +1064,7 @@ export default function EmployePage() {
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Numéro de Téléphone d'Urgence"
                   name="contact_urgence_telephone"
                   value={newEmployee.contact_urgence_telephone}
@@ -1062,19 +1079,19 @@ export default function EmployePage() {
               sx={{ mt: 2 }}
               variant="body1"
               fontWeight={600}
-              color="white"
               gutterBottom
             >
-              Position
+              Informations professionnelles
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Role</InputLabel>
                   <Select
                     label="Role"
                     value={newEmployee.role}
+                    
                     onChange={handleInputChange}
                     name="role"
                   >
@@ -1085,7 +1102,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
                     label="Département"
@@ -1102,7 +1119,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Service</InputLabel>
                   <Select
                     label="Service"
@@ -1127,11 +1144,12 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
-              color="white"
+
+                      
               fontWeight={600}
               gutterBottom
             >
-              Information Banquaire
+              Informations bancaires
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -1140,6 +1158,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Salaire de base"
                   name="salaire_base"
+                  required
                   type="search"
                   variant="outlined"
                   value={newEmployee.salaire_base}
@@ -1232,17 +1251,12 @@ export default function EmployePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpen(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>
             <Typography variant="body1" fontWeight={600} gutterBottom>
-              Informations personnelles
+            Informations d'identité
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -1362,7 +1376,7 @@ export default function EmployePage() {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Genre légal</InputLabel>
                   <Select
                     label="Genre légal"
@@ -1376,7 +1390,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Situation familiale</InputLabel>
                   <Select
                     label="Situation familiale"
@@ -1416,12 +1430,11 @@ export default function EmployePage() {
             </Grid>
             <Typography
               variant="body1"
-              color="white"
               fontWeight={600}
               sx={{ pt: 2 }}
               gutterBottom
             >
-              Informations personnelles
+              Coordonnées personnelles
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -1477,11 +1490,10 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
-              color="white"
               gutterBottom
               fontWeight={600}
             >
-              Contact d&apos;urgence
+              Contact d'urgence
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
@@ -1513,16 +1525,15 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
-              color="white"
               gutterBottom
               fontWeight={600}
             >
-              Position
+              Informations professionnelles
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl fullWidth required variant="outlined">
                   <InputLabel>Role</InputLabel>
                   <Select
                     label="Role"
@@ -1537,7 +1548,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Département</InputLabel>
                   <Select
                     label="Département"
@@ -1554,7 +1565,7 @@ export default function EmployePage() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Service</InputLabel>
                   <Select
                     label="Service"
@@ -1579,12 +1590,10 @@ export default function EmployePage() {
             <Typography
               sx={{ mt: 2 }}
               variant="body1"
-              color="white"
               fontWeight={600}
               gutterBottom
             >
-              Information Banquaire
-            </Typography>
+Informations bancaires            </Typography>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
@@ -1657,9 +1666,7 @@ export default function EmployePage() {
       <DataGrid
         sx={{
           mt: "4px",
-          "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-            display: "none",
-          },
+          
         }}
         apiRef={apiRef}
         rows={employees}
