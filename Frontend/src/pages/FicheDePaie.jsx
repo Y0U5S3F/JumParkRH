@@ -337,6 +337,16 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
 
 
 const handleAddSalaire = async () => {
+
+  if (!ficheDePaieData.employe || !ficheDePaieData.mode_paiement) {
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Champs obligatoires requis",
+    });
+    return;
+  }
+
   const salaireData = {
     employe: ficheDePaieData.employe?.matricule || "", // Ensure matricule is provided
     salaire_base: parseFloat(ficheDePaieData.salaire_base || 0).toFixed(2),
@@ -574,6 +584,7 @@ const handleAddSalaire = async () => {
                     <TextField
                       {...params}
                       label="Employé"
+                      required
                       variant="outlined"
                       fullWidth
                     />
@@ -726,10 +737,11 @@ const handleAddSalaire = async () => {
                 />
               </Grid>
               {/* Mode de paiement */}
-              <Grid item lg={4} md={6} xs={12}>
-                <FormControl size="small" fullWidth>
+              <Grid item  lg={4} md={6} xs={12}>
+                <FormControl required size="small" fullWidth>
                   <InputLabel>Mode de paiement</InputLabel>
                   <Select
+                  
                     label="Mode de paiement"
                     name="mode_paiement"
                     value={ficheDePaieData.mode_paiement}
@@ -908,6 +920,7 @@ const handleAddSalaire = async () => {
               <TextField
                 {...params}
                 label="Employé"
+                required
                 variant="outlined"
                 fullWidth
               />
@@ -1055,7 +1068,7 @@ const handleAddSalaire = async () => {
 
         {/* Mode de paiement */}
         <Grid item lg={4} md={6} xs={12}>
-          <FormControl size="small" fullWidth>
+          <FormControl required size="small" fullWidth>
             <InputLabel>Mode de paiement</InputLabel>
             <Select
               label="Mode de paiement"

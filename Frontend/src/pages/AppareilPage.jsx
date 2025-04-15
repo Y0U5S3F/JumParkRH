@@ -191,6 +191,16 @@ export default function AppareilPage() {
   };
 
   const handleAddAppareil = async () => {
+
+    if (!newAppareil.nom || !newAppareil.ip || !newAppareil.port || !newAppareil.status) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Champs obligatoires requis.",
+      });
+      return;
+    }
+  
     try {
       const appareilToSend = {
         nom: newAppareil.nom,
@@ -356,6 +366,7 @@ export default function AppareilPage() {
                   type="search"
                   variant="outlined"
                   name="nom"
+                  required
                   value={newAppareil.nom}
                   onChange={handleChange}
                   fullWidth
@@ -367,6 +378,7 @@ export default function AppareilPage() {
                   label="Adresse IP"
                   type="search"
                   variant="outlined"
+                  required
                   name="ip"
                   value={newAppareil.ip}
                   onChange={handleChange}
@@ -377,6 +389,7 @@ export default function AppareilPage() {
                 <TextField
                   id="outlined-search"
                   label="Port"
+                  required
                   type="search"
                   variant="outlined"
                   name="port"
@@ -386,7 +399,7 @@ export default function AppareilPage() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
                     label="Statut"
@@ -445,6 +458,7 @@ export default function AppareilPage() {
                   label="Nom"
                   type="search"
                   variant="outlined"
+                  required
                   name="nom"
                   value={editAppareil.nom}
                   onChange={handleInputModifyChange}
@@ -454,6 +468,7 @@ export default function AppareilPage() {
               <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Adresse IP"
                   type="search"
                   variant="outlined"
@@ -466,6 +481,7 @@ export default function AppareilPage() {
               <Grid item xs={12} md={6}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Port"
                   type="search"
                   variant="outlined"
@@ -476,7 +492,7 @@ export default function AppareilPage() {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <FormControl fullWidth variant="outlined">
+                <FormControl required fullWidth variant="outlined">
                   <InputLabel>Statut</InputLabel>
                   <Select
                     label="Statut"

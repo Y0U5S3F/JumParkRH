@@ -4,7 +4,6 @@ class JourFerie(models.Model):
 
     nom = models.CharField(max_length=100, verbose_name="Nom")
     date = models.DateField(verbose_name="Date")
-    description = models.TextField(verbose_name="Description")
 
     class Meta:
         ordering = ['date']
