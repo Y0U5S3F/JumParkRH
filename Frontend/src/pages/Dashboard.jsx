@@ -39,7 +39,7 @@ const SummaryCard = ({ title, value, subValue, icon, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -120,7 +120,7 @@ const PieChartCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -178,7 +178,7 @@ const BarChartCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -223,7 +223,7 @@ const BirthdaysCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
