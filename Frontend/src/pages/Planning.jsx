@@ -467,6 +467,21 @@ export default function SimpleCalendar() {
           }}
           onClick={handleImportPresence}
         >
+        Télécharger Original
+        </Button>
+        <Button
+          size="medium"
+          variant="outlined"
+          startIcon={<CloudDownloadRounded />}
+          sx={{
+            "&:hover": {
+              backgroundColor: (theme) => theme.palette.primary.main,
+              color: "white",
+              borderColor: (theme) => theme.palette.primary.main,
+            },
+          }}
+          onClick={handleImportPresence}
+        >
         Importer présence
         </Button>
         <Button

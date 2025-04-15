@@ -142,7 +142,7 @@ def AIChatBot(request):
         """Send the user query and SQL results to OpenAI for human-friendly formatting."""
         response = client.chat.completions.create(
             messages=[
-                {"role": "system", "content": "You are a helpful assistant that humanizes SQL query results for users.YOU NEVER RETURN ANY SENSETIVE DATA LIKE PASSWORDS, EMAILS, OR ANY OTHER SENSITIVE DATA RELATIVE TO THE DATABASE LOGIN CREDENTIALS."},
+                {"role": "system",  "content": "You are a helpful assistant that summarizes SQL query results clearly and concisely for users. Always respond in a professional tone, without emojis or unnecessary wording. NEVER return sensitive information such as passwords, emails, login credentials, or any other confidential data. Use the same language as the user's query."},
                 {"role": "user", "content": f"Here is the user query: '{user_query}'\n\nHere are the raw SQL results: {sql_results}\n\nPlease humanize and format the results in a user-friendly way."}
             ],
             model=MODEL_NAME,

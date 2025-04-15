@@ -8,6 +8,8 @@ import datetime
 DEVICE_IP = '41.224.5.17'
 DEVICE_PORT = 4370
 
+# esm 
+
 # Initialize ZK object
 zk = ZK(DEVICE_IP, port=DEVICE_PORT, timeout=5)
 

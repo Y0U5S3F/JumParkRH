@@ -12,6 +12,9 @@ from rest_framework.permissions import IsAuthenticated
 import csv
 from django.utils.timezone import now
 from django.db.models import Sum, F, ExpressionWrapper, DurationField
+from appareil.models import Appareil
+import datetime
+import io
 
 class LabelListCreateView(generics.ListCreateAPIView):
     queryset = Label.objects.all().order_by('id').prefetch_related('data')
@@ -248,3 +251,106 @@ def monthly_report(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+    
+PUNCH_TO_STATE = {
+    0: "Check-In",
+    1: "Check-Out",
+    4: "Pause-Out",
+    5: "Pause-In"
+}
+
+def get_filtered_logs(logs, start_date):
+    return [log for log in logs if log.timestamp.date() >= start_date]
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def importoriginal(request):
+    start_date_str = request.data.get('start_date')  # expecting 'DD/MM/YYYY'
+    if not start_date_str:
+        return Response({'error': 'Missing "start_date" parameter in DD/MM/YYYY format.'}, status=400)
+
+    try:
+        start_date = datetime.datetime.strptime(start_date_str, "%d/%m/%Y").date()
+    except ValueError:
+        return Response({'error': 'Invalid date format. Use DD/MM/YYYY.'}, status=400)
+
+    devices = Appareil.objects.all()
+    if not devices.exists():
+        return Response({'error': 'No devices found in the database.'}, status=404)
+
+    boundary = "----DeviceCSVBoundary"
+    parts = []
+
+    for device in devices:
+        device_name = device.nom if hasattr(device, 'nom') else f"device_{device.id}"
+        ip = getattr(device, 'ip', None)
+        port = getattr(device, 'port', 4370)
+
+        if not ip:
+            continue
+
+        zk = ZK(ip, port=int(port), timeout=5)
+        conn = None
+
+        try:
+            conn = zk.connect()
+            users = conn.get_users()
+            user_dict = {int(user.user_id): user for user in users if user.user_id}
+
+            logs = conn.get_attendance()
+            filtered_logs = get_filtered_logs(logs, start_date)
+
+            log_entries = []
+            for log in filtered_logs:
+                user_id = int(log.user_id)
+                punch = log.punch
+
+                user = user_dict.get(user_id)
+                if user:
+                    if hasattr(user, 'name') and isinstance(user.name, (str, bytes)):
+                        decoded_name = user.name.decode('utf-8', errors='ignore') if isinstance(user.name, bytes) else user.name
+                        user_name = decoded_name.strip() or str(user.user_id)
+                    else:
+                        user_name = str(user.user_id)
+                else:
+                    user_name = 'Unknown'
+
+                state = PUNCH_TO_STATE.get(punch, "Unknown State")
+                log_entries.append([log.uid, log.user_id, user_name, log.punch, state, log.timestamp])
+
+            # Sort alphabetically by user name
+            log_entries.sort(key=lambda x: x[2].lower())
+
+            if log_entries:
+                csv_io = io.StringIO()
+                writer = csv.writer(csv_io)
+                writer.writerow(["UID", "User ID", "Name", "Punch", "State", "Timestamp"])
+                writer.writerows(log_entries)
+
+                filename = f"{device_name}_{start_date.strftime('%Y%m%d')}_logs.csv".replace(" ", "_")
+
+                part = (
+                    f"--{boundary}\r\n"
+                    f"Content-Type: text/csv\r\n"
+                    f"Content-Disposition: attachment; filename=\"{filename}\"\r\n\r\n"
+                    f"{csv_io.getvalue()}\r\n"
+                )
+                parts.append(part)
+
+        except Exception as e:
+            print(f"Error processing device {device_name}: {e}")
+            continue  # Ignore failed devices silently
+
+        finally:
+            if conn:
+                conn.disconnect()
+
+    if not parts:
+        return Response({'message': 'No logs found for any device.'}, status=200)
+
+    # Final multipart response
+    multipart_content = ''.join(parts) + f"--{boundary}--\r\n"
+
+    response = HttpResponse(multipart_content, content_type=f"multipart/mixed; boundary={boundary}")
+    response['Content-Disposition'] = 'inline; filename="device_logs.multipart"'
+    return response
