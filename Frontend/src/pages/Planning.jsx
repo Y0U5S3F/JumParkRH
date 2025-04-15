@@ -569,7 +569,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Date"
+                    label="Date de début"
                     value={dayjs(newPresence.startDate)}
                     sx={{ width: "100%" }}
                     ampm={false}
@@ -595,7 +595,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Date"
+                    label="Date de fin"
                     value={dayjs(newPresence.endDate)}
                     sx={{ width: "100%" }}
                     ampm={false}
@@ -621,7 +621,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Pause"
+                    label="Début de pause"
                     value={dayjs(newPresence.startPause)}
                     ampm={false}
                     sx={{ width: "100%" }}
@@ -647,7 +647,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Pause"
+                    label="Fin de pause"
                     ampm={false}
                     value={dayjs(newPresence.endPause)}
                     sx={{ width: "100%" }}
@@ -712,7 +712,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Date"
+                    label="Date de début"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -740,7 +740,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Date"
+                    label="Date de fin"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -769,7 +769,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Pause"
+                    label="Début de pause"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -797,7 +797,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Pause"
+                    label="Fin de pause"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
