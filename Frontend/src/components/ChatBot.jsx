@@ -18,7 +18,7 @@ const CHATBOT_API_URL = "http://127.0.0.1:8000/api/appareil/chatbot/";
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hi! How can I help you today?" },
+    { sender: "bot", text: "Bonjour ! Comment puis-je vous aider aujourd’hui ?" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

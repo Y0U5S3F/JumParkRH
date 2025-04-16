@@ -843,7 +843,7 @@ const handleAddSalaire = async () => {
           <Box className={classes.actionContainer}>
             {/* Total Salary */}
             <Box className={classes.boxLeft}>
-              Total: {parseFloat(ficheDePaieData.salaire_net).toFixed(2)}€
+              Total: {parseFloat(ficheDePaieData.salaire_net).toFixed(2)} TND
             </Box>
 
             {/* Buttons */}
@@ -1163,7 +1163,7 @@ const handleAddSalaire = async () => {
     </Box>
     <Box className={classes.actionContainer}>
     <Box className={classes.boxLeft}>
-              Total: {parseFloat(selectedFicheDePaie?.salaire_net).toFixed(2)||""}€
+              Total: {parseFloat(selectedFicheDePaie?.salaire_net).toFixed(2)||""} TND
             </Box>
             <Box className={classes.boxRight}>
       <Button

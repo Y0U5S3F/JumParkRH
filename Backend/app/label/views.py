@@ -327,7 +327,7 @@ def importoriginal(request):
                 writer.writerow(["UID", "User ID", "Name", "Punch", "State", "Timestamp"])
                 writer.writerows(log_entries)
 
-                filename = f"{device_name}_{start_date.strftime('%Y%m%d')}_logs.csv".replace(" ", "_")
+                filename = f"{device_name}_{start_date.strftime('%d_%m_%Y')}_logs.csv".replace(" ", "_")
 
                 part = (
                     f"--{boundary}\r\n"
