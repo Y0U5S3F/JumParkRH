@@ -19,7 +19,6 @@ export const fetchSalaires = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching salaires:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const fetchSalaireById = async (salaireId) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching salaire:", error);
     throw error;
   }
 };
@@ -73,7 +71,6 @@ export const downloadSalaire = async (salaireId) => {
     link.parentNode.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error("Error downloading salaire:", error);
   }
 };
 
@@ -88,7 +85,6 @@ export const addSalaire = async (salaireData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding salaire:", error);
     throw error;
   }
 };
@@ -104,7 +100,6 @@ export const updateSalaire = async (salaireId, updatedSalaire) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating salaire:", error);
     throw error;
   }
 };
@@ -119,7 +114,6 @@ export const deleteSalaire = async (salaireId) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting salaire:", error);
     throw error;
   }
 };
@@ -157,12 +151,10 @@ export const fetchSalairesStream = async (onData) => {
             const parsedData = JSON.parse(line);
             onData(parsedData); // Pass each salary object to a callback
           } catch (err) {
-            console.error("Error parsing streamed JSON:", err);
           }
         }
       }
     }
   } catch (error) {
-    console.error("Error fetching streamed salaires:", error);
   }
 };

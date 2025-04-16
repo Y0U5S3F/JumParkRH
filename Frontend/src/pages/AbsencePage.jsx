@@ -136,7 +136,6 @@ export default function AbsencePage() {
         setAbsences(formattedAbsences);
         setEmployees(employeesData);
       } catch (error) {
-        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -177,7 +176,6 @@ export default function AbsencePage() {
 
   const handleUpdateAbsence = async () => {
     try {
-      console.log(editAbsence);
       await updateAbsence(editAbsence.id, editAbsence);
       setSnackbar({
         open: true,

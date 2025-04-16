@@ -19,7 +19,6 @@ export const fetchAppareils = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching appareils:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const fetchAppareilById = async (appareilId) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching appareil:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const addAppareil = async (appareilData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding appareil:", error);
     throw error;
   }
 };
@@ -67,7 +64,6 @@ export const updateAppareil = async (appareilId, updatedAppareil) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating appareil:", error);
     throw error;
   }
 };
@@ -82,7 +78,6 @@ export const deleteAppareil = async (appareilId) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting appareil:", error);
     throw error;
   }
 };
@@ -98,7 +93,6 @@ export const toggleAppareilStatus = async (appareilId, currentStatus) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error toggling appareil status:", error);
     throw error;
   }
 };

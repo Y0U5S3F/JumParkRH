@@ -113,7 +113,6 @@ export default function JourFeriePage() {
         const jourFeriesData = await fetchJourFeries();
         setJourFeries(jourFeriesData);
       } catch (error) {
-        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }

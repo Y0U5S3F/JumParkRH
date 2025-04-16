@@ -19,7 +19,6 @@ export const fetchAbsences = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching absences:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const fetchAbsenceById = async (absenceId) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching absence:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const addAbsence = async (absenceData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding absence:", error);
     throw error;
   }
 };
@@ -67,7 +64,6 @@ export const updateAbsence = async (absenceId, updatedAbsence) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating absence:", error);
     throw error;
   }
 };
@@ -82,7 +78,6 @@ export const deleteAbsence = async (absenceId) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting absence:", error);
     throw error;
   }
 };

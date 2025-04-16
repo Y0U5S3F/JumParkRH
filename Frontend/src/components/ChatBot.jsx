@@ -52,7 +52,6 @@ const ChatBot = () => {
           { sender: "bot", text: response.data.result || "No response from server" },
         ]);
       } catch (error) {
-        console.error("Error sending message:", error);
         setMessages((prev) => [
           ...prev,
           { sender: "bot", text: "Sorry, something went wrong!" },

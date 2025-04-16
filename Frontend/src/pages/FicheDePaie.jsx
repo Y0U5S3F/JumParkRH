@@ -145,10 +145,8 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
           fetchSalaires(),
         ]);
         setEmployees(employeesData);
-        console.log("Fetched salaires:", salairesData);
         setSalaires(salairesData);
       } catch (error) {
-        console.error("Erreur lors du chargement des employés:", error);
       } finally {
         setLoading(false);
       }
@@ -230,15 +228,8 @@ const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selecte
           salaryInfo.mode_paiement
         );
         setFicheDePaieData(calculateSalary(updatedData));
-        console.log(
-          "Informations de salaire chargées avec succès:",
-          salaryInfo
-        );
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement des informations de salaire:",
-          error
-        );
+
       }
     }
   };
@@ -370,11 +361,9 @@ const handleAddSalaire = async () => {
     mode_paiement: ficheDePaieData.mode_paiement || "virement bancaire", // Default to "virement bancaire"
   };
 
-  console.log("Payload being sent:", salaireData);
 
   try {
     await addSalaire(salaireData);
-    console.log("Salaire ajouté avec succès");
     setSnackbar({
       open: true,
       severity: "success",
@@ -386,9 +375,7 @@ const handleAddSalaire = async () => {
     
   } catch (error) {
     if (error.response) {
-      console.error("Server response:", error.response.data); // Log server's error response
     } else {
-      console.error("Erreur lors de l'ajout du salaire:", error);
     }
     setSnackbar({
       open: true,
@@ -402,7 +389,6 @@ const handleAddSalaire = async () => {
     try {
       await downloadSalaire(salaireId);
     } catch (error) {
-      console.error("Error downloading salaire:", error);
     }
   };
 
@@ -422,7 +408,6 @@ const handleAddSalaire = async () => {
       setOpenDeleteDialog(false); // Close the dialog
 
     } catch (error) {
-      console.error("Error deleting fiche de paie:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -494,7 +479,6 @@ const handleAddSalaire = async () => {
 
       setOpenEditModal(false);
     } catch (error) {
-      console.error("Error updating fiche de paie:", error);
   
       // Show error message
       setSnackbar({

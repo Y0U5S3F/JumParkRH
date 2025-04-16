@@ -147,11 +147,7 @@ export default function DemandeCongePage() {
         setEmployees(employeesData);
         setTypeConges(typeCongesData);
 
-        console.log("Congés:", congesData);
-        console.log("Employés:", employeesData);
-        console.log("Types de Congé:", typeCongesData);
       } catch (error) {
-        console.error("Erreur lors du chargement des données:", error);
         setSnackbar({
           open: true,
           severity: "error",
@@ -187,7 +183,6 @@ export default function DemandeCongePage() {
       setOpenDeleteDialog(false);
       setRefresh((prev) => prev + 1);
     } catch (error) {
-      console.error("Error deleting congé:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -205,13 +200,11 @@ export default function DemandeCongePage() {
       typeconge: typeConge ? typeConge.id : "",
     });
     setOpenEdit(true);
-    console.log("Edit Conge:", conge);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewConge((prev) => ({ ...prev, [name]: value }));
-    console.log(newConge);
   };
 
   const handleUpdateConge = async () => {
@@ -261,10 +254,8 @@ export default function DemandeCongePage() {
   const handleInputModifyChange = (e) => {
     const { name, value } = e.target;
     setEditConge((prev) => ({ ...prev, [name]: value }));
-    console.log(editConge);
   };
   const handleAddConge = async () => {
-    console.log(newConge); // Debugging
     try {
       // Ensure all required fields are provided
       if (
@@ -280,7 +271,6 @@ export default function DemandeCongePage() {
         });
         return;
       }
-      console.log(newConge); // Debugging
       const congeToSend = {
         employe: newConge.employe,
         startDate: newConge.startDate,
@@ -291,7 +281,6 @@ export default function DemandeCongePage() {
       };
 
       const response = await addConge(congeToSend);
-      console.log(congeToSend); // Debugging
 
       if (response) {
         setSnackbar({

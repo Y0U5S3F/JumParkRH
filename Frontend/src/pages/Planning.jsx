@@ -222,7 +222,6 @@ export default function SimpleCalendar() {
                   return prevData;
                 });
               } catch (e) {
-                console.error("Error parsing JSON:", e);
               }
             }
           }
@@ -243,11 +242,9 @@ export default function SimpleCalendar() {
               return prevData;
             });
           } catch (e) {
-            console.error("Error parsing final JSON:", e);
           }
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
       }
       setIsLoading(false);
     };
@@ -261,7 +258,6 @@ export default function SimpleCalendar() {
         const employeesData = await fetchMinimalEmployes();
         setEmployees(employeesData);
       } catch (error) {
-        console.error("Error fetching employees:", error);
       }
     };
 
@@ -276,7 +272,6 @@ export default function SimpleCalendar() {
   const handlePresenceChange = (e) => {
     const { name, value } = e.target;
     setNewPresence((prev) => ({ ...prev, [name]: value }));
-    console.log(newPresence);
   };
 
   const handleAddPresence = async () => {
@@ -324,9 +319,7 @@ export default function SimpleCalendar() {
         status: newPresence.status,
         label: newPresence.label,
       };
-      console.log("Sending data:", presenceToSend);
       const response = await addLabel(newPresence.matricule, presenceToSend);
-      console.log("Response:", response);
       setSnackbar({
         open: true,
         severity: "success",
@@ -340,7 +333,6 @@ export default function SimpleCalendar() {
         severity: "error",
         message: `Erreur lors de l'ajout de la présence.${error}`,
       });
-      console.error("Error adding presence:", error);
     }
   };
 
@@ -354,9 +346,7 @@ export default function SimpleCalendar() {
         endPause: selectedTile.endPause,
         status: selectedTile.status.toLowerCase(),
       };
-      console.log("Updating data:", presenceToUpdate);
       const response = await updateLabel(selectedTile.id, presenceToUpdate);
-      console.log("Response:", response);
       setSnackbar({
         open: true,
         severity: "success",
@@ -370,14 +360,12 @@ export default function SimpleCalendar() {
         severity: "error",
         message: `Erreur lors de la mise à jour de la présence.${error}`,
       });
-      console.error("Error updating presence:", error);
     }
   };
 
   const handleDeletePresence = async () => {
     try {
       const response = await deleteLabel(selectedTile.id);
-      console.log("Response:", response);
       setSnackbar({
         open: true,
         severity: "success",
@@ -391,7 +379,6 @@ export default function SimpleCalendar() {
         severity: "error",
         message: `Erreur lors de la suppression de la présence.${error}`,
       });
-      console.error("Error deleting presence:", error);
     }
   };
 
@@ -527,7 +514,6 @@ export default function SimpleCalendar() {
           isLoading={isLoading}
           data={schedulerData}
           onTileClick={(clickedTile) => {
-            console.log("clickedTile", clickedTile);
             setSelectedTile(clickedTile);
             setOpenViewModal(true);
           }}
@@ -805,7 +791,6 @@ export default function SimpleCalendar() {
                         ...prev,
                         startDate: formattedDate,
                       }));
-                      console.log(selectedTile);
                     }}
                     renderInput={(params) => (
                       <TextField {...params} fullWidth />
@@ -833,7 +818,6 @@ export default function SimpleCalendar() {
                         ...prev,
                         endDate: formattedDate,
                       }));
-                      console.log(selectedTile);
                     }}
                     renderInput={(params) => (
                       <TextField {...params} fullWidth />
@@ -862,7 +846,6 @@ export default function SimpleCalendar() {
                         ...prev,
                         startPause: formattedDate,
                       }));
-                      console.log(selectedTile);
                     }}
                     renderInput={(params) => (
                       <TextField {...params} fullWidth />
@@ -890,7 +873,6 @@ export default function SimpleCalendar() {
                         ...prev,
                         endPause: formattedDate,
                       }));
-                      console.log(selectedTile);
                     }}
                     renderInput={(params) => (
                       <TextField {...params} fullWidth />

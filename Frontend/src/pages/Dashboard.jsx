@@ -303,12 +303,7 @@ export default function Dashboard() {
           })
         );
         setDashboardData({ ...data, employes_on_leave: employesOnLeave });
-        console.log("Dashboard Data:", data);
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des données du tableau de bord:",
-          error
-        );
         setSnackbar({
           open: true,
           severity: "error",

@@ -19,7 +19,6 @@ export const fetchServices = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching services:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const addService = async (serviceData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding service:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const updateService = async (serviceId, updatedService) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating service:", error);
     throw error;
   }
 };
@@ -65,9 +62,7 @@ export const deleteService = async (serviceId) => {
         Authorization: `Bearer ${token}`, // Add the token to the headers
       },
     });
-    console.log(`Deleted service with ID: ${serviceId}`);
   } catch (error) {
-    console.error("Error deleting service:", error);
     throw error;
   }
 };

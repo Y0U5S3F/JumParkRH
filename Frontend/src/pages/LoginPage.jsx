@@ -98,7 +98,6 @@ export default function SignIn(props) {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-      console.error('Login error:', error);
       setEmailError(true);
       setEmailErrorMessage('Invalid email or password');
       setPasswordError(true);

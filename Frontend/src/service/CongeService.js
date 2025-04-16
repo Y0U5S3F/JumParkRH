@@ -37,7 +37,6 @@ export const fetchConges = async () => {
 
     return congesWithDetails;
   } catch (error) {
-    console.error("Error fetching congés:", error);
     throw error;
   }
 };
@@ -53,7 +52,6 @@ export const addConge = async (congeData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding congé:", error);
     throw error;
   }
 };
@@ -69,7 +67,6 @@ export const updateConge = async (congeId, updatedConge) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating congé:", error);
     throw error;
   }
 };
@@ -84,7 +81,6 @@ export const deleteConge = async (congeId) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting congé:", error);
     throw error;
   }
 };

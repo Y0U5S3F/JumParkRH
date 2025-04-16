@@ -19,7 +19,6 @@ export const fetchDepartements = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching departments:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const updateDepartement = async (id, departementData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating department:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const addDepartment = async (departmentData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding department:", error);
     throw error;
   }
 };
@@ -65,9 +62,7 @@ export const deleteDepartment = async (id) => {
         Authorization: `Bearer ${token}`, // Add the token to the headers
       },
     });
-    console.log(`Deleted department with ID: ${id}`);
   } catch (error) {
-    console.error("Error deleting department:", error);
     throw error;
   }
 };
