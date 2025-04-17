@@ -566,7 +566,7 @@ export default function EmployePage() {
               Détails de l'employé
             </Typography>
             <CloseIcon
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenViewModal(false)}
               
             />
           </Box>
@@ -1243,7 +1243,7 @@ export default function EmployePage() {
               Modifier Personnel
             </Typography>
             <CloseIcon
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenEditModal(false)}
               
             />
           </Box>
@@ -1258,6 +1258,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Matricule"
                   type="search"
+                  required
                   variant="outlined"
                   name="matricule"
                   value={editEmployee.matricule}
@@ -1270,6 +1271,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Nom"
                   type="search"
+                  required
                   variant="outlined"
                   name="nom"
                   value={editEmployee.nom}
@@ -1282,6 +1284,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Prenom"
                   type="search"
+                  required
                   name="prenom"
                   value={editEmployee.prenom}
                   onChange={handleInputModifyChange}
@@ -1294,6 +1297,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Email"
                   type="search"
+                  required
                   variant="outlined"
                   name="email"
                   value={editEmployee.email}
@@ -1403,6 +1407,7 @@ export default function EmployePage() {
                   fullWidth
                   variant="outlined"
                   label="CIN"
+                  required
                   name="CIN"
                   value={editEmployee.CIN}
                   onChange={handleInputModifyChange}
@@ -1434,6 +1439,7 @@ export default function EmployePage() {
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Numero de telephone"
                   type="search"
                   name="num_telephone"
@@ -1493,6 +1499,7 @@ export default function EmployePage() {
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Nom du Contact d'Urgence"
                   name="nom_urgence"
                   value={editEmployee.nom_urgence}
@@ -1505,6 +1512,7 @@ export default function EmployePage() {
               <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   id="outlined-search"
+                  required
                   label="Numéro de Téléphone d'Urgence"
                   name="num_telephone_urgence"
                   value={editEmployee.num_telephone_urgence}
@@ -1595,6 +1603,7 @@ Informations bancaires            </Typography>
                   label="Salaire de base"
                   name="salaire_base"
                   type="search"
+                  required
                   variant="outlined"
                   value={editEmployee.salaire_base}
                   onChange={handleInputModifyChange}
