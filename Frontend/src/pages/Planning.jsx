@@ -796,12 +796,7 @@ export default function SimpleCalendar() {
             </Typography>
             <CloseIcon
               onClick={() => setOpenViewModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>

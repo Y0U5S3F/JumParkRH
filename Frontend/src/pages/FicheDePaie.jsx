@@ -922,12 +922,7 @@ export default function FicheDePaiePage() {
             </Typography>
             <CloseIcon
               onClick={() => setOpenEditModal(false)}
-              sx={{
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.9)", // Transparent background
-                  borderRadius: "50%", // Circular shape
-                },
-              }}
+              
             />
           </Box>
           <Box className={classes.contentContainer}>

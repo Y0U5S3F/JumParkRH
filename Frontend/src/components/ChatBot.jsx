@@ -120,7 +120,7 @@ const ChatBot = () => {
             maxHeight: "600px",
             display: "flex",
             flexDirection: "column",
-            border: `1px solid ${theme.palette.secondary.main}`, // Add border with secondary color
+            border: `1px solid ${theme.palette.secondary.main}`, 
 
             borderRadius: 2,
             overflow: "hidden",

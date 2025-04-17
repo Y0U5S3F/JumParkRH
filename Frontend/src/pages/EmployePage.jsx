@@ -573,7 +573,7 @@ export default function EmployePage() {
               Détails de l'employé
             </Typography>
             <CloseIcon
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenViewModal(false)}
               
             />
           </Box>
@@ -1250,7 +1250,7 @@ export default function EmployePage() {
               Modifier Personnel
             </Typography>
             <CloseIcon
-              onClick={() => setOpen(false)}
+              onClick={() => setOpenEditModal(false)}
               
             />
           </Box>
