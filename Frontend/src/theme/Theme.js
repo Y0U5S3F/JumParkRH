@@ -1,10 +1,10 @@
 import { createTheme } from '@mui/material/styles';
-import logoWhite from '../../public/logos/LogoWhite.svg';
-import darkBackground from '../../public/dark-bg.png'; // Import dark background
-import lightBackground from '../../public/white-bg.png'; // Import light background
+import logoWhite from '/logos/LogoWhite.svg';
+import darkBackground from '/dark-bg.png'; // Import dark background
+import lightBackground from '/white-bg.png'; // Import light background
 
 
-import logoBlack from '../../public/logos/LogoBlack.svg';
+import logoBlack from '/logos/LogoBlack.svg';
 const shadowsArray = [
   'none', // Elevation 0
   '0px 1px 3px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12)', // Elevation 1
