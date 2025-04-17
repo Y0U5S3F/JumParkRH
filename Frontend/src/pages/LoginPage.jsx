@@ -64,6 +64,12 @@ export default function SignIn(props) {
   const [showPassword, setShowPassword] = React.useState(false);
   const { isDarkMode } = useThemeToggle(); // Get current theme mode
   const navigate = useNavigate(); // for redirecting after login
+  const [pageTitle, setPageTitle] = React.useState("Login");
+
+
+  React.useEffect(() => {
+    document.title = pageTitle; // Update the document title
+  }, [pageTitle]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
