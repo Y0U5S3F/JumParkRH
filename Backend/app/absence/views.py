@@ -34,19 +34,15 @@ def dashboard_stats(request):
     current_month = today.month
     current_year = today.year
     
-    # General Stats
     total_employes = Employe.objects.count()
     total_departements = Departement.objects.count()
     pending_vacation = Conge.objects.filter(status='en cours').count()
     
-    # Next public holiday
     next_public_holiday = JourFerie.objects.filter(date__gte=today).order_by('date').first()
     next_public_holiday_date = next_public_holiday.date if next_public_holiday else "No upcoming holidays"
 
-    # Employee Distribution
     employe_distribution = Employe.objects.values('departement__nom').annotate(total=Count('matricule'))
     
-    # Employees on leave today (congé & absence)
     employes_on_leave = []
 
     conges = Conge.objects.filter(startDate__lte=today, endDate__gte=today)
@@ -74,9 +70,8 @@ def dashboard_stats(request):
         total=Sum('salaire_net')
     )["total"] or 0
 
-    five_months_ago = today.replace(day=1) - timedelta(days=150)  # Approximation for 5 months
+    five_months_ago = today.replace(day=1) - timedelta(days=150)
 
-    # Total absences in the last 5 months grouped by month
     absences_last_5_months = (
     Absence.objects.filter(date__gte=five_months_ago, date__lte=today)
     .annotate(month=TruncMonth('date'))
@@ -96,7 +91,7 @@ def dashboard_stats(request):
         "employedistribution": list(employe_distribution),
         "employes_on_leave": employes_on_leave,
         "birthdays_this_month": list(birthdays_this_month),
-                "absences_last_5_months": list(absences_last_5_months),  # Add absences data
+                "absences_last_5_months": list(absences_last_5_months),
     }
 
     return JsonResponse(response_data)

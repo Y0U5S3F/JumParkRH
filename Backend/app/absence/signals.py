@@ -8,7 +8,6 @@ from label.models import Label, LabelData
 def add_label_data_for_absence(sender, instance, created, **kwargs):
     if created:
         try:
-            # Retrieve the Label associated with the employee
             label = Label.objects.get(employe=instance.employe)
         except Label.DoesNotExist:
             print(f"No label found for employe {instance.employe}")
@@ -16,14 +15,12 @@ def add_label_data_for_absence(sender, instance, created, **kwargs):
 
         try:
             if instance.date:
-                # Create start and end datetime objects with specified times
                 start_datetime = datetime.datetime.combine(instance.date, datetime.time(hour=8, minute=0))
                 end_datetime = datetime.datetime.combine(instance.date, datetime.time(hour=17, minute=0))
             else:
                 start_datetime = None
                 end_datetime = None
 
-            # Create a new LabelData entry with status "absent"
             LabelData.objects.create(
                 label=label,
                 startDate=start_datetime,
