@@ -137,119 +137,122 @@ export default function SignIn(props) {
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : whiteTheme}>
       <CssBaseline enableColorScheme />
-      {isLoading && <Loading />} {/* Show Loading component when isLoading is true */}
-      <SignInContainer direction="column" justifyContent="space-between">
-        {/* Theme Toggle in top-right corner */}
-        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-          <ThemeToggle />
-        </Box>
-        
-        <Card variant="outlined">
-        <Box sx={{ display: 'flex' }}>
-  <img 
-    src={isDarkMode ? darkTheme.logo.main : whiteTheme.logo.main} 
-    alt="GymPark Logo" 
-    style={{ maxWidth: '100%', height: '15px' }} 
-  />
-</Box>
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ 
-              width: '100%', 
-              fontSize: 'clamp(2rem, 10vw, 2.15rem)', 
-              fontWeight: 'bold',
-              color: theme => theme.palette.text.primary 
-            }}
-          >
-            Sign in
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Email</FormLabel>
-              <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
-                name="email"
-                size="small"
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? 'error' : 'primary'}
+      {isLoading ? (
+        <Loading /> // Show only the Loading component when isLoading is true
+      ) : (
+        <SignInContainer direction="column" justifyContent="space-between">
+          {/* Theme Toggle in top-right corner */}
+          <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+            <ThemeToggle />
+          </Box>
+          
+          <Card variant="outlined">
+            <Box sx={{ display: 'flex' }}>
+              <img 
+                src={isDarkMode ? darkTheme.logo.main : whiteTheme.logo.main} 
+                alt="GymPark Logo" 
+                style={{ maxWidth: '100%', height: '15px' }} 
               />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type={showPassword ? "text" : "password"} // Toggle between text and password
-                size="small"
-                id="password"
-                autoComplete="current-password"
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
-                      edge="end"
-                      sx={{
-                        color: 'inherit', // Ensure the icon inherits the input's color
-                      }}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  ),
-                }}
-                sx={{
-                  '&:-webkit-autofill': {
-                    WebkitBoxShadow: theme => `0 0 0 100px ${theme.palette.mode === 'dark' ? 'rgba(33, 34, 44, 0.8)' : 'rgba(248, 250, 252, 0.8)'} inset`,
-                    WebkitTextFillColor: theme => theme.palette.text.primary,
-                    transition: 'background-color 5000s ease-in-out 0s',
-                  },
-                }}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox name="remember" value="true" color="primary" />}
-              label={<Typography color="text.secondary">Remember me</Typography>}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={isLoading}
-              color="primary"
-              sx={{
-                py: 1.5,
-                fontWeight: 600,
+            </Box>
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{ 
+                width: '100%', 
+                fontSize: 'clamp(2rem, 10vw, 2.15rem)', 
+                fontWeight: 'bold',
+                color: theme => theme.palette.text.primary 
               }}
             >
-              {isLoading ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </Box>
-        </Card>
-      </SignInContainer>
+              Sign in
+            </Typography>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: 2,
+              }}
+            >
+              <FormControl>
+                <FormLabel htmlFor="email" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Email</FormLabel>
+                <TextField
+                  error={emailError}
+                  helperText={emailErrorMessage}
+                  id="email"
+                  type="email"
+                  name="email"
+                  size="small"
+                  placeholder="your@email.com"
+                  autoComplete="email"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                  color={emailError ? 'error' : 'primary'}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel htmlFor="password" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Password</FormLabel>
+                <TextField
+                  error={passwordError}
+                  helperText={passwordErrorMessage}
+                  name="password"
+                  placeholder="••••••"
+                  type={showPassword ? "text" : "password"} // Toggle between text and password
+                  size="small"
+                  id="password"
+                  autoComplete="current-password"
+                  required
+                  fullWidth
+                  variant="outlined"
+                  color={passwordError ? 'error' : 'primary'}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+                        edge="end"
+                        sx={{
+                          color: 'inherit', // Ensure the icon inherits the input's color
+                        }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    ),
+                  }}
+                  sx={{
+                    '&:-webkit-autofill': {
+                      WebkitBoxShadow: theme => `0 0 0 100px ${theme.palette.mode === 'dark' ? 'rgba(33, 34, 44, 0.8)' : 'rgba(248, 250, 252, 0.8)'} inset`,
+                      WebkitTextFillColor: theme => theme.palette.text.primary,
+                      transition: 'background-color 5000s ease-in-out 0s',
+                    },
+                  }}
+                />
+              </FormControl>
+              <FormControlLabel
+                control={<Checkbox name="remember" value="true" color="primary" />}
+                label={<Typography color="text.secondary">Remember me</Typography>}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={isLoading}
+                color="primary"
+                sx={{
+                  py: 1.5,
+                  fontWeight: 600,
+                }}
+              >
+                {isLoading ? 'Signing in...' : 'Sign in'}
+              </Button>
+            </Box>
+          </Card>
+        </SignInContainer>
+      )}
     </ThemeProvider>
   );
 }

@@ -22,7 +22,8 @@ import CelebrationIcon from "@mui/icons-material/Celebration";
 import { PieChart } from "@mui/x-charts/PieChart";
 import { BarChart } from "@mui/x-charts/BarChart";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { DataGrid, useGridApiRef ,   DEFAULT_GRID_AUTOSIZE_OPTIONS,
+} from "@mui/x-data-grid";
 import { fetchDashboardData } from "../service/DashboardService"; // Import the fetchDashboardData function
 
 const absenceData = [
@@ -39,7 +40,7 @@ const SummaryCard = ({ title, value, subValue, icon, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -120,7 +121,7 @@ const PieChartCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -178,7 +179,7 @@ const BarChartCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -223,7 +224,7 @@ const BirthdaysCard = ({ data, loading }) => {
     <Card
       sx={{
         color: (theme) => theme.palette.text.primary,
-        boxShadow: 3,
+        boxShadow: 1,
         borderRadius: 2,
         display: "flex",
         flexDirection: "column",
@@ -285,6 +286,8 @@ export default function Dashboard() {
   });
   const apiRef = useGridApiRef();
   const [pageTitle, setPageTitle] = useState("Tableau de bord");
+    const [expand, setExpand] = useState(DEFAULT_GRID_AUTOSIZE_OPTIONS.expand);
+  
 
   useEffect(() => {
     document.title = pageTitle; // Update the document title
@@ -492,13 +495,20 @@ export default function Dashboard() {
         apiRef={apiRef}
         rows={dashboardData.employes_on_leave || []}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        autoHeight
-        disableColumnMenu
-        disableColumnSelector
-        disableSelectionOnClick
-        disableMultipleColumnsSorting
+        checkboxSelection={false}
+        disableRowSelectionOnClick={true}
+        disableMultipleRowSelection={true}
+        autosizeOptions={expand}
+        pagination
+        hideScrollbar={true}
+        // autosizeOnMount
+
+        pageSizeOptions={[5, 10, 25]}
+        initialState={{
+          pagination: {
+            paginationModel: { pageSize: 10, page: 0 },
+          },
+        }}
         loading={loading}
       />
     </div>
