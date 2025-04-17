@@ -145,6 +145,7 @@ def process_log(log, marker_file, token):
             resp = update_record(data_id, "endDate", end_date_str, token)
             if resp.status_code == 200:
                 update_record(data_id, "status", "fin de service", token)
+                remove_first_log_entry(user_id, marker_file)
 
 def fetch_devices(request):
     """Fetch device details from the backend API and return only connected devices."""
