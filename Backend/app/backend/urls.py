@@ -1,9 +1,7 @@
-from django.contrib import admin
 from django.urls import path, include
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('api/absence/', include('absence.urls')),
     path('api/appareil/', include('appareil.urls')),
     path('api/attendance/', include('attendance.urls')),

@@ -24,12 +24,10 @@ const Table = ({employees,})=> {
           await axios.delete(
             `http://127.0.0.1:8000/api/employe/employes/${matricule}/`
           );
-          console.log("Deleted employé with matricule:", matricule);
           setEmployees((prev) =>
             prev.filter((employee) => employee.matricule !== matricule)
           );
         } catch (error) {
-          console.error("Error deleting employé:", error);
         }
       };
     const handleView = (employee) => {
@@ -37,7 +35,6 @@ const Table = ({employees,})=> {
         setOpenViewModal(true);
       };
         const handleEdit = (employee) => {
-            console.log("Edit employee:", employee);
         };
   const autosizeOptions = {
     expand,

@@ -24,7 +24,6 @@ export const fetchEmployes = async () => {
       service: emp.service ? emp.service.nom : "N/A",
     }));
   } catch (error) {
-    console.error("Error fetching employees:", error);
     throw error;
   }
 };
@@ -38,9 +37,7 @@ export const deleteEmployee = async (matricule) => {
         Authorization: `Bearer ${token}`, // Add the token to the headers
       },
     });
-    console.log("Deleted employee with matricule:", matricule);
   } catch (error) {
-    console.error("Error deleting employee:", error);
     throw error;
   }
 };
@@ -56,7 +53,6 @@ export const addEmployee = async (employeeData) => {
     });
     return response;
   } catch (error) {
-    console.error("Error adding employee:", error);
     throw error;
   }
 };
@@ -72,7 +68,6 @@ export const updateEmployee = async (matricule, updatedData) => {
     });
     return response;
   } catch (error) {
-    console.error("Error updating employee:", error);
     throw error;
   }
 };
@@ -92,7 +87,6 @@ export const fetchMinimalEmployes = async () => {
       prenom: emp.prenom,
     }));
   } catch (error) {
-    console.error("Error fetching minimal employee data:", error);
     throw error;
   }
 };
@@ -108,7 +102,6 @@ export const fetchEmployeeMinimalByMatricule = async (matricule) => {
     });
     return response.data; // Expected to return { nom: "John", prenom: "Doe" }
   } catch (error) {
-    console.error(`Error fetching employee by matricule ${matricule}:`, error);
     return { nom: "N/A", prenom: "N/A" }; // Default values in case of error
   }
 };
@@ -146,13 +139,11 @@ export const fetchEmployesStream = async (onData) => {
             const parsedData = JSON.parse(line);
             onData(parsedData); // Pass each employee object to a callback
           } catch (err) {
-            console.error("Error parsing streamed JSON:", err);
           }
         }
       }
     }
   } catch (error) {
-    console.error("Error fetching streamed employees:", error);
   }
 };
 
@@ -199,7 +190,6 @@ export const DownloadPresence = async (reportYear,reportMonth) => {
       message: "Fichier téléchargé avec succès!",
     });
   } catch (error) {
-    console.error("Error downloading presence report:", error);
     setSnackbar({
       open: true,
       severity: "error",

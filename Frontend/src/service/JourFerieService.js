@@ -19,7 +19,6 @@ export const fetchJourFeries = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching jour feries:", error);
     throw error;
   }
 };
@@ -35,7 +34,6 @@ export const fetchJourFerieById = async (jourFerieId) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching jour ferie:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const addJourFerie = async (jourFerieData) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error adding jour ferie:", error);
     throw error;
   }
 };
@@ -67,7 +64,6 @@ export const updateJourFerie = async (jourFerieId, updatedJourFerie) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error updating jour ferie:", error);
     throw error;
   }
 };
@@ -82,7 +78,6 @@ export const deleteJourFerie = async (jourFerieId) => {
       },
     });
   } catch (error) {
-    console.error("Error deleting jour ferie:", error);
     throw error;
   }
 };

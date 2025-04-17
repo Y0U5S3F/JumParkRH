@@ -145,10 +145,8 @@ export default function FicheDePaiePage() {
           fetchSalaires(),
         ]);
         setEmployees(employeesData);
-        console.log("Fetched salaires:", salairesData);
         setSalaires(salairesData);
       } catch (error) {
-        console.error("Erreur lors du chargement des employés:", error);
       } finally {
         setLoading(false);
       }
@@ -240,15 +238,8 @@ export default function FicheDePaiePage() {
           salaryInfo.mode_paiement
         );
         setFicheDePaieData(calculateSalary(updatedData));
-        console.log(
-          "Informations de salaire chargées avec succès:",
-          salaryInfo
-        );
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement des informations de salaire:",
-          error
-        );
+
       }
     }
   };
@@ -403,38 +394,34 @@ export default function FicheDePaiePage() {
       mode_paiement: ficheDePaieData.mode_paiement || "virement bancaire", // Default to "virement bancaire"
     };
 
-    console.log("Payload being sent:", salaireData);
 
-    try {
-      await addSalaire(salaireData);
-      console.log("Salaire ajouté avec succès");
-      setSnackbar({
-        open: true,
-        severity: "success",
-        message: "Fiche de paie ajoutée avec succès!",
-      });
-      setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+  try {
+    await addSalaire(salaireData);
+    setSnackbar({
+      open: true,
+      severity: "success",
+      message: "Fiche de paie ajoutée avec succès!",
+    });
+    setRefresh((prev) => !prev); // Toggle refresh state to trigger update
 
-      setOpen(false); // Close the modal
-    } catch (error) {
-      if (error.response) {
-        console.error("Server response:", error.response.data); // Log server's error response
-      } else {
-        console.error("Erreur lors de l'ajout du salaire:", error);
-      }
-      setSnackbar({
-        open: true,
-        severity: "error",
-        message: "Erreur lors de l'ajout de la fiche de paie.",
-      });
+    setOpen(false); // Close the modal
+    
+  } catch (error) {
+    if (error.response) {
+    } else {
     }
-  };
+    setSnackbar({
+      open: true,
+      severity: "error",
+      message: "Erreur lors de l'ajout de la fiche de paie.",
+    });
+  }
+};
 
   const handleDownload = async (salaireId) => {
     try {
       await downloadSalaire(salaireId);
     } catch (error) {
-      console.error("Error downloading salaire:", error);
     }
   };
 
@@ -453,7 +440,6 @@ export default function FicheDePaiePage() {
 
       setOpenDeleteDialog(false); // Close the dialog
     } catch (error) {
-      console.error("Error deleting fiche de paie:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -533,8 +519,7 @@ export default function FicheDePaiePage() {
 
       setOpenEditModal(false);
     } catch (error) {
-      console.error("Error updating fiche de paie:", error);
-
+  
       // Show error message
       setSnackbar({
         open: true,

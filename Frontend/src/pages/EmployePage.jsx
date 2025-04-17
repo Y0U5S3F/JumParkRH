@@ -160,7 +160,6 @@ export default function EmployePage() {
   const handleInputModifyChange = (e) => {
     const { name, value } = e.target;
     setEditEmployee((prev) => ({ ...prev, [name]: value }));
-    console.log(editEmployee);
   };
 
   const [pageTitle, setPageTitle] = useState("Personnel");
@@ -184,7 +183,6 @@ export default function EmployePage() {
         setDepartments(departmentsData);
         setServices(servicesData);
       } catch (error) {
-        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -200,7 +198,6 @@ export default function EmployePage() {
         prev.filter((employee) => employee.matricule !== matricule)
       );
     } catch (error) {
-      console.error("Error deleting employee:", error);
     }
   };
 
@@ -279,7 +276,6 @@ export default function EmployePage() {
         newEmployee.rib_bancaire
       );
       const response = await addEmployee(employeeToSend);
-      console.log(employeeToSend); // Call the service
 
       if (response.status === 201) {
         setSnackbar({
@@ -373,7 +369,6 @@ export default function EmployePage() {
         message: "Employé supprimé avec succès!",
       });
     } catch (error) {
-      console.error("Error deleting employee:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -401,7 +396,6 @@ export default function EmployePage() {
       await DownloadPresence(reportYear, reportMonth);
       setOpenPresenceModal(false);
     } catch (error) {
-      console.error("Error downloading salaire:", error);
     }
   };
 
@@ -426,7 +420,6 @@ export default function EmployePage() {
     // Set the new employee data with the IDs
     setEditEmployee(updatedEmployee);
 
-    console.log(updatedEmployee); // For debugging
     setOpenEditModal(true); // Open the edit modal
   };
 

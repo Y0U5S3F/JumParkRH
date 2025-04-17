@@ -19,7 +19,6 @@ export const fetchLabels = async () => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching labels:", error);
     throw error;
   }
 };
@@ -36,7 +35,6 @@ export const fetchLabelsStream = async () => {
     });
     return response; // Return the raw response for streaming
   } catch (error) {
-    console.error("Error fetching labels with streaming:", error);
     throw error;
   }
 };
@@ -51,7 +49,6 @@ export const fetchLabelById = async (labelId) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching label:", error);
     throw error;
   }
 };
@@ -71,7 +68,6 @@ export const addLabel = async (matricule, labelData) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error adding label:", error);
     throw error;
   }
 };
@@ -91,7 +87,6 @@ export const updateLabel = async (labelId, updatedLabel) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating label:", error);
     throw error;
   }
 };
@@ -105,9 +100,7 @@ export const deleteLabel = async (labelId) => {
         Authorization: `Bearer ${token}`, // Add the token to the headers
       },
     });
-    console.log(`Deleted label with ID: ${labelId}`);
   } catch (error) {
-    console.error("Error deleting label:", error);
     throw error;
   }
 };
@@ -116,7 +109,6 @@ export const importPresence = async () => {
   try {
     const token = getAccessToken();
     if (!token) {
-      console.error("Access token not found");
       return;
     }
     const response = await axios.get("http://127.0.0.1:8000/api/label/zk_auto_import/", {
@@ -124,9 +116,7 @@ export const importPresence = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("Response:", response.data);
   } catch (error) {
-    console.error("Error importing presence:", error);
   }
 };
 
@@ -199,6 +189,5 @@ export const downloadHistory = async (formattedDate) => {
       window.URL.revokeObjectURL(blobUrl);
     });
   } catch (error) {
-    console.error("Error downloading history:", error);
   }
 };

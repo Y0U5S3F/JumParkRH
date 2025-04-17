@@ -146,7 +146,6 @@ export default function AppareilPage() {
 
         setAppareils(formattedAppareils);
       } catch (error) {
-        console.error("Error fetching appareils:", error);
       } finally {
         setLoading(false);
       }
@@ -198,9 +197,7 @@ export default function AppareilPage() {
         port: parseInt(newAppareil.port, 10), // Ensure port is an integer
         status: newAppareil.status,
       };
-      console.log("Sending data:", appareilToSend);
       const response = await addAppareil(appareilToSend);
-      console.log("Response:", response);
       setSnackbar({
         open: true,
         severity: "success",
@@ -214,7 +211,6 @@ export default function AppareilPage() {
         severity: "error",
         message: `Erreur lors de l'ajout de l'appareil.${error}`,
       });
-      console.error("Error adding appareil:", error);
     }
   };
 
@@ -246,7 +242,6 @@ export default function AppareilPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewAppareil((prev) => ({ ...prev, [name]: value }));
-    console.log(newAppareil);
   };
 
   const handleInputModifyChange = (e) => {
@@ -266,7 +261,6 @@ export default function AppareilPage() {
         prev.map((app) => (app.id === id ? { ...app, status: updatedAppareil.status } : app))
       );
     } catch (error) {
-      console.error("Error toggling appareil status:", error);
       setSnackbar({
         open: true,
         severity: "error",

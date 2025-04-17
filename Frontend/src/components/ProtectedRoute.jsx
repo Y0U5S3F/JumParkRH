@@ -9,7 +9,6 @@ function ProtectedRoute() {
 
     useEffect(() => {
         auth().catch((error) => {
-            console.error('Error during authorization:', error);
             setIsAuthorized(false);
         });
     }, []);

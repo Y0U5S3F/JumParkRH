@@ -154,7 +154,6 @@ export default function ServicePage() {
         setServices(formattedServices);
         setDepartements(departmentsData);
       } catch (error) {
-        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -198,7 +197,6 @@ export default function ServicePage() {
       setRefresh((prev) => prev + 1);
     } catch (error) {
       // Handle error
-      console.error("Error deleting service:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -240,7 +238,6 @@ export default function ServicePage() {
       setRefresh((prev) => !prev); // Refresh service list
     } catch (error) {
       // Handle error
-      console.error("Erreur lors de l'ajout du service:", error);
       setSnackbar({
         open: true,
         severity: "error",

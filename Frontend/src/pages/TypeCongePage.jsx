@@ -125,7 +125,6 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         );
         setTypeConges(formattedTypeConges);
       } catch (error) {
-        console.error("Error fetching types of leave:", error);
       } finally {
         setLoading(false);
       }
@@ -185,7 +184,6 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
 
       // Send POST request
       const response = await addTypeConge(typeCongeToSend);
-    console.log(response.status);
       if (response.status === 201) {
         setSnackbar({
           open: true,
@@ -203,7 +201,6 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         });
       }
     } catch (error) {
-      console.error("Erreur lors de l'ajout du type de congé:", error);
       setSnackbar({
         open: true,
         severity: "error",

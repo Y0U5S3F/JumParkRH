@@ -17,7 +17,6 @@ export const fetchEmployeeSalaryInfo = async (matricule) => {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching employee salary info:", error);
     throw error;
   }
 };

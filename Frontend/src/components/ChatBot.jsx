@@ -69,7 +69,6 @@ const ChatBot = () => {
           },
         ]);
       } catch (error) {
-        console.error("Error sending message:", error);
         setMessages((prev) => [
           ...prev,
           { sender: "bot", text: "Sorry, something went wrong!" },

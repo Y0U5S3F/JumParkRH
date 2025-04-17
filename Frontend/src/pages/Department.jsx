@@ -135,7 +135,6 @@ export default function Department() {
         );
         setDepartements(formattedDepartments);
       } catch (error) {
-        console.error("Error fetching departments:", error);
       } finally {
         setLoading(false);
       }
@@ -204,7 +203,6 @@ export default function Department() {
       setNewDepartment(new Departement("", "")); // Reset form
       setRefresh((prev) => !prev); // Refresh department list
     } catch (error) {
-      console.error("Erreur lors de l'ajout du département:", error);
       setSnackbar({
         open: true,
         severity: "error",
@@ -228,7 +226,6 @@ export default function Department() {
       });
       setRefresh((prev) => !prev); // Trigger re-fetch
     } catch (error) {
-      console.error("Error deleting department:", error);
       setSnackbar({
         open: true,
         severity: "error",
