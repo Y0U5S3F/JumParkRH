@@ -332,12 +332,7 @@ export default function AppareilPage() {
 <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
   Ajouter Appareil
 </Typography>
-<CloseIcon onClick={()=> setOpen(false)} sx={{
-'&:hover': {
-  backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-  borderRadius: '50%', // Circular shape
-},
-}}/>
+<CloseIcon onClick={()=> setOpen(false)} />
 </Box>
           <Box className={classes.contentContainer}>
             
@@ -421,12 +416,7 @@ export default function AppareilPage() {
 <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
   Ajouter Appareil
 </Typography>
-<CloseIcon onClick={()=> setOpenEditModal(false)} sx={{
-'&:hover': {
-  backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-  borderRadius: '50%', // Circular shape
-},
-}}/>
+<CloseIcon onClick={()=> setOpenEditModal(false)} />
 </Box>
           
           <Box className={classes.contentContainer}>
