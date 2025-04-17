@@ -5,18 +5,33 @@ import lightBackground from '../../public/white-bg.png'; // Import light backgro
 
 
 import logoBlack from '../../public/logos/LogoBlack.svg';
-const shadows = {
-  dark: {
-    sm: '0 1px 3px rgba(0, 0, 0, 0.2)',
-    md: '0 5px 15px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.2)',
-    lg: '0 10px 25px rgba(0, 0, 0, 0.25), 0 6px 15px rgba(0, 0, 0, 0.15)',
-  },
-  light: {
-    sm: '0 1px 3px rgba(0, 0, 0, 0.05)',
-    md: '0 5px 15px rgba(0, 0, 0, 0.05), 0 3px 8px rgba(0, 0, 0, 0.05)',
-    lg: '0 10px 25px rgba(0, 0, 0, 0.1), 0 6px 15px rgba(0, 0, 0, 0.05)',
-  }
-};
+const shadowsArray = [
+  'none', // Elevation 0
+  '0px 1px 3px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 2px 1px rgba(0, 0, 0, 0.12)', // Elevation 1
+  '0px 1px 5px rgba(0, 0, 0, 0.2), 0px 2px 2px rgba(0, 0, 0, 0.14), 0px 3px 1px rgba(0, 0, 0, 0.12)', // Elevation 2
+  '0px 1px 8px rgba(0, 0, 0, 0.2), 0px 3px 4px rgba(0, 0, 0, 0.14), 0px 3px 3px rgba(0, 0, 0, 0.12)', // Elevation 3
+  '0px 2px 4px rgba(0, 0, 0, 0.2), 0px 3px 6px rgba(0, 0, 0, 0.14), 0px 1px 8px rgba(0, 0, 0, 0.12)', // Elevation 4
+  '0px 3px 5px rgba(0, 0, 0, 0.2), 0px 4px 8px rgba(0, 0, 0, 0.14), 0px 1px 10px rgba(0, 0, 0, 0.12)', // Elevation 5
+  '0px 3px 5px rgba(0, 0, 0, 0.2), 0px 5px 10px rgba(0, 0, 0, 0.14), 0px 1px 14px rgba(0, 0, 0, 0.12)', // Elevation 6
+  '0px 4px 5px rgba(0, 0, 0, 0.2), 0px 6px 10px rgba(0, 0, 0, 0.14), 0px 1px 18px rgba(0, 0, 0, 0.12)', // Elevation 7
+  '0px 5px 5px rgba(0, 0, 0, 0.2), 0px 7px 10px rgba(0, 0, 0, 0.14), 0px 1px 22px rgba(0, 0, 0, 0.12)', // Elevation 8
+  '0px 5px 6px rgba(0, 0, 0, 0.2), 0px 8px 10px rgba(0, 0, 0, 0.14), 0px 1px 26px rgba(0, 0, 0, 0.12)', // Elevation 9
+  '0px 6px 6px rgba(0, 0, 0, 0.2), 0px 9px 12px rgba(0, 0, 0, 0.14), 0px 1px 30px rgba(0, 0, 0, 0.12)', // Elevation 10
+  '0px 6px 7px rgba(0, 0, 0, 0.2), 0px 10px 14px rgba(0, 0, 0, 0.14), 0px 1px 34px rgba(0, 0, 0, 0.12)', // Elevation 11
+  '0px 7px 8px rgba(0, 0, 0, 0.2), 0px 11px 15px rgba(0, 0, 0, 0.14), 0px 1px 38px rgba(0, 0, 0, 0.12)', // Elevation 12
+  '0px 8px 9px rgba(0, 0, 0, 0.2), 0px 12px 17px rgba(0, 0, 0, 0.14), 0px 1px 42px rgba(0, 0, 0, 0.12)', // Elevation 13
+  '0px 9px 10px rgba(0, 0, 0, 0.2), 0px 13px 19px rgba(0, 0, 0, 0.14), 0px 1px 46px rgba(0, 0, 0, 0.12)', // Elevation 14
+  '0px 10px 11px rgba(0, 0, 0, 0.2), 0px 14px 21px rgba(0, 0, 0, 0.14), 0px 1px 50px rgba(0, 0, 0, 0.12)', // Elevation 15
+  '0px 11px 12px rgba(0, 0, 0, 0.2), 0px 15px 23px rgba(0, 0, 0, 0.14), 0px 1px 54px rgba(0, 0, 0, 0.12)', // Elevation 16
+  '0px 12px 13px rgba(0, 0, 0, 0.2), 0px 16px 25px rgba(0, 0, 0, 0.14), 0px 1px 58px rgba(0, 0, 0, 0.12)', // Elevation 17
+  '0px 13px 14px rgba(0, 0, 0, 0.2), 0px 17px 27px rgba(0, 0, 0, 0.14), 0px 1px 62px rgba(0, 0, 0, 0.12)', // Elevation 18
+  '0px 14px 15px rgba(0, 0, 0, 0.2), 0px 18px 29px rgba(0, 0, 0, 0.14), 0px 1px 66px rgba(0, 0, 0, 0.12)', // Elevation 19
+  '0px 15px 16px rgba(0, 0, 0, 0.2), 0px 19px 31px rgba(0, 0, 0, 0.14), 0px 1px 70px rgba(0, 0, 0, 0.12)', // Elevation 20
+  '0px 16px 17px rgba(0, 0, 0, 0.2), 0px 20px 33px rgba(0, 0, 0, 0.14), 0px 1px 74px rgba(0, 0, 0, 0.12)', // Elevation 21
+  '0px 17px 18px rgba(0, 0, 0, 0.2), 0px 21px 35px rgba(0, 0, 0, 0.14), 0px 1px 78px rgba(0, 0, 0, 0.12)', // Elevation 22
+  '0px 18px 19px rgba(0, 0, 0, 0.2), 0px 22px 37px rgba(0, 0, 0, 0.14), 0px 1px 82px rgba(0, 0, 0, 0.12)', // Elevation 23
+  '0px 19px 20px rgba(0, 0, 0, 0.2), 0px 23px 39px rgba(0, 0, 0, 0.14), 0px 1px 86px rgba(0, 0, 0, 0.12)', // Elevation 24
+];
 
 
 const darkTheme = createTheme({
@@ -74,7 +89,7 @@ const darkTheme = createTheme({
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
-  shadows: shadows.dark,
+  shadows: shadowsArray,
   components: {
     MuiCard: {
       styleOverrides: {
@@ -178,7 +193,7 @@ const whiteTheme = createTheme({
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
 
-  shadows: shadows.light,
+  shadows: shadowsArray,
   backgroundImage: {
     main: lightBackground,
   },
