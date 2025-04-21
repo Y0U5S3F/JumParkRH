@@ -1,0 +1,55 @@
+services:
+  # Remove or comment this out if you use an online DB
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: jumpark
+  #     POSTGRES_USER: admin
+  #     POSTGRES_PASSWORD: admin
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - jumpark-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./Back/app
+      dockerfile: Dockerfile
+    container_name: django-backend
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./Back/app:/app
+    ports:
+      - "8000:8000"
+    environment:
+      DB_NAME: defaultdb
+      DB_USER: avnadmin
+      DB_PASSWORD: "AVNS_CAUj84Y4C7C4h0vbNnC"
+      DB_HOST: pg-162c6da-jumparkrh.c.aivencloud.com
+      DB_PORT: "11652"
+      SECRET_KEY: a37d8b49199ed0179404a48417bbb10a7187f9b277801ca39cdac687f9e24f01
+      DEBUG: "True"
+      ALLOWED_HOSTS: "*"
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173"
+      GITHUB_TOKEN: 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
+      CHATBOT_ENDPOINT: "https://models.inference.ai.azure.com/"
+      CHATBOT_MODEL_NAME: gpt-4o
+    networks:
+      - jumpark-network
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./Front
+      dockerfile: Dockerfile
+    container_name: nginx-frontend
+    ports:
+      - "3000:80"
+    networks:
+      - jumpark-network
+
+# Network Configuration
+networks:
+  jumpark-network:
+    driver: bridge
