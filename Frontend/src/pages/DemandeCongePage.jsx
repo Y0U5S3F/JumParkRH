@@ -558,7 +558,7 @@ export default function DemandeCongePage() {
               sx={{ mb: 3 }}
               gutterBottom
             >
-              Ajouter demande
+              Modifier demande
             </Typography>
             <CloseIcon
               onClick={() => setOpenEdit(false)}

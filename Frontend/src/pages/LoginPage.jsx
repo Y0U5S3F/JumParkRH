@@ -21,8 +21,6 @@ import { useNavigate } from 'react-router-dom'; // For redirecting after login
 import Loading from '../components/Loading'; // Import the Loading component
 import ThemeToggle from '../components/ThemeToggle'; // Import the theme toggle
 
-
-
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
