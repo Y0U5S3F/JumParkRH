@@ -2,9 +2,15 @@ import csv
 import requests
 import os
 from datetime import datetime
+from dotenv import load_dotenv
 
-# Constants
-DEVICE_API_URL = "http://127.0.0.1:8000/api/appareil/appareils/"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+dotenv_path = os.path.join(BASE_DIR, '.env')
+load_dotenv(dotenv_path)
+
+DEVICE_API_URL = os.getenv("DEVICE_API_URL")
+POINTAGE_API_ADD_URL = os.getenv("POINTAGE_API_ADD_URL")
+POINTAGE_API_UPDATE_URL = os.getenv("POINTAGE_API_UPDATE_URL")
 
 def read_last_uid(filename):
     """Read the last processed UID from the marker file."""
@@ -80,7 +86,7 @@ def send_label_data(user_id, start_date, end_date, start_pause, end_pause, statu
     For a check‑in (punch 0), send the initial POST request.
     The fields end_date, start_pause, and end_pause can be None.
     """
-    url = f"http://127.0.0.1:8000/api/label/labels/auto/{user_id}/"
+    url = f"{POINTAGE_API_URL}{user_id}/"
     payload = {
        "startDate": start_date,
        "endDate": end_date,
@@ -93,7 +99,7 @@ def send_label_data(user_id, start_date, end_date, start_pause, end_pause, statu
 
 def update_record(data_id, field, value, token):
     """Update a single field of the record with the given data_id via a PUT request."""
-    url = f"http://127.0.0.1:8000/api/label/labels/data/{data_id}/"
+    url = f"{POINTAGE_API_UPDATE_URL}{data_id}/"
     payload = {field: value}
     headers = {'Authorization': token}
     return requests.put(url, json=payload, headers=headers)
