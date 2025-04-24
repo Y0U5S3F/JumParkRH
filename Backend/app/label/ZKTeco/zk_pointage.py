@@ -86,7 +86,7 @@ def send_label_data(user_id, start_date, end_date, start_pause, end_pause, statu
     For a check‑in (punch 0), send the initial POST request.
     The fields end_date, start_pause, and end_pause can be None.
     """
-    url = f"{POINTAGE_API_URL}{user_id}/"
+    url = f"{POINTAGE_API_ADD_URL}{user_id}/"
     payload = {
        "startDate": start_date,
        "endDate": end_date,
