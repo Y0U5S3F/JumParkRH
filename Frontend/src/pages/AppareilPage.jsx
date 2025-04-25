@@ -414,7 +414,7 @@ export default function AppareilPage() {
         <Box sx={{display:"flex",justifyContent:"space-between"}}>
 
 <Typography variant="h5" fontWeight="bold"sx={{mb:3}} gutterBottom>
-  Ajouter Appareil
+  Modifier Appareil
 </Typography>
 <CloseIcon onClick={()=> setOpenEditModal(false)} />
 </Box>
