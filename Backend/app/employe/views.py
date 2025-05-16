@@ -57,17 +57,14 @@ class EmployeLoginView(APIView):
         password = request.data.get("password")
 
         try:
-            # Retrieve the employee by email
             employe = Employe.objects.get(email=email)
         except Employe.DoesNotExist:
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the password is correct
         if not employe.check_password(password):
             return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Check if the employe's departement_id is 2
-        if employe.departement.id != 2:
+        if employe.departement.nom != "HR":
             return Response({"error": "Access denied. Invalid department."}, status=status.HTTP_403_FORBIDDEN)
 
         tokens = employe.get_tokens()

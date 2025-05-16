@@ -7,7 +7,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { makeStyles } from "@mui/styles";
 import CircularProgress from "@mui/material/CircularProgress";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { History } from "@mui/icons-material";
 import { useThemeToggle } from "../App"; // Add this import
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -29,13 +29,18 @@ import {
   Autocomplete,
 } from "@mui/material";
 import { fetchMinimalEmployes } from "../service/EmployeService";
-import { addLabel, updateLabel, deleteLabel, importPresence, downloadHistory } from "../service/LabelDataService"; // Import the addLabel service
+import {
+  addLabel,
+  updateLabel,
+  deleteLabel,
+  importPresence,
+  downloadHistory,
+} from "../service/LabelDataService"; // Import the addLabel service
 import LabelData from "../models/labelData"; // Import the LabelData model
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { ACCESS_TOKEN } from "../constants";
 import { CloudDownloadRounded, Event } from "@mui/icons-material";
-
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -66,6 +71,18 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     margin: "0 auto",
+  },
+  loading: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999,
   },
   calendar: {
     position: "relative",
@@ -114,6 +131,7 @@ export default function SimpleCalendar() {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [isDownloadingHistory, setIsDownloadingHistory] = useState(false);
   const [openHistoryModal, setOpenHistoryModal] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -126,21 +144,21 @@ export default function SimpleCalendar() {
   const [pageTitle, setPageTitle] = useState("Planning");
   const { isDarkMode } = useThemeToggle(); // Add this line to get theme state
 
-
   useEffect(() => {
     document.title = pageTitle; // Update the document title
   }, [pageTitle]);
   useEffect(() => {
     // This will force the Scheduler to completely re-render when theme changes
-    setSchedulerKey(prevKey => prevKey + 1);
+    setSchedulerKey((prevKey) => prevKey + 1);
   }, [isDarkMode]);
-
 
   useEffect(() => {
     const fetchLabels = async () => {
       try {
         // Retrieve the access token from local storage
-        const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
+        const token =
+          localStorage.getItem(ACCESS_TOKEN) ||
+          sessionStorage.getItem(ACCESS_TOKEN);
         // Fetch labels with the Authorization header
         const response = await fetch(
           "http://127.0.0.1:8000/api/label/labels/?stream=true",
@@ -175,7 +193,9 @@ export default function SimpleCalendar() {
         const transformItem = (item) => {
           const transformEvent = (event) => {
             const formatDate = (dateString) =>
-              dateString ? dayjs(dateString).format("YYYY-MM-DDTHH:mm:ss") : null;
+              dateString
+                ? dayjs(dateString).format("YYYY-MM-DDTHH:mm:ss")
+                : null;
             const formatTime = (timeString) =>
               timeString ? dayjs(timeString).format("HH:mm") : null;
             return {
@@ -186,8 +206,9 @@ export default function SimpleCalendar() {
               subtitle: `${dayjs(event.endDate).format("HH:mm")} - ${event.status}`,
               description:
                 event.startPause || event.endPause
-                  ? `${event.startPause ? formatTime(event.startPause) : ""}${event.startPause && event.endPause ? " - " : ""
-                  }${event.endPause ? formatTime(event.endPause) : ""}`
+                  ? `${event.startPause ? formatTime(event.startPause) : ""}${
+                      event.startPause && event.endPause ? " - " : ""
+                    }${event.endPause ? formatTime(event.endPause) : ""}`
                   : "pas de pause",
               bgColor: statusColorMapping[event.status] || "#FFFFFF",
             };
@@ -337,7 +358,6 @@ export default function SimpleCalendar() {
   };
 
   const handleUpdatePresence = async () => {
-
     try {
       const presenceToUpdate = {
         startDate: selectedTile.startDate,
@@ -405,6 +425,7 @@ export default function SimpleCalendar() {
   };
 
   const handleDownloadHistory = async () => {
+    setIsDownloadingHistory(true); // Set loading state to true
     try {
       // Format the selected date into "DD/MM/YYYY"
       const formattedDate = selectedDate.format("DD/MM/YYYY");
@@ -421,9 +442,10 @@ export default function SimpleCalendar() {
         severity: "error",
         message: `Erreur lors du téléchargement: ${error.message}`,
       });
+    } finally {
+      setIsDownloadingHistory(false); // Set loading state to false
     }
   };
-
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -432,20 +454,12 @@ export default function SimpleCalendar() {
   return (
     <Container className={classes.container} maxWidth={false}>
       {isImportingPresence && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 9999,
-          }}
-        >
+        <Box className={classes.loading}>
+          <CircularProgress color="primary" />
+        </Box>
+      )}
+      {isDownloadingHistory && (
+        <Box className={classes.loading}>
           <CircularProgress color="primary" />
         </Box>
       )}
@@ -492,9 +506,9 @@ export default function SimpleCalendar() {
             variant="outlined"
             startIcon={<AddIcon />}
             sx={{
-              '&:hover': {
+              "&:hover": {
                 backgroundColor: (theme) => theme.palette.primary.main,
-                color: 'white',
+                color: "white",
                 borderColor: (theme) => theme.palette.primary.main,
               },
             }}
@@ -503,14 +517,12 @@ export default function SimpleCalendar() {
             Ajouter une Présence
           </Button>
           <ThemeToggle></ThemeToggle>
-
         </Box>
       </Box>
       <Box className={classes.calendar}>
         {/* <StyledSchedulerFrame> */}
         <Scheduler
           key={schedulerKey} // Add this key prop
-
           isLoading={isLoading}
           data={schedulerData}
           onTileClick={(clickedTile) => {
@@ -534,8 +546,12 @@ export default function SimpleCalendar() {
       >
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
               Ajouter présence
             </Typography>
             <CloseIcon onClick={() => setOpenPresenceModal(false)} />
@@ -564,7 +580,8 @@ export default function SimpleCalendar() {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Autocomplete required
+                <Autocomplete
+                  required
                   options={employees}
                   getOptionLabel={(option) =>
                     `${option.nom} ${option.prenom} (${option.matricule})`
@@ -579,14 +596,19 @@ export default function SimpleCalendar() {
                     });
                   }}
                   renderInput={(params) => (
-                    <TextField required {...params} label="Employé" variant="outlined" />
+                    <TextField
+                      required
+                      {...params}
+                      label="Employé"
+                      variant="outlined"
+                    />
                   )}
                 />
               </Grid>
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Date"
+                    label="Date de début"
                     value={dayjs(newPresence.startDate)}
                     sx={{ width: "100%" }}
                     ampm={false}
@@ -612,7 +634,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Date"
+                    label="Date de fin"
                     value={dayjs(newPresence.endDate)}
                     sx={{ width: "100%" }}
                     ampm={false}
@@ -638,7 +660,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Pause"
+                    label="Début de pause"
                     value={dayjs(newPresence.startPause)}
                     ampm={false}
                     sx={{ width: "100%" }}
@@ -664,7 +686,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Pause"
+                    label="Fin de pause"
                     ampm={false}
                     value={dayjs(newPresence.endPause)}
                     sx={{ width: "100%" }}
@@ -689,12 +711,14 @@ export default function SimpleCalendar() {
             </Grid>
           </Box>
           <Box mt={3} display="flex" justifyContent="space-between">
-            <Button
-              variant="outlined"
-              onClick={() => setNewPresence(new LabelData())}
-            >
-              Réinitialiser
-            </Button>
+          <Button
+  variant="outlined"
+  onClick={() =>
+    setNewPresence(new LabelData(null, null, null, null, null, "", ""))
+  }
+>
+  Réinitialiser
+</Button>
             <Button
               variant="contained"
               color="primary"
@@ -706,10 +730,7 @@ export default function SimpleCalendar() {
         </Box>
       </Modal>
       {/* Modal for Month and Year Selection */}
-      <Modal
-        open={openHistoryModal}
-        onClose={() => setOpenHisotyModal(false)}
-      >
+      <Modal open={openHistoryModal} onClose={() => setOpenHisotyModal(false)}>
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Typography
@@ -720,10 +741,7 @@ export default function SimpleCalendar() {
             >
               Sélectionner le Jour, le Mois et l'Année
             </Typography>
-            <CloseIcon
-              onClick={() => setOpenHistoryModal(false)}
-
-            />
+            <CloseIcon onClick={() => setOpenHistoryModal(false)} />
           </Box>
           <Divider sx={{ mb: 2 }} />
 
@@ -755,27 +773,28 @@ export default function SimpleCalendar() {
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-
             {/* Form Inputs for the selected tile */}
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 3 }} gutterBottom>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              sx={{ mb: 3 }}
+              gutterBottom
+            >
               Modifier présence
             </Typography>
-            <CloseIcon onClick={() => setOpenViewModal(false)} sx={{
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.9)', // Transparent background
-                borderRadius: '50%', // Circular shape
-              },
-            }} />
+            <CloseIcon
+              onClick={() => setOpenViewModal(false)}
+              
+            />
           </Box>
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-
               {/* Example for start and end date inputs */}
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Date"
+                    label="Date de début"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -802,7 +821,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Date"
+                    label="Date de fin"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -830,7 +849,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="Start Pause"
+                    label="Début de pause"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -857,7 +876,7 @@ export default function SimpleCalendar() {
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
-                    label="End Pause"
+                    label="Fin de pause"
                     sx={{ width: "100%" }}
                     ampm={false}
                     value={
@@ -913,7 +932,7 @@ export default function SimpleCalendar() {
               color="secondary"
               onClick={handleDeletePresence}
               sx={{
-                '&:hover': {
+                "&:hover": {
                   color: (theme) => theme.palette.primary.main,
                   borderColor: (theme) => theme.palette.primary.main,
                 },
@@ -924,7 +943,6 @@ export default function SimpleCalendar() {
             <Button variant="contained" onClick={handleUpdatePresence}>
               Enregistrer
             </Button>
-
           </Box>
         </Box>
       </Modal>

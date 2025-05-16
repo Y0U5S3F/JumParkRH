@@ -359,7 +359,7 @@ export default function Dashboard() {
         >
           <DashboardIcon />
           <Typography variant="h6" fontWeight="bold">
-            Fiche de Paie
+            Dashboard
           </Typography>
         </Box>
         <Box sx={{display:"flex",flexDirection:"row",alignItems:"center",gap:"10px"}}>
