@@ -168,7 +168,7 @@ export default function SignIn(props) {
                 color: theme => theme.palette.text.primary 
               }}
             >
-              Sign in
+              Se connecter
             </Typography>
             <Box
               component="form"
@@ -182,7 +182,7 @@ export default function SignIn(props) {
               }}
             >
               <FormControl>
-                <FormLabel htmlFor="email" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Email</FormLabel>
+                <FormLabel htmlFor="email" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Adresse e-mail</FormLabel>
                 <TextField
                   error={emailError}
                   helperText={emailErrorMessage}
@@ -200,7 +200,7 @@ export default function SignIn(props) {
                 />
               </FormControl>
               <FormControl>
-                <FormLabel htmlFor="password" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Password</FormLabel>
+                <FormLabel htmlFor="password" sx={{ mb: '3px', color: theme => theme.palette.text.secondary }}>Mot de passe</FormLabel>
                 <TextField
                   error={passwordError}
                   helperText={passwordErrorMessage}
@@ -238,7 +238,7 @@ export default function SignIn(props) {
               </FormControl>
               <FormControlLabel
                 control={<Checkbox name="remember" value="true" color="primary" />}
-                label={<Typography color="text.secondary">Remember me</Typography>}
+                label={<Typography color="text.secondary">Se souvenir de moi</Typography>}
               />
               <Button
                 type="submit"
@@ -251,7 +251,7 @@ export default function SignIn(props) {
                   fontWeight: 600,
                 }}
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'CONNEXION...' : 'CONNEXION'}
               </Button>
             </Box>
           </Card>

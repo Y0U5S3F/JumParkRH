@@ -232,6 +232,9 @@ export default function EmployePage() {
       "salaire_base",
       "departement_id",
       "service_id",
+      "cnss",
+      "compte_bancaire",
+      "rib_bancaire",
     ];
   
     // Check for missing fields
@@ -1060,6 +1063,7 @@ export default function EmployePage() {
                   required
                   label="Numéro de Téléphone d'Urgence"
                   name="contact_urgence_telephone"
+                  
                   value={newEmployee.contact_urgence_telephone}
                   onChange={handleInputChange}
                   type="search"
@@ -1164,6 +1168,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Numero CNSS"
                   name="cnss"
+                  required
                   type="search"
                   variant="outlined"
                   value={newEmployee.cnss}
@@ -1176,6 +1181,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Compte bancaire"
                   name="compte_bancaire"
+                  required
                   value={newEmployee.compte_bancaire}
                   onChange={handleInputChange}
                   type="search"
@@ -1187,6 +1193,7 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-search"
                   label="RIB bancaire"
+                  required
                   name="rib_bancaire"
                   type="search"
                   variant="outlined"
@@ -1259,6 +1266,7 @@ export default function EmployePage() {
                   label="Matricule"
                   type="search"
                   variant="outlined"
+                  required
                   name="matricule"
                   value={editEmployee.matricule}
                   onChange={handleInputModifyChange}
@@ -1272,6 +1280,7 @@ export default function EmployePage() {
                   type="search"
                   variant="outlined"
                   name="nom"
+                  required
                   value={editEmployee.nom}
                   onChange={handleInputModifyChange}
                   fullWidth
@@ -1282,6 +1291,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Prenom"
                   type="search"
+                  required
                   name="prenom"
                   value={editEmployee.prenom}
                   onChange={handleInputModifyChange}
@@ -1295,6 +1305,7 @@ export default function EmployePage() {
                   label="Email"
                   type="search"
                   variant="outlined"
+                  required
                   name="email"
                   value={editEmployee.email}
                   onChange={handleInputModifyChange}
@@ -1402,6 +1413,7 @@ export default function EmployePage() {
                 <TextField
                   fullWidth
                   variant="outlined"
+                  required
                   label="CIN"
                   name="CIN"
                   value={editEmployee.CIN}
@@ -1435,6 +1447,7 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-search"
                   label="Numero de telephone"
+                  required
                   type="search"
                   name="num_telephone"
                   value={editEmployee.num_telephone}
@@ -1497,6 +1510,7 @@ export default function EmployePage() {
                   name="nom_urgence"
                   value={editEmployee.nom_urgence}
                   onChange={handleInputModifyChange}
+                  required
                   type="search"
                   variant="outlined"
                   fullWidth
@@ -1507,6 +1521,7 @@ export default function EmployePage() {
                   id="outlined-search"
                   label="Numéro de Téléphone d'Urgence"
                   name="num_telephone_urgence"
+                  required
                   value={editEmployee.num_telephone_urgence}
                   onChange={handleInputModifyChange}
                   type="search"
@@ -1596,6 +1611,7 @@ Informations bancaires            </Typography>
                   name="salaire_base"
                   type="search"
                   variant="outlined"
+                  required
                   value={editEmployee.salaire_base}
                   onChange={handleInputModifyChange}
                   fullWidth
@@ -1605,6 +1621,7 @@ Informations bancaires            </Typography>
                 <TextField
                   id="outlined-search"
                   label="Numero CNSS"
+                  required
                   name="cnss"
                   type="search"
                   variant="outlined"
@@ -1617,6 +1634,7 @@ Informations bancaires            </Typography>
                 <TextField
                   id="outlined-search"
                   label="Compte bancaire"
+                  required
                   name="compte_bancaire"
                   value={editEmployee.compte_bancaire}
                   onChange={handleInputModifyChange}
@@ -1629,6 +1647,7 @@ Informations bancaires            </Typography>
                 <TextField
                   id="outlined-search"
                   label="RIB bancaire"
+                  required
                   name="rib_bancaire"
                   type="search"
                   variant="outlined"
