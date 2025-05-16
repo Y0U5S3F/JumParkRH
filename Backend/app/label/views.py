@@ -11,7 +11,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 import csv
 from django.utils.timezone import now
-from django.db.models import Sum, F, ExpressionWrapper, DurationField
+from django.db.models import Sum, F, ExpressionWrapper, DurationField, Value
+from django.db.models.functions import Coalesce
 from appareil.models import Appareil
 import datetime
 import io
@@ -209,49 +210,86 @@ def auto_import_labels(request):
 @permission_classes([IsAuthenticated])
 def monthly_report(request):
     try:
+        # Parse requested month and year, defaulting to current
         report_month = int(request.data.get('report_month', now().month))
         report_year = int(request.data.get('report_year', now().year))
 
-        label_data = LabelData.objects.filter(
-            startDate__year=report_year,
-            startDate__month=report_month,
-            status="fin de service"
-        ).annotate(
-            worked_time=ExpressionWrapper(
-                (F('endDate') - F('startDate')) - (F('endPause') - F('startPause')),
-                output_field=DurationField()
+        # Zero timedelta for default
+        zero_td = datetime.timedelta(0)
+
+        # Filter and annotate each LabelData with safe durations
+        label_data = (
+            LabelData.objects
+            .filter(
+                startDate__year=report_year,
+                startDate__month=report_month,
+                status="fin de service"
             )
-        ).values(
-            'label__employe__matricule',
-            'label__employe__nom', 
-            'label__employe__prenom'
-        ).annotate(
-            total_hours=Sum('worked_time')
+            .annotate(
+                # Work duration (0 if either date is null)
+                work_duration=ExpressionWrapper(
+                    Coalesce(
+                        F('endDate') - F('startDate'),
+                        Value(zero_td, output_field=DurationField())
+                    ),
+                    output_field=DurationField()
+                ),
+                # Pause duration (0 if either pause field is null)
+                pause_duration=ExpressionWrapper(
+                    Coalesce(
+                        F('endPause') - F('startPause'),
+                        Value(zero_td, output_field=DurationField())
+                    ),
+                    output_field=DurationField()
+                ),
+                # Net duration = work minus pause
+                net_duration=ExpressionWrapper(
+                    F('work_duration') - F('pause_duration'),
+                    output_field=DurationField()
+                )
+            )
+            .values(
+                'label__employe__matricule',
+                'label__employe__nom',
+                'label__employe__prenom'
+            )
+            .annotate(
+                total_duration=Sum('net_duration')
+            )
         )
 
+        # Prepare CSV response
         filename = f"presence_{report_month}_{report_year}.csv"
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
-
         writer = csv.writer(response)
         writer.writerow(["Matricule", "Nom", "Prénom", "Total Heures Travaillées"])
 
-        if not label_data.exists():
+        # Handle case with no data
+        if not label_data:
             writer.writerow(["No data", "", "", 0])
             return response
 
+        # Write aggregated rows
         for entry in label_data:
-            matricule = entry['label__employe__matricule']
-            nom = entry['label__employe__nom']
-            prenom = entry['label__employe__prenom']
-            total_hours = round(entry['total_hours'].total_seconds() / 3600, 2) if entry['total_hours'] else 0
-            writer.writerow([matricule, nom, prenom, total_hours])
+            total_sec = entry['total_duration'].total_seconds() if entry['total_duration'] else 0
+            total_hr = round(total_sec / 3600, 2)
+            writer.writerow([
+                entry['label__employe__matricule'],
+                entry['label__employe__nom'],
+                entry['label__employe__prenom'],
+                total_hr
+            ])
 
         return response
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
-    
+
+    except Exception as e:
+        # Return error as JSON for easier debugging on client side
+        return JsonResponse({"error": str(e)}, status=400)
+
 PUNCH_TO_STATE = {
     0: "Check-In",
     1: "Check-Out",
