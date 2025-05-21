@@ -23,7 +23,7 @@ class EmployeSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    password = serializers.CharField(write_only=True, required=False)  # Password is optional for updates
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Employe

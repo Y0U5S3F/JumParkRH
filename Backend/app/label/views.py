@@ -22,7 +22,6 @@ class LabelListCreateView(generics.ListCreateAPIView):
     serializer_class = LabelSerializer
 
     def list(self, request, *args, **kwargs):
-        # Check for "stream" parameter in query params.
         if request.query_params.get("stream") == "true":
             return self.stream_response()
         return super().list(request, *args, **kwargs)
@@ -32,7 +31,6 @@ class LabelListCreateView(generics.ListCreateAPIView):
 
         def data_stream():
             for label in queryset.iterator(chunk_size=100):
-                # Serialize Label
                 label_data = {
                     "id": label.id,
                     "employe": label.employe.matricule,
@@ -42,7 +40,6 @@ class LabelListCreateView(generics.ListCreateAPIView):
                     "data": []
                 }
         
-                # Include related LabelData entries
                 for data_entry in label.data.all():
                     label_data["data"].append({
                         "id": str(data_entry.id),
@@ -102,10 +99,8 @@ class LabelDataCreateManualView(generics.CreateAPIView):
     serializer_class = LabelDataSerializer
 
     def create(self, request, *args, **kwargs):
-        # Get the matricule from the URL parameters
         matricule = self.kwargs.get('matricule')
         
-        # Fetch the latest Label for the given matricule
         label = Label.objects.filter(employe=matricule).order_by('-id').first()
 
         if not label:
@@ -114,10 +109,9 @@ class LabelDataCreateManualView(generics.CreateAPIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Prepare data for LabelData creation
         data = request.data.copy()
         data['label'] = label.id
-        data['matricule'] = matricule  # Include the matricule in the data
+        data['matricule'] = matricule
 
         # Serialize and save the new LabelData instance
         serializer = self.get_serializer(data=data)
@@ -147,7 +141,6 @@ def auto_import_labels(request):
                 attendance_logs = conn.get_attendance()
                 last_uid = read_last_uid(marker_file)
 
-                # Process each new log entry.
                 for log in attendance_logs:
                     if log.uid > last_uid:
                         event = process_punch(log.punch)
@@ -186,13 +179,11 @@ def auto_import_labels(request):
                 attendance_logs = conn.get_attendance()
                 last_uid = read_last_uid(marker_file)
 
-                # Process each new log entry as it comes in.
                 for log in attendance_logs:
                     if log.uid > last_uid:
                         event = process_punch(log.punch)
                         log_entry = (log.uid, log.user_id, log.punch, log.timestamp, event)
                         process_log(log_entry, marker_file, request.headers.get('Authorization'))
-                        # Update the marker file immediately after processing each log.
                         update_last_uid(marker_file, log.uid)
                 print("All logs processed.")
             except Exception as e:
@@ -210,14 +201,11 @@ def auto_import_labels(request):
 @permission_classes([IsAuthenticated])
 def monthly_report(request):
     try:
-        # Parse requested month and year, defaulting to current
         report_month = int(request.data.get('report_month', now().month))
         report_year = int(request.data.get('report_year', now().year))
 
-        # Zero timedelta for default
         zero_td = datetime.timedelta(0)
 
-        # Filter and annotate each LabelData with safe durations
         label_data = (
             LabelData.objects
             .filter(
@@ -226,7 +214,6 @@ def monthly_report(request):
                 status="fin de service"
             )
             .annotate(
-                # Work duration (0 if either date is null)
                 work_duration=ExpressionWrapper(
                     Coalesce(
                         F('endDate') - F('startDate'),
@@ -234,7 +221,6 @@ def monthly_report(request):
                     ),
                     output_field=DurationField()
                 ),
-                # Pause duration (0 if either pause field is null)
                 pause_duration=ExpressionWrapper(
                     Coalesce(
                         F('endPause') - F('startPause'),
@@ -242,7 +228,6 @@ def monthly_report(request):
                     ),
                     output_field=DurationField()
                 ),
-                # Net duration = work minus pause
                 net_duration=ExpressionWrapper(
                     F('work_duration') - F('pause_duration'),
                     output_field=DurationField()
@@ -258,19 +243,16 @@ def monthly_report(request):
             )
         )
 
-        # Prepare CSV response
         filename = f"presence_{report_month}_{report_year}.csv"
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         writer = csv.writer(response)
         writer.writerow(["Matricule", "Nom", "Prénom", "Total Heures Travaillées"])
 
-        # Handle case with no data
         if not label_data:
             writer.writerow(["No data", "", "", 0])
             return response
 
-        # Write aggregated rows
         for entry in label_data:
             total_sec = entry['total_duration'].total_seconds() if entry['total_duration'] else 0
             total_hr = round(total_sec / 3600, 2)
@@ -287,7 +269,6 @@ def monthly_report(request):
         return JsonResponse({"error": str(e)}, status=400)
 
     except Exception as e:
-        # Return error as JSON for easier debugging on client side
         return JsonResponse({"error": str(e)}, status=400)
 
 PUNCH_TO_STATE = {
@@ -303,7 +284,7 @@ def get_filtered_logs(logs, start_date):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def importoriginal(request):
-    start_date_str = request.data.get('start_date')  # expecting 'DD/MM/YYYY'
+    start_date_str = request.data.get('start_date')
     if not start_date_str:
         return Response({'error': 'Missing "start_date" parameter in DD/MM/YYYY format.'}, status=400)
 
@@ -356,7 +337,6 @@ def importoriginal(request):
                 state = PUNCH_TO_STATE.get(punch, "Unknown State")
                 log_entries.append([log.uid, log.user_id, user_name, log.punch, state, log.timestamp])
 
-            # Sort alphabetically by user name
             log_entries.sort(key=lambda x: x[2].lower())
 
             if log_entries:
@@ -377,7 +357,7 @@ def importoriginal(request):
 
         except Exception as e:
             print(f"Error processing device {device_name}: {e}")
-            continue  # Ignore failed devices silently
+            continue
 
         finally:
             if conn:
@@ -386,7 +366,6 @@ def importoriginal(request):
     if not parts:
         return Response({'message': 'No logs found for any device.'}, status=200)
 
-    # Final multipart response
     multipart_content = ''.join(parts) + f"--{boundary}--\r\n"
 
     response = HttpResponse(multipart_content, content_type=f"multipart/mixed; boundary={boundary}")

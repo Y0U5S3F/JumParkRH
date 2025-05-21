@@ -38,19 +38,17 @@ export const fetchSalaireById = async (salaireId) => {
   }
 };
 
-// Download a salaire
 export const downloadSalaire = async (salaireId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     const url = `http://127.0.0.1:8000/api/salaire/generer/${salaireId}/`;
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
-      responseType: "blob", // Get response as a Blob for binary data
+      responseType: "blob",
     });
     
-    // Extract filename from Content-Disposition header if available
     const contentDisposition = response.headers["content-disposition"];
     let filename = `salaire_${salaireId}.pdf`;
     if (contentDisposition) {
@@ -60,27 +58,24 @@ export const downloadSalaire = async (salaireId) => {
       }
     }
     
-    // Create a URL for the Blob and simulate a download link click
     const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
     const link = document.createElement("a");
     link.href = blobUrl;
     link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
-    // Clean up the DOM and revoke the object URL
     link.parentNode.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
   }
 };
 
-// Add a new salaire
 export const addSalaire = async (salaireData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     const response = await axios.post(SALAIRE_API_URL, salaireData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -89,13 +84,12 @@ export const addSalaire = async (salaireData) => {
   }
 };
 
-// Update an existing salaire
 export const updateSalaire = async (salaireId, updatedSalaire) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     const response = await axios.put(`${SALAIRE_API_URL}${salaireId}/`, updatedSalaire, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -104,13 +98,12 @@ export const updateSalaire = async (salaireId, updatedSalaire) => {
   }
 };
 
-// Delete a salaire
 export const deleteSalaire = async (salaireId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     await axios.delete(`${SALAIRE_API_URL}${salaireId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
   } catch (error) {
@@ -118,13 +111,12 @@ export const deleteSalaire = async (salaireId) => {
   }
 };
 
-// Fetch salaires stream
 export const fetchSalairesStream = async (onData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     const response = await fetch(`${SALAIRE_API_URL}?stream=true`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -143,13 +135,13 @@ export const fetchSalairesStream = async (onData) => {
       buffer += decoder.decode(value, { stream: true });
 
       let lines = buffer.split("\n");
-      buffer = lines.pop(); // Keep any incomplete JSON object for next iteration
+      buffer = lines.pop();
 
       for (let line of lines) {
         if (line.trim()) {
           try {
             const parsedData = JSON.parse(line);
-            onData(parsedData); // Pass each salary object to a callback
+            onData(parsedData);
           } catch (err) {
           }
         }

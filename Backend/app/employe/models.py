@@ -29,19 +29,16 @@ class EmployeManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 class CustomRefreshToken(RefreshToken):
-    # Override the for_user method
     @classmethod
     def for_user(cls, user):
         token = super().for_user(user)
         
-        # Remove 'user_id' from the payload
         if 'user_id' in token:
             del token['user_id']
         
-        # Add 'matricule', 'email', and 'departement' to the token
         token['matricule'] = user.matricule
         token['email'] = user.email
-        token['departement'] = user.departement.id  # Assuming departement has a 'nom' field
+        token['departement'] = user.departement.id
         token['role'] = user.role
         token['nom'] = user.prenom + " " + user.nom
         
@@ -66,7 +63,6 @@ class Employe(AbstractBaseUser, PermissionsMixin):
         ('Veuf', 'Veuf(ve)'),
     ]
 
-    # Personal Information
     matricule = models.CharField(max_length=6, unique=True, primary_key=True, verbose_name="Matricule")
     nom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Nom")
     prenom = models.CharField(max_length=100, null=False, blank=False, verbose_name="Prénom")
@@ -81,37 +77,30 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     num_telephone = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="Numéro de Téléphone", db_index=True)
     uid = models.PositiveIntegerField(unique=True, null=True, blank=True, verbose_name="UID")
 
-    # Address Information
     adresse = models.TextField(null=True, blank=True, verbose_name="Adresse")
     ville = models.CharField(max_length=100, blank=True, default="", verbose_name="Ville")
     code_postal = models.CharField(max_length=10, blank=True, default="", verbose_name="Code Postal")
 
-    # Emergency Contact
     nom_urgence = models.CharField(max_length=100, null=False, blank=False, verbose_name="Nom du Contact d'Urgence")
     num_telephone_urgence = models.CharField(max_length=20, null=False, blank=False, verbose_name="Numéro de Téléphone d'Urgence")
 
-    # Banking Information
     salaire_base = models.DecimalField(max_digits=15, decimal_places=5, null=False, blank=False, verbose_name="Salaire de Base")
     CNSS = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="CNSS")
     compte_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="Compte Bancaire")
     rib_bancaire = models.CharField(max_length=50, unique=True, null=True, blank=True, verbose_name="RIB Bancaire")
 
-    # Department and Service
     departement = models.ForeignKey(Departement,on_delete=models.PROTECT,null=False,blank=False,verbose_name="Departement",related_name="employes",)
     service = models.ForeignKey(Service,on_delete=models.PROTECT,null=False,blank=False,verbose_name="Service",related_name="employes",)
 
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de Création")
 
-    # Authentication Fields
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False, verbose_name="Superuser Status")
 
-    # Groups and Permissions
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name="employe_groups",  # Unique related_name
+        related_name="employe_groups",
         blank=True,
         verbose_name="groups",
         help_text="The groups this user belongs to.",
@@ -119,7 +108,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
 
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name="employe_user_permissions",  # Unique related_name
+        related_name="employe_user_permissions",
         blank=True,
         verbose_name="user permissions",
         help_text="Specific permissions for this user.",

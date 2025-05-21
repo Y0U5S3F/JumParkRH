@@ -2,7 +2,6 @@ import jinja2
 from pylatex import Document
 from pylatex.utils import NoEscape
 
-# Define the data for the template
 data = {
     "mois": "Mars",
     "annee": "2025",
@@ -36,21 +35,16 @@ data = {
     "modePaiment": "Virement Bancaire"
 }
 
-# Set up the Jinja2 environment
-template_loader = jinja2.FileSystemLoader(searchpath="./")  # Ensure your template file is here
+template_loader = jinja2.FileSystemLoader(searchpath="./")
 template_env = jinja2.Environment(loader=template_loader)
-template = template_env.get_template("fichedepaie.tex")  # Your complete LaTeX template file
+template = template_env.get_template("fichedepaie.tex")
 
-# Render the full LaTeX document (including preamble) with your data
 rendered_tex = template.render(data)
 
-# Create a dummy PyLaTeX Document
 doc = Document()
 
-# Override the dumps() method so it returns our rendered template
 doc.dumps = lambda: rendered_tex
 
-# Generate the PDF; output will be written to output.pdf.
 doc.generate_pdf("output", clean_tex=True, compiler="pdflatex")
 
 print("PDF generated successfully!")
