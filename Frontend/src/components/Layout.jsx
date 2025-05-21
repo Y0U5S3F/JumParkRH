@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
-import ChatBot from "./ChatBot"; // Import ChatBot component
+import ChatBot from "./ChatBot"; 
 
 const Layout = () => {
   return (
@@ -11,16 +11,16 @@ const Layout = () => {
         display: "flex",
         minHeight: "100vh",
         flexDirection: "row",
-        overflow: "hidden", // Prevent horizontal scrolling
+        overflow: "hidden", 
       }}
     >
       <Navbar />
       <Box
         sx={{
-          flexGrow: 1, // Allow the content to grow and fill the remaining space
-          overflowX: "hidden", // Prevent horizontal scrolling in the content area
-          overflowY: "auto", // Allow vertical scrolling if content overflows
-          paddingBottom: (theme) => `calc(${theme.spacing(5)} * 2)`, // Dynamically calculate padding
+          flexGrow: 1, 
+          overflowX: "hidden", 
+          overflowY: "auto", 
+          paddingBottom: (theme) => `calc(${theme.spacing(5)} * 2)`, 
         }}
       >
         <Outlet />

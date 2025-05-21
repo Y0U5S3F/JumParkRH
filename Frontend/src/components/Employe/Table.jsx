@@ -10,7 +10,6 @@ import EditIcon from '@mui/icons-material/Edit';
 
 const Table = ({employees,})=> {
 
-    // const [loading, setLoading] = useState(true);
     const [pageSize, setPageSize] = useState(5);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [openViewModal, setOpenViewModal] = useState(false);
@@ -18,7 +17,6 @@ const Table = ({employees,})=> {
     const apiRef = useGridApiRef();
     
     
-    //Handle Delete, Edit and View
     const handleDelete = async (matricule) => {
         try {
           await axios.delete(
@@ -41,26 +39,25 @@ const Table = ({employees,})=> {
   };
 
 
-    //Columns
     const columns = [
         { field: "matricule", headerName: "Matricule", flex: 1 },
         { field: "nom", headerName: "Nom", flex: 1 },
         { field: "prenom", headerName: "Prénom", flex: 1 },
-        { field: "email", headerName: "Email", flex: 2 }, // Email might be longer
+        { field: "email", headerName: "Email", flex: 2 }, 
         { field: "role", headerName: "Role", flex: 1 },
         { field: "departement", headerName: "Département", flex: 1 },
         { field: "service", headerName: "Service", flex: 1 },
         {
           field: "actions",
           headerName: "Actions",
-          flex: 1, // Ensures actions don't shrink too much
+          flex: 1, 
           renderCell: (params) => (
             <div style={{ display: "flex",}}>
               <IconButton onClick={() => handleView(params.row)}>
                 <VisibilityIcon />
               </IconButton>
               <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon /> {/* Add Edit icon */}
+            <EditIcon /> 
           </IconButton>
               <IconButton onClick={() => handleDelete(params.row.id)}>
                 <DeleteIcon />
@@ -79,7 +76,6 @@ const Table = ({employees,})=> {
             onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
             checkboxSelection={false}
             disableRowSelectionOnClick={true}
-            // loading={loading}
             disableMultipleRowSelection={true}
             autosizeOptions={autosizeOptions}
           />

@@ -58,9 +58,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -223,14 +223,14 @@ export default function AbsencePage() {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
-      minWidth: 100, // Ensure the Actions column is always fully visible
+      minWidth: 100, 
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton
       onClick={() => {
         setEditAbsence({
           ...params.row,
-          certifie: params.row.certifie === "Certifié", // Convert "Certifié" to true, otherwise false
+          certifie: params.row.certifie === "Certifié", 
         });
         setOpenEditModal(true);
       }}
@@ -310,7 +310,7 @@ export default function AbsencePage() {
     onChange={(date) =>
       setNewAbsence((prev) => ({
         ...prev,
-        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+        date: date?.format("YYYY-MM-DD"), 
       }))
     }
     slotProps={{
@@ -419,7 +419,7 @@ export default function AbsencePage() {
     onChange={(date) =>
       setEditAbsence((prev) => ({
         ...prev,
-        date: date?.format("YYYY-MM-DD"), // Ensure the date is stored in the correct format
+        date: date?.format("YYYY-MM-DD"), 
       }))
     }
     slotProps={{

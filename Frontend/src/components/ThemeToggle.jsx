@@ -1,9 +1,8 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 import { Switch } from "@mui/material";
-import { useThemeToggle } from "../App"; // Import from App
+import { useThemeToggle } from "../App"; 
 
-// Styled Theme Toggle Switch
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -51,9 +50,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-// Change from default export to named export
 export const ThemeToggle = ({ sx = {} }) => {
-  // Get theme context
   const { isDarkMode, toggleTheme } = useThemeToggle();
 
   return (
@@ -66,5 +63,4 @@ export const ThemeToggle = ({ sx = {} }) => {
   );
 };
 
-// Also provide default export for flexibility
 export default ThemeToggle;

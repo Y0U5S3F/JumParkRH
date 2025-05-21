@@ -170,7 +170,7 @@ export default function Navbar() {
           {isOpen && (
             <Link to="/">
 <img 
-                src={theme.logo.main} // Use the logo from theme
+                src={theme.logo.main} 
                 alt="GymPark Logo"
                 
               />            </Link>

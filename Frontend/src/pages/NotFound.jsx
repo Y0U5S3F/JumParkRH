@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useTheme } from "@mui/material/styles"; // Import useTheme to access theme colors
+import { useTheme } from "@mui/material/styles"; 
 
 const NotFound = () => {
-  const theme = useTheme(); // Access the current theme
+  const theme = useTheme(); 
 
   return (
     <Box
@@ -12,8 +12,8 @@ const NotFound = () => {
       alignItems="center"
       justifyContent="center"
       height="100vh"
-      bgcolor={theme.palette.background.default} // Use theme background color
-      color={theme.palette.text.primary} // Use theme text color
+      bgcolor={theme.palette.background.default} 
+      color={theme.palette.text.primary} 
       p={4}
     >
       <Container maxWidth="sm" style={{ textAlign: "center" }}>
@@ -21,7 +21,7 @@ const NotFound = () => {
           variant="h1"
           component="h2"
           fontWeight="bold"
-          color={theme.palette.text.secondary} // Use secondary text color
+          color={theme.palette.text.secondary} 
           gutterBottom
         >
           404
@@ -31,14 +31,14 @@ const NotFound = () => {
         </Typography>
         <Typography
           variant="body1"
-          color={theme.palette.text.secondary} // Use secondary text color
+          color={theme.palette.text.secondary} 
           mb={4}
         >
           Mais ne vous inquiétez pas, vous pouvez trouver plein d'autres choses sur notre page d'accueil.
         </Typography>
         <Button
           variant="contained"
-          color="primary" // Use primary color for the button
+          color="primary" 
           component={Link}
           to="/"
           size="large"

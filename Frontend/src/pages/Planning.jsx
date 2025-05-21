@@ -9,7 +9,7 @@ import { makeStyles } from "@mui/styles";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { History } from "@mui/icons-material";
-import { useThemeToggle } from "../App"; // Add this import
+import { useThemeToggle } from "../App"; 
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Container,
@@ -35,9 +35,9 @@ import {
   deleteLabel,
   importPresence,
   downloadHistory,
-} from "../service/LabelDataService"; // Import the addLabel service
-import LabelData from "../models/labelData"; // Import the LabelData model
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; // Import DateTimePicker
+} from "../service/LabelDataService"; 
+import LabelData from "../models/labelData"; 
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"; 
 import AddIcon from "@mui/icons-material/Add";
 import { ACCESS_TOKEN } from "../constants";
 import { CloudDownloadRounded, Event } from "@mui/icons-material";
@@ -60,9 +60,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%",
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     border: `1px solid ${theme.palette.primary.main}`,
@@ -120,14 +120,14 @@ export default function SimpleCalendar() {
   const [schedulerData, setSchedulerData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTile, setSelectedTile] = useState(null);
-  const [openPresenceModal, setOpenPresenceModal] = useState(false); // State for presence modal
+  const [openPresenceModal, setOpenPresenceModal] = useState(false); 
   const [openViewModal, setOpenViewModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null); // State for selected item
+  const [selectedItem, setSelectedItem] = useState(null); 
   const classes = useStyles();
 
   const [newPresence, setNewPresence] = useState(
     new LabelData(null, null, null, null, null, null, null)
-  ); // State for new presence
+  ); 
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [refresh, setRefresh] = useState(false);
@@ -138,39 +138,37 @@ export default function SimpleCalendar() {
     severity: "",
     message: "",
   });
-  const [schedulerKey, setSchedulerKey] = useState(0); // Add this line
-  const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current date
+  const [schedulerKey, setSchedulerKey] = useState(0); 
+  const [selectedDate, setSelectedDate] = useState(dayjs()); 
   const [isImportingPresence, setIsImportingPresence] = useState(false);
   const [pageTitle, setPageTitle] = useState("Planning");
-  const { isDarkMode } = useThemeToggle(); // Add this line to get theme state
+  const { isDarkMode } = useThemeToggle(); 
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
   useEffect(() => {
-    // This will force the Scheduler to completely re-render when theme changes
     setSchedulerKey((prevKey) => prevKey + 1);
   }, [isDarkMode]);
 
   useEffect(() => {
     const fetchLabels = async () => {
       try {
-        // Retrieve the access token from local storage
+        
         const token =
           localStorage.getItem(ACCESS_TOKEN) ||
           sessionStorage.getItem(ACCESS_TOKEN);
-        // Fetch labels with the Authorization header
         const response = await fetch(
           "http://127.0.0.1:8000/api/label/labels/?stream=true",
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+              Authorization: `Bearer ${token}`, 
             },
           }
         );
 
-        // Check if the response is successful
+      
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -180,16 +178,15 @@ export default function SimpleCalendar() {
         let buffer = "";
 
         const statusColorMapping = {
-          Present: "rgba(144, 238, 191, 0.8)", // Soft Green (representing presence and positivity)
-          "En Pause": "rgba(169, 223, 216, 0.8)", // Light Teal (calm and neutral, good for pause)
-          "En Conge": "rgba(40, 174, 243, 0.8)", // Bright Blue (freedom and relaxation)
-          Absent: "rgba(242, 109, 91, 0.8)", // Deep Coral (alert and attention)
-          "Fin de Service": "rgba(199, 162, 255, 0.8)", // Soft Purple (closure or completion)
-          Anomalie: "rgba(252, 184, 89, 0.8)", // Warm Yellow (warning or irregularity)
-          "Jour Ferie": "rgba(242, 200, 237, 0.8)", // Pastel Pink (celebration or special day)
+          Present: "rgba(144, 238, 191, 0.8)", 
+          "En Pause": "rgba(169, 223, 216, 0.8)", 
+          "En Conge": "rgba(40, 174, 243, 0.8)", 
+          Absent: "rgba(242, 109, 91, 0.8)", 
+          "Fin de Service": "rgba(199, 162, 255, 0.8)", 
+          Anomalie: "rgba(252, 184, 89, 0.8)", 
+          "Jour Ferie": "rgba(242, 200, 237, 0.8)", 
         };
 
-        // Helper function to transform each streamed item
         const transformItem = (item) => {
           const transformEvent = (event) => {
             const formatDate = (dateString) =>
@@ -226,13 +223,12 @@ export default function SimpleCalendar() {
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
-          buffer = lines.pop(); // Save last incomplete line
+          buffer = lines.pop(); 
           for (const line of lines) {
             if (line.trim()) {
               try {
                 const item = JSON.parse(line);
                 const transformedItem = transformItem(item);
-                // Append the new item to schedulerData if it doesn't already exist
                 setSchedulerData((prevData) => {
                   const existingItem = prevData.find(
                     (data) => data.id === transformedItem.id
@@ -248,7 +244,6 @@ export default function SimpleCalendar() {
           }
         }
 
-        // Handle any remaining buffered content.
         if (buffer.trim()) {
           try {
             const item = JSON.parse(buffer);
@@ -286,8 +281,7 @@ export default function SimpleCalendar() {
   }, []);
 
   const handleItemClick = (item) => {
-    // setSelectedItem(item);
-    // setOpenViewModal(true);
+    
   };
 
   const handlePresenceChange = (e) => {
@@ -296,17 +290,14 @@ export default function SimpleCalendar() {
   };
 
   const handleAddPresence = async () => {
-    // Validation logic based on status
     const requiredFieldsMap = {
       présent: ["startDate"],
       "en pause": ["startDate", "startPause"],
       "fin de service": ["startDate", "endDate"],
     };
 
-    // Always required fields
     const alwaysRequiredFields = ["status", "matricule"];
 
-    // Combine required fields based on status
     const missingFields = [
       ...alwaysRequiredFields,
       ...(requiredFieldsMap[newPresence.status] || []),
@@ -347,7 +338,7 @@ export default function SimpleCalendar() {
         message: "Présence ajoutée avec succès!",
       });
       setOpenPresenceModal(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setRefresh((prev) => prev + 1); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -373,7 +364,7 @@ export default function SimpleCalendar() {
         message: "Présence mise à jour avec succès!",
       });
       setOpenViewModal(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setRefresh((prev) => prev + 1); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -392,7 +383,7 @@ export default function SimpleCalendar() {
         message: "Présence supprimée avec succès!",
       });
       setOpenViewModal(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setRefresh((prev) => prev + 1); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -403,7 +394,7 @@ export default function SimpleCalendar() {
   };
 
   const handleImportPresence = async () => {
-    setIsImportingPresence(true); // Set loading state for importPresence to true
+    setIsImportingPresence(true); 
     try {
       await importPresence();
       setSnackbar({
@@ -411,7 +402,7 @@ export default function SimpleCalendar() {
         severity: "success",
         message: "Présence importée avec succès!",
       });
-      setRefresh((prev) => !prev); // Trigger re-fetch
+      setRefresh((prev) => !prev); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -419,15 +410,15 @@ export default function SimpleCalendar() {
         message: `Erreur lors de l'importation de la présence: ${error.message}`,
       });
     } finally {
-      window.location.reload(); // Reload the window
-      setIsImportingPresence(false); // Set loading state for importPresence to false
+      window.location.reload(); 
+      setIsImportingPresence(false); 
     }
   };
 
   const handleDownloadHistory = async () => {
-    setIsDownloadingHistory(true); // Set loading state to true
+    setIsDownloadingHistory(true); 
     try {
-      // Format the selected date into "DD/MM/YYYY"
+      
       const formattedDate = selectedDate.format("DD/MM/YYYY");
       setOpenHistoryModal(false);
       await downloadHistory(formattedDate);
@@ -443,7 +434,7 @@ export default function SimpleCalendar() {
         message: `Erreur lors du téléchargement: ${error.message}`,
       });
     } finally {
-      setIsDownloadingHistory(false); // Set loading state to false
+      setIsDownloadingHistory(false); 
     }
   };
 
@@ -522,7 +513,7 @@ export default function SimpleCalendar() {
       <Box className={classes.calendar}>
         {/* <StyledSchedulerFrame> */}
         <Scheduler
-          key={schedulerKey} // Add this key prop
+          key={schedulerKey} 
           isLoading={isLoading}
           data={schedulerData}
           onTileClick={(clickedTile) => {
@@ -534,10 +525,10 @@ export default function SimpleCalendar() {
             maxRecordsPerPage: 100,
             maxRecordsPerTile: 3,
             filterButtonState: false,
-            defaultTheme: isDarkMode ? "dark" : "light", // Updated to use isDarkMode
+            defaultTheme: isDarkMode ? "dark" : "light", 
           }}
         />
-        {/* </StyledSchedulerFrame> */}
+        
       </Box>
       {/* Add Presence Modal */}
       <Modal
@@ -613,7 +604,6 @@ export default function SimpleCalendar() {
                     sx={{ width: "100%" }}
                     ampm={false}
                     onChange={(newValue) => {
-                      // Format the start date before sending it to the backend
                       const formattedDate = newValue.format(
                         "YYYY-MM-DDTHH:mm:ss"
                       );
@@ -623,8 +613,8 @@ export default function SimpleCalendar() {
                     }}
                     slotProps={{
                       textField: {
-                        error: false, // Disable automatic error validation
-                        helperText: "", // No error message
+                        error: false, 
+                        helperText: "", 
                       },
                     }}
                   />
@@ -639,7 +629,6 @@ export default function SimpleCalendar() {
                     sx={{ width: "100%" }}
                     ampm={false}
                     onChange={(newValue) => {
-                      // Format the end date before sending it to the backend
                       const formattedDate = newValue.format(
                         "YYYY-MM-DDTHH:mm:ss"
                       );
@@ -649,8 +638,8 @@ export default function SimpleCalendar() {
                     }}
                     slotProps={{
                       textField: {
-                        error: false, // Disable automatic error validation
-                        helperText: "", // No error message
+                        error: false, 
+                        helperText: "", 
                       },
                     }}
                   />
@@ -665,7 +654,6 @@ export default function SimpleCalendar() {
                     ampm={false}
                     sx={{ width: "100%" }}
                     onChange={(newValue) => {
-                      // Format the start pause date before sending it to the backend
                       const formattedDate = newValue.format(
                         "YYYY-MM-DDTHH:mm:ss"
                       );
@@ -675,8 +663,8 @@ export default function SimpleCalendar() {
                     }}
                     slotProps={{
                       textField: {
-                        error: false, // Disable automatic error validation
-                        helperText: "", // No error message
+                        error: false, 
+                        helperText: "", 
                       },
                     }}
                   />
@@ -691,7 +679,6 @@ export default function SimpleCalendar() {
                     value={dayjs(newPresence.endPause)}
                     sx={{ width: "100%" }}
                     onChange={(newValue) => {
-                      // Format the end pause date before sending it to the backend
                       const formattedDate = newValue.format(
                         "YYYY-MM-DDTHH:mm:ss"
                       );
@@ -701,8 +688,8 @@ export default function SimpleCalendar() {
                     }}
                     slotProps={{
                       textField: {
-                        error: false, // Disable automatic error validation
-                        helperText: "", // No error message
+                        error: false, 
+                        helperText: "", 
                       },
                     }}
                   />
@@ -747,7 +734,7 @@ export default function SimpleCalendar() {
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              views={["year", "month", "day"]} // Now allowing day selection
+              views={["year", "month", "day"]} 
               label="Date complète"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
@@ -773,7 +760,6 @@ export default function SimpleCalendar() {
       <Modal open={openViewModal} onClose={() => setOpenViewModal(false)}>
         <Box className={classes.modalStyle}>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* Form Inputs for the selected tile */}
             <Typography
               variant="h5"
               fontWeight="bold"
@@ -790,7 +776,6 @@ export default function SimpleCalendar() {
           <Box className={classes.contentContainer}>
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2}>
-              {/* Example for start and end date inputs */}
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker
@@ -799,7 +784,7 @@ export default function SimpleCalendar() {
                     ampm={false}
                     value={
                       selectedTile?.startDate
-                        ? dayjs(selectedTile.startDate) // Adjust for time zone
+                        ? dayjs(selectedTile.startDate) 
                         : null
                     }
                     onChange={(newValue) => {
@@ -826,7 +811,7 @@ export default function SimpleCalendar() {
                     ampm={false}
                     value={
                       selectedTile?.endDate
-                        ? dayjs(selectedTile.endDate) // Adjust for time zone
+                        ? dayjs(selectedTile.endDate) 
                         : null
                     }
                     onChange={(newValue) => {
@@ -845,7 +830,6 @@ export default function SimpleCalendar() {
                 </LocalizationProvider>
               </Grid>
 
-              {/* Example for pause start and end */}
               <Grid item xs={12} md={6}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DateTimePicker

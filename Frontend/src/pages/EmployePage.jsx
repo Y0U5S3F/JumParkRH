@@ -8,9 +8,9 @@ import {
   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
 import CloseIcon from "@mui/icons-material/Close";
-import ChatBot from "../components/ChatBot"; // Import ChatBot component
+import ChatBot from "../components/ChatBot"; 
 import { People } from "@mui/icons-material";
-import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
+import { ThemeToggle } from "../components/ThemeToggle"; 
 
 import {
   Dialog,
@@ -67,9 +67,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -83,10 +83,10 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400, // Adjust the width
-    maxWidth: "90%", // Ensure it doesn't exceed the viewport width
-    height: "auto", // Let the height adjust based on content
-    maxHeight: "90%", // Ensure it doesn't exceed the viewport height
+    width: 400,
+    maxWidth: "90%", 
+    height: "auto", 
+    maxHeight: "90%",
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -98,10 +98,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px", 
+    scrollbarWidth: "none", 
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none", 
     },
   },
   formContainer: {
@@ -145,12 +145,12 @@ export default function EmployePage() {
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  const [refresh, setRefresh] = useState(0);
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const [newEmployee, setNewEmployee] = useState(new Employe());
   const [openPresenceModal, setOpenPresenceModal] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(dayjs()); // Default to current date
+  const [selectedDate, setSelectedDate] = useState(dayjs()); 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -165,7 +165,7 @@ export default function EmployePage() {
   const [pageTitle, setPageTitle] = useState("Personnel");
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   useEffect(() => {
@@ -237,11 +237,9 @@ export default function EmployePage() {
       "rib_bancaire",
     ];
   
-    // Check for missing fields
     const missingFields = requiredFields.filter((field) => !newEmployee[field]);
   
     if (missingFields.length > 0) {
-      // Show snackbar with a message in French
       setSnackbar({
         open: true,
         severity: "error",
@@ -360,7 +358,7 @@ export default function EmployePage() {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteEmployee(employeeToDelete.matricule); // Call the service
+      await deleteEmployee(employeeToDelete.matricule); 
       setEmployees((prev) =>
         prev.filter(
           (employee) => employee.matricule !== employeeToDelete.matricule
@@ -403,42 +401,38 @@ export default function EmployePage() {
   };
 
   const handleEdit = (employee) => {
-    // Find the department ID based on the department name
     const department = departments.find(
       (dept) => dept.nom === employee.departement
     );
     const service = services.find((srv) => srv.nom === employee.service);
 
-    // Create a new employee object with updated departement_id and service_id
     const updatedEmployee = {
       ...employee,
-      departement_id: department ? department.id : "", // Set department ID
-      service_id: service ? service.id : "", // Set service ID
+      departement_id: department ? department.id : "", 
+      service_id: service ? service.id : "", 
     };
 
-    // Remove the departement and service fields
     delete updatedEmployee.departement;
     delete updatedEmployee.service;
 
-    // Set the new employee data with the IDs
     setEditEmployee(updatedEmployee);
 
-    setOpenEditModal(true); // Open the edit modal
+    setOpenEditModal(true); 
   };
 
   const columns = [
     { field: "matricule", headerName: "Matricule", flex: 1, minWidth: 100 },
     { field: "nom", headerName: "Nom", flex: 1, minWidth: 100 },
     { field: "prenom", headerName: "Prénom", flex: 1, minWidth: 100 },
-    { field: "email", headerName: "Email", flex: 2, minWidth: 150 }, // Email might be longer
+    { field: "email", headerName: "Email", flex: 2, minWidth: 150 }, 
     { field: "role", headerName: "Role", flex: 1, minWidth: 100 },
     { field: "departement", headerName: "Département", flex: 1, minWidth: 100 },
     { field: "service", headerName: "Service", flex: 1, minWidth: 100 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 0.5, // Ensure it takes less space but remains visible
-      minWidth: 150, // Set a minimum width to ensure it is always fully visible
+      flex: 0.5, 
+      minWidth: 150, 
       renderCell: (params) => (
         <div
           style={{
@@ -489,7 +483,7 @@ export default function EmployePage() {
                 borderColor: (theme) => theme.palette.primary.main,
               },
             }}
-            onClick={() => setOpenPresenceModal(true)} // Open the modal
+            onClick={() => setOpenPresenceModal(true)} 
           >
             Télécharger Presence
           </Button>
@@ -535,7 +529,7 @@ export default function EmployePage() {
           
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              views={["year", "month"]} // Restrict to year and month selection
+              views={["year", "month"]} 
               label="Mois et Année"
               value={selectedDate}
               onChange={(newValue) => setSelectedDate(newValue)}
@@ -855,7 +849,7 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-password"
                   label="Mot de passe"
-                  type={showPassword ? "text" : "password"} // Toggle between text and password
+                  type={showPassword ? "text" : "password"}
                   variant="outlined"
                   name="password"
                   value={newEmployee.password}
@@ -864,7 +858,7 @@ export default function EmployePage() {
                   InputProps={{
                     endAdornment: (
                       <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+                        onClick={() => setShowPassword((prev) => !prev)} 
                         edge="end"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -891,7 +885,7 @@ export default function EmployePage() {
                         },
                       })
                     }
-                    format="DD/MM/YYYY" // Set the desired format
+                    format="DD/MM/YYYY"
 
                   />
                 </LocalizationProvider>
@@ -1316,7 +1310,7 @@ export default function EmployePage() {
   <TextField
     id="outlined-password-edit"
     label="Mot de Passe"
-    type={showPassword ? "text" : "password"} // Toggle between text and password
+    type={showPassword ? "text" : "password"} 
     variant="outlined"
     name="password"
     value={editEmployee.password}
@@ -1325,7 +1319,7 @@ export default function EmployePage() {
     InputProps={{
       endAdornment: (
         <IconButton
-          onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+          onClick={() => setShowPassword((prev) => !prev)} 
           edge="end"
         >
           {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -1690,8 +1684,6 @@ Informations bancaires            </Typography>
         autosizeOptions={expand}
         pagination
         hideScrollbar={true}
-        // autosizeOnMount
-
         pageSizeOptions={[10, 25, 100]}
         initialState={{
           pagination: {
@@ -1713,7 +1705,7 @@ Informations bancaires            </Typography>
           {snackbar.message}
         </Alert>
       </Snackbar>
-      <ChatBot /> {/* Add ChatBot */}
+      <ChatBot /> 
     </Container>
   );
 }

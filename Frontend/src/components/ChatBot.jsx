@@ -17,7 +17,6 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { useTheme } from "@mui/material/styles";
 import { ACCESS_TOKEN } from "../constants";
 
-// Helper function to get the token from local storage
 const getAccessToken = () => {
   return (
     localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN)
@@ -104,18 +103,18 @@ const ChatBot = () => {
             bottom: 25,
             right: 25,
             width: {
-              xs: "60vw", // 90% of the viewport width for extra-small screens
-              sm: "50vw", // 70% for small screens
-              md: "30vw", // 40% for medium screens
-              lg: "25vw", // 30% for large screens
+              xs: "60vw", 
+              sm: "50vw", 
+              md: "30vw", 
+              lg: "25vw", 
             },
             height: {
-              xs: "40vh", // 50% of the viewport height for extra-small screens
-              sm: "40vh", // 60% for small screens
-              md: "60vh", // 70% for medium screens
-              lg: "50vh", // 60% for large screens
+              xs: "40vh", 
+              sm: "40vh", 
+              md: "60vh", 
+              lg: "50vh", 
             },
-            maxWidth: "500px", // Limit the maximum width
+            maxWidth: "500px", 
             maxHeight: "600px",
             display: "flex",
             flexDirection: "column",
@@ -239,9 +238,9 @@ const ChatBot = () => {
             >
               {loading ? (
                 <CircularProgress
-                  size={24} // Match the size of the SendIcon
+                  size={24} 
                   sx={{
-                    color: theme.palette.background.paper, // Match the color of the SendIcon
+                    color: theme.palette.background.paper, 
                   }}
                 />
               ) : (

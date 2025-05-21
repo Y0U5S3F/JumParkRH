@@ -5,27 +5,24 @@ import { ACCESS_TOKEN } from "../constants";
 
 const CONGE_API_URL = "http://127.0.0.1:8000/api/conge/conges/";
 
-// Helper function to get the token from local storage
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all congés with employee names
 export const fetchConges = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(CONGE_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     const conges = response.data;
 
-    // Fetch employee names and typeConge names for each congé
     const congesWithDetails = await Promise.all(
       conges.map(async (conge) => {
-        const employee = await fetchEmployeeMinimalByMatricule(conge.employe); // Fetch employee details
-        const typeConge = await fetchTypeCongeById(conge.typeconge); // Fetch typeConge name
+        const employee = await fetchEmployeeMinimalByMatricule(conge.employe); 
+        const typeConge = await fetchTypeCongeById(conge.typeconge); 
         
         return {
           ...conge,
@@ -41,13 +38,12 @@ export const fetchConges = async () => {
   }
 };
 
-// Add a new congé
 export const addConge = async (congeData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.post(CONGE_API_URL, congeData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -56,13 +52,12 @@ export const addConge = async (congeData) => {
   }
 };
 
-// Update an existing congé
 export const updateConge = async (congeId, updatedConge) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.put(`${CONGE_API_URL}${congeId}/`, updatedConge, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -71,13 +66,12 @@ export const updateConge = async (congeId, updatedConge) => {
   }
 };
 
-// Delete a congé
 export const deleteConge = async (congeId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     await axios.delete(`${CONGE_API_URL}${congeId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
   } catch (error) {

@@ -4,7 +4,7 @@ import {
   addDepartment,
   updateDepartement,
   deleteDepartment,
-} from "../service/DepartementService"; // Import services
+} from "../service/DepartementService"; 
 import CloseIcon from "@mui/icons-material/Close";
 
 import Departement from "../models/departement";
@@ -56,9 +56,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewpo
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -121,11 +121,11 @@ export default function Department() {
   const [pageTitle, setPageTitle] = useState("Département");
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   useEffect(() => {
-    // Fetch departments data using the service
+    
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -192,16 +192,16 @@ export default function Department() {
         });
         return;
       }
-      // Send POST request using the service
+      
       await addDepartment(newDepartment);
       setSnackbar({
         open: true,
         severity: "success",
         message: "Département ajouté avec succès!",
       });
-      setOpen(false); // Close modal
-      setNewDepartment(new Departement("", "")); // Reset form
-      setRefresh((prev) => !prev); // Refresh department list
+      setOpen(false); 
+      setNewDepartment(new Departement("", "")); 
+      setRefresh((prev) => !prev); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -218,13 +218,13 @@ export default function Department() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteDepartment(id); // Use the service
+      await deleteDepartment(id); 
       setSnackbar({
         open: true,
         severity: "success",
         message: "Département supprimé avec succès!",
       });
-      setRefresh((prev) => !prev); // Trigger re-fetch
+      setRefresh((prev) => !prev);
     } catch (error) {
       setSnackbar({
         open: true,
@@ -245,8 +245,8 @@ export default function Department() {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1, // Ensure it takes enough space to remain visible
-      minWidth: 100, // Set a minimum width to ensure it is always fully visible
+      flex: 1, 
+      minWidth: 100, 
       renderCell: (params) => (
         <div style={{ display: "flex", width: "100%" }}>
           <IconButton

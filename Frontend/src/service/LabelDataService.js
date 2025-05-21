@@ -3,18 +3,16 @@ import { ACCESS_TOKEN } from "../constants";
 
 const LABEL_DATA_API_URL = "http://127.0.0.1:8000/api/label/labels/";
 
-// Helper function to get the token from local storage
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all labels with token
 export const fetchLabels = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(LABEL_DATA_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -23,28 +21,26 @@ export const fetchLabels = async () => {
   }
 };
 
-// Fetch labels with streaming support and token
 export const fetchLabelsStream = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${LABEL_DATA_API_URL}?stream=true`, {
-      responseType: "stream", // Ensure the response is treated as a stream
+      responseType: "stream", 
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
-    return response; // Return the raw response for streaming
+    return response; 
   } catch (error) {
     throw error;
   }
 };
-// Fetch a single label by ID with token
 export const fetchLabelById = async (labelId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${LABEL_DATA_API_URL}${labelId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -53,16 +49,15 @@ export const fetchLabelById = async (labelId) => {
   }
 };
 
-// Add a new label with matricule and token
 export const addLabel = async (matricule, labelData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.post(
       `${LABEL_DATA_API_URL}${matricule}/`,
       labelData,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the headers
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
@@ -72,16 +67,15 @@ export const addLabel = async (matricule, labelData) => {
   }
 };
 
-// Update an existing label with token
 export const updateLabel = async (labelId, updatedLabel) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.put(
       `${LABEL_DATA_API_URL}data/${labelId}/`,
       updatedLabel,
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the headers
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
@@ -91,13 +85,12 @@ export const updateLabel = async (labelId, updatedLabel) => {
   }
 };
 
-// Delete a label with token
 export const deleteLabel = async (labelId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     await axios.delete(`${LABEL_DATA_API_URL}data/${labelId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
   } catch (error) {
@@ -125,7 +118,6 @@ export const downloadHistory = async (formattedDate) => {
     const token = getAccessToken();
     const url = "http://localhost:8000/api/label/import_original/";
 
-    // Send POST request with the formatted date (e.g., "01/04/2025")
     const response = await axios.post(
       url,
       { start_date: formattedDate },
@@ -142,33 +134,26 @@ export const downloadHistory = async (formattedDate) => {
       response.headers["content-type"] || "application/octet-stream";
     const blob = new Blob([response.data], { type: contentType });
 
-    // Since the response is always multipart/mixed, extract the boundary
     const boundaryMatch = contentType.match(/boundary=(.+)$/);
     if (!boundaryMatch) {
       throw new Error("Unable to determine multipart boundary");
     }
     const boundary = boundaryMatch[1];
 
-    // Convert the blob to text (async/await style)
     const text = await blob.text();
-    // Split using the boundary and filter out empty segments (and the end boundary marker)
     const parts = text
       .split(`--${boundary}`)
       .filter((part) => part.trim() && !part.includes("--"));
 
-    // Process each multipart part
     parts.forEach((part) => {
-      // Split headers and content by the first occurrence of a double newline (\r\n\r\n)
       const splitIndex = part.indexOf("\r\n\r\n");
-      if (splitIndex === -1) return; // Skip if no header/content separator found
+      if (splitIndex === -1) return; 
 
       const rawHeaders = part.substring(0, splitIndex);
       const csvContent = part.substring(splitIndex + 4).trim();
 
-      // Default filename: using dashes in place of slashes from formattedDate
       let filename = `history_${formattedDate.replace(/\//g, "-")}.csv`;
 
-      // Check for a filename in the part headers
       const headerLines = rawHeaders.split("\r\n");
       headerLines.forEach((line) => {
         const filenameMatch = line.match(/filename="(.+?)"/);
@@ -177,7 +162,6 @@ export const downloadHistory = async (formattedDate) => {
         }
       });
 
-      // Create a Blob for the CSV content and trigger a download
       const csvBlob = new Blob([csvContent], { type: "text/csv" });
       const blobUrl = window.URL.createObjectURL(csvBlob);
       const link = document.createElement("a");

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-// Change this line at the top of your file
 import ChatBot from "../components/ChatBot";
-import { ThemeToggle } from "../components/ThemeToggle"; // Import as named export
+import { ThemeToggle } from "../components/ThemeToggle"; 
 import {
   Container,
   Box,
@@ -24,7 +23,7 @@ import { BarChart } from "@mui/x-charts/BarChart";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { DataGrid, useGridApiRef ,   DEFAULT_GRID_AUTOSIZE_OPTIONS,
 } from "@mui/x-data-grid";
-import { fetchDashboardData } from "../service/DashboardService"; // Import the fetchDashboardData function
+import { fetchDashboardData } from "../service/DashboardService"; 
 
 const absenceData = [
   { name: "John Doe", absences: 15 },
@@ -34,7 +33,7 @@ const absenceData = [
   { name: "Charlie White", absences: 7 },
 ];
 
-// Reusable Summary Card Component
+
 const SummaryCard = ({ title, value, subValue, icon, loading }) => {
   return (
     <Card
@@ -290,7 +289,7 @@ export default function Dashboard() {
   
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   useEffect(() => {
@@ -298,7 +297,6 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const data = await fetchDashboardData();
-        // Add unique id to each employee on leave
         const employesOnLeave = data.employes_on_leave.map(
           (employee, index) => ({
             ...employee,
@@ -465,7 +463,7 @@ export default function Dashboard() {
   <BarChartCard
     data={
       (dashboardData.absences_last_5_months || []).map((item) => ({
-        name: dayjs(item.month).format("MMMM"), // Convert month number to name
+        name: dayjs(item.month).format("MMMM"), 
         absences: item.total,
       }))
     }
@@ -501,7 +499,6 @@ export default function Dashboard() {
         autosizeOptions={expand}
         pagination
         hideScrollbar={true}
-        // autosizeOnMount
 
         pageSizeOptions={[5, 10, 25]}
         initialState={{

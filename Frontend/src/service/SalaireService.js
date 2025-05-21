@@ -3,18 +3,16 @@ import { ACCESS_TOKEN } from "../constants";
 
 const SALAIRE_API_URL = "http://127.0.0.1:8000/api/salaire/salaires/";
 
-// Helper function to get the token from local storage
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all salaires
 export const fetchSalaires = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(SALAIRE_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -23,13 +21,12 @@ export const fetchSalaires = async () => {
   }
 };
 
-// Fetch a single salaire by ID
 export const fetchSalaireById = async (salaireId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${SALAIRE_API_URL}${salaireId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;

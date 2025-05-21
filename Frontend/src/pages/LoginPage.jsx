@@ -14,12 +14,12 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import { styled, ThemeProvider } from '@mui/material/styles';
-import { useThemeToggle } from "../App"; // Import theme context
-import { darkTheme, whiteTheme } from '../theme/Theme'; // Import both themes
+import { useThemeToggle } from "../App"; 
+import { darkTheme, whiteTheme } from '../theme/Theme'; 
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // For redirecting after login
-import Loading from '../components/Loading'; // Import the Loading component
-import ThemeToggle from '../components/ThemeToggle'; // Import the theme toggle
+import { useNavigate } from 'react-router-dom'; 
+import Loading from '../components/Loading';
+import ThemeToggle from '../components/ThemeToggle'; 
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -44,10 +44,10 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   minHeight: '100%',
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.default,
-  backgroundImage: `url(${theme.backgroundImage.main})`, // Use theme background image
+  backgroundImage: `url(${theme.backgroundImage.main})`, 
   backgroundSize: 'cover',
   backgroundPosition: 'center',
-  position: 'relative', // For positioning the theme toggle
+  position: 'relative', 
   [theme.breakpoints.up('sm')]: {
     padding: theme.spacing(4),
   },
@@ -60,19 +60,18 @@ export default function SignIn(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
-  const { isDarkMode } = useThemeToggle(); // Get current theme mode
-  const navigate = useNavigate(); // for redirecting after login
+  const { isDarkMode } = useThemeToggle(); 
+  const navigate = useNavigate(); 
   const [pageTitle, setPageTitle] = React.useState("Login");
 
 
   React.useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Validate inputs
     if (!validateInputs()) {
       return;
     }
@@ -80,7 +79,7 @@ export default function SignIn(props) {
     const data = new FormData(event.currentTarget);
     const email = data.get('email');
     const password = data.get('password');
-    const rememberMe = data.get('remember') !== null; // This will be true if checkbox is checked
+    const rememberMe = data.get('remember') !== null; 
 
     try {
       setIsLoading(true);
@@ -142,10 +141,9 @@ export default function SignIn(props) {
     <ThemeProvider theme={isDarkMode ? darkTheme : whiteTheme}>
       <CssBaseline enableColorScheme />
       {isLoading ? (
-        <Loading /> // Show only the Loading component when isLoading is true
+        <Loading /> 
       ) : (
         <SignInContainer direction="column" justifyContent="space-between">
-          {/* Theme Toggle in top-right corner */}
           <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
             <ThemeToggle />
           </Box>
@@ -206,7 +204,7 @@ export default function SignIn(props) {
                   helperText={passwordErrorMessage}
                   name="password"
                   placeholder="••••••"
-                  type={showPassword ? "text" : "password"} // Toggle between text and password
+                  type={showPassword ? "text" : "password"} 
                   size="small"
                   id="password"
                   autoComplete="current-password"
@@ -217,10 +215,10 @@ export default function SignIn(props) {
                   InputProps={{
                     endAdornment: (
                       <IconButton
-                        onClick={() => setShowPassword((prev) => !prev)} // Toggle visibility
+                        onClick={() => setShowPassword((prev) => !prev)}
                         edge="end"
                         sx={{
-                          color: 'inherit', // Ensure the icon inherits the input's color
+                          color: 'inherit', 
                         }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}

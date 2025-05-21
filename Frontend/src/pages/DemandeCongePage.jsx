@@ -57,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -71,10 +71,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px", 
+    scrollbarWidth: "none", 
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none", 
     },
   },
   formContainer: {
@@ -122,7 +122,7 @@ export default function DemandeCongePage() {
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  const [refresh, setRefresh] = useState(0); 
   const [loading, setLoading] = useState(true);
   const [newConge, setNewConge] = useState(new Conge());
 
@@ -130,7 +130,7 @@ export default function DemandeCongePage() {
   const [pageTitle, setPageTitle] = useState("Demande congé");
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   useEffect(() => {
@@ -171,10 +171,10 @@ export default function DemandeCongePage() {
     setSnackbar({ ...snackbar, open: false });
   };
 
-  // Update the handleDeleteConge function
+
   const handleDeleteConge = async () => {
     try {
-      await deleteConge(congeToDelete); // Call the service with the ID stored in state
+      await deleteConge(congeToDelete); 
       setSnackbar({
         open: true,
         severity: "success",
@@ -241,7 +241,7 @@ export default function DemandeCongePage() {
       });
 
       setOpenEdit(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setRefresh((prev) => prev + 1); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -257,7 +257,7 @@ export default function DemandeCongePage() {
   };
   const handleAddConge = async () => {
     try {
-      // Ensure all required fields are provided
+      
       if (
         !newConge.employe ||
         !newConge.startDate ||
@@ -276,7 +276,7 @@ export default function DemandeCongePage() {
         startDate: newConge.startDate,
         endDate: newConge.endDate,
         typeconge: newConge.typeconge,
-        status: newConge.status, // Use "accepte" here when applicable
+        status: newConge.status, 
         notes: newConge.notes,
       };
 
@@ -299,7 +299,7 @@ export default function DemandeCongePage() {
       setOpen(false);
       setRefresh((prev) => prev + 1);
 
-      // Reset newConge with consistent key names
+      
       setNewConge({
         employe: "",
         startDate: "",
@@ -329,7 +329,7 @@ export default function DemandeCongePage() {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
-      minWidth: 100, // Ensure the Actions column is always fully visible
+      minWidth: 100, 
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
@@ -723,10 +723,8 @@ export default function DemandeCongePage() {
             paginationModel: { pageSize: 10, page: 0 },
           },
         }}
-        // checkboxSelection={false}
       />
 
-      {/* Add this Delete Confirmation Dialog before the DataGrid component */}
       <Dialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}

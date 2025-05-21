@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -111,11 +111,10 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
   const [pageTitle, setPageTitle] = useState("Type conge");
       
         useEffect(() => {
-          document.title = pageTitle; // Update the document title
+          document.title = pageTitle; 
         }, [pageTitle]);
 
   useEffect(() => {
-    // Fetch types of leave data
     const fetchTypeCongesData = async () => {
       setLoading(true);
       try {
@@ -179,10 +178,8 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         return;
       }
 
-      // Create type of leave object
       const typeCongeToSend = new TypeConge("", newTypeConge.nom);
 
-      // Send POST request
       const response = await addTypeConge(typeCongeToSend);
       if (response.status === 201) {
         setSnackbar({
@@ -190,9 +187,9 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
           severity: "success",
           message: "Type de congé ajouté avec succès !",
         });
-        setOpen(false); // Close modal
-        setNewTypeConge(new TypeConge("", "")); // Reset form
-        setRefresh((prev) => !prev); // Refresh type of leave list
+        setOpen(false); 
+        setNewTypeConge(new TypeConge("", "")); 
+        setRefresh((prev) => !prev); 
       } else {
         setSnackbar({
           open: true,
@@ -227,7 +224,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
         severity: "success",
         message: "Type de congé supprimé avec succès!",
       });
-      setRefresh((prev) => !prev); // Refresh the list
+      setRefresh((prev) => !prev); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -251,7 +248,7 @@ const [typeCongeToDelete, setTypeCongeToDelete] = useState(null);
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
-      minWidth: 100, // Ensure the Actions column is always fully visible
+      minWidth: 100, 
       renderCell: (params) => (
         <>
           <IconButton onClick={() => handleDelete(params.row.id)}>

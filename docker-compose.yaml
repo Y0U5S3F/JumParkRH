@@ -1,15 +1,4 @@
 services:
-  # Remove or comment this out if you use an online DB
-  # db:
-  #   image: postgres:15
-  #   environment:
-  #     POSTGRES_DB: jumpark
-  #     POSTGRES_USER: admin
-  #     POSTGRES_PASSWORD: admin
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   networks:
-  #     - jumpark-network
 
   # Backend Service
   backend:

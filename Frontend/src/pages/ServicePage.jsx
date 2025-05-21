@@ -63,9 +63,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%",
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -119,33 +119,31 @@ export default function ServicePage() {
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  const [refresh, setRefresh] = useState(0); 
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
   const [pageTitle, setPageTitle] = useState("Service");
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch all necessary data in parallel
+       
         const [servicesData, departmentsData] = await Promise.all([
           fetchServices(),
           fetchDepartements(),
         ]);
 
-        // Map departments to an object for quick lookup
         const departmentMap = departmentsData.reduce((acc, dept) => {
-          acc[dept.id] = dept.nom; // Store department name by ID
+          acc[dept.id] = dept.nom; 
           return acc;
         }, {});
 
-        // Process services to replace department ID with name
         const formattedServices = servicesData.map((service) => ({
           ...service,
           departement: departmentMap[service.departement] || "N/A", // Get name from map
@@ -163,15 +161,13 @@ export default function ServicePage() {
   }, [refresh]);
 
   const handleEdit = (service) => {
-    // Find the department ID based on the department name
     const department = departements.find(
       (dept) => dept.nom === service.departement
     );
 
-    // Create a new service object with updated departement_id
     const updatedService = {
       ...service,
-      departement: department ? department.id : "", // Set department ID
+      departement: department ? department.id : "", 
     };
 
     setEditService(updatedService);
@@ -185,10 +181,8 @@ export default function ServicePage() {
 
   const handleDelete = async (id) => {
     try {
-      // Use the deleteService function from ServiceService.js
       await deleteService(id);
 
-      // Handle success
       setSnackbar({
         open: true,
         severity: "success",
@@ -196,14 +190,13 @@ export default function ServicePage() {
       });
       setRefresh((prev) => prev + 1);
     } catch (error) {
-      // Handle error
       setSnackbar({
         open: true,
         severity: "error",
         message: "Erreur lors de la suppression du service.",
       });
     } finally {
-      setOpenDeleteDialog(false); // Close the delete confirmation dialog
+      setOpenDeleteDialog(false); 
     }
   };
 
@@ -218,26 +211,22 @@ export default function ServicePage() {
         return;
       }
 
-      // Create service object
       const serviceToSend = {
         nom: newService.nom,
         departement: newService.departement, // Send department ID
       };
 
-      // Use the addService function from ServiceService.js
       const response = await addService(serviceToSend);
 
-      // Handle success
       setSnackbar({
         open: true,
         severity: "success",
         message: "Service ajouté avec succès !",
       });
-      setOpen(false); // Close modal
-      setNewService({ nom: "", departement: "" }); // Reset form
-      setRefresh((prev) => !prev); // Refresh service list
+      setOpen(false); 
+      setNewService({ nom: "", departement: "" }); 
+      setRefresh((prev) => !prev); 
     } catch (error) {
-      // Handle error
       setSnackbar({
         open: true,
         severity: "error",
@@ -279,7 +268,7 @@ export default function ServicePage() {
 
     setEditService((prev) => ({
       ...prev,
-      [name]: name === "departement" ? parseInt(value) : value, // Ensure department is stored as an ID
+      [name]: name === "departement" ? parseInt(value) : value,
     }));
   };
 
@@ -291,7 +280,7 @@ export default function ServicePage() {
       field: "actions",
       headerName: "Actions",
       flex: 0.5,
-      minWidth: 100, // Ensure the Actions column is always fully visible
+      minWidth: 100, 
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>

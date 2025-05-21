@@ -7,13 +7,12 @@ export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch dashboard data
 export const fetchDashboardData = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken();
     const response = await axios.get(DASHBOARD_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;

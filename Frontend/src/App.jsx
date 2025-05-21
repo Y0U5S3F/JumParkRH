@@ -4,18 +4,15 @@ import { whiteTheme, darkTheme } from "./theme/Theme";
 import { useState, useEffect, useTransition, Suspense, lazy, createContext, useContext } from "react";
 import Loading from "./components/Loading";
 
-// Create Theme Context
 export const ThemeContext = createContext({
   isDarkMode: false,
   toggleTheme: () => {},
 });
 
-// Theme Context Hook
 export const useThemeToggle = () => {
   return useContext(ThemeContext);
 };
 
-// Lazy load components
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const ProtectedRoute = lazy(() => import("./components/ProtectedRoute"));
 const EmployePage = lazy(() => import("./pages/EmployePage"));
@@ -34,19 +31,15 @@ const JourFeriePage = lazy(() => import("./pages/JourFeriePage"));
 const FicheDePaie = lazy(() => import("./pages/FicheDePaie"));
 
 function App() {
-  // Loading state for route changes
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const [isPending, startTransition] = useTransition();
   
-  // Theme state
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Use localStorage to persist theme preference
     const savedTheme = localStorage.getItem('darkMode');
     return savedTheme ? JSON.parse(savedTheme) : false;
   });
 
-  // Toggle theme function
   const toggleTheme = () => {
     setIsDarkMode(prevMode => {
       const newMode = !prevMode;
@@ -55,7 +48,6 @@ function App() {
     });
   };
 
-  // Handle route change loading state
   useEffect(() => {
     const handleStart = () => setLoading(true);
     const handleComplete = () => setLoading(false);

@@ -3,18 +3,16 @@ import { ACCESS_TOKEN } from "../constants";
 
 const APPAREIL_API_URL = "http://127.0.0.1:8000/api/appareil/appareils/";
 
-// Helper function to get the token from local storage
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all appareils
 export const fetchAppareils = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(APPAREIL_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -23,13 +21,12 @@ export const fetchAppareils = async () => {
   }
 };
 
-// Fetch a single appareil by ID
 export const fetchAppareilById = async (appareilId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${APPAREIL_API_URL}${appareilId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -38,13 +35,12 @@ export const fetchAppareilById = async (appareilId) => {
   }
 };
 
-// Add a new appareil
 export const addAppareil = async (appareilData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.post(APPAREIL_API_URL, appareilData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`,
       },
     });
     return response.data;
@@ -53,13 +49,12 @@ export const addAppareil = async (appareilData) => {
   }
 };
 
-// Update an existing appareil
 export const updateAppareil = async (appareilId, updatedAppareil) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.put(`${APPAREIL_API_URL}${appareilId}/`, updatedAppareil, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;
@@ -68,13 +63,12 @@ export const updateAppareil = async (appareilId, updatedAppareil) => {
   }
 };
 
-// Delete an appareil
 export const deleteAppareil = async (appareilId) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     await axios.delete(`${APPAREIL_API_URL}${appareilId}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
   } catch (error) {
@@ -84,11 +78,11 @@ export const deleteAppareil = async (appareilId) => {
 
 export const toggleAppareilStatus = async (appareilId, currentStatus) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const newStatus = currentStatus === "Connecte" ? "Non Connecte" : "Connecte";
     const response = await axios.patch(`${APPAREIL_API_URL}${appareilId}/`, { status: newStatus }, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data;

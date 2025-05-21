@@ -43,7 +43,7 @@ import {
   downloadSalaire,
   updateSalaire,
   deleteSalaire,
-} from "../service/SalaireService"; // Import addSalaire function
+} from "../service/SalaireService"; 
 import FicheDePaie from "../models/ficheDePaie";
 import { makeStyles } from "@mui/styles";
 import ThemeToggle from "../components/ThemeToggle";
@@ -62,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -109,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function FicheDePaiePage() {
-  const [open, setOpen] = useState(false); // State to manage modal open/close
+  const [open, setOpen] = useState(false); 
 
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -121,10 +121,10 @@ export default function FicheDePaiePage() {
   const apiRef = useGridApiRef();
   const [loading, setLoading] = useState(true);
   const [salaires, setSalaires] = useState([]);
-  const [openEditModal, setOpenEditModal] = useState(false); // State to manage edit modal
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  const [openEditModal, setOpenEditModal] = useState(false); 
+  const [refresh, setRefresh] = useState(0); 
 
-  const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); // Selected row data
+  const [selectedFicheDePaie, setSelectedFicheDePaie] = useState(null); 
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -135,7 +135,7 @@ export default function FicheDePaiePage() {
   const [pageTitle, setPageTitle] = useState("Fiche de paie");
 
   useEffect(() => {
-    document.title = pageTitle; // Update the document title
+    document.title = pageTitle; 
   }, [pageTitle]);
   useEffect(() => {
     const fetchData = async () => {
@@ -158,8 +158,8 @@ export default function FicheDePaiePage() {
     setSnackbar({ ...snackbar, open: false });
   };
   const handleEdit = (row) => {
-    setSelectedFicheDePaie(row); // Set the selected row data
-    setOpenEditModal(true); // Open the edit modal
+    setSelectedFicheDePaie(row);
+    setOpenEditModal(true); 
   };
 
   const columns = [
@@ -182,7 +182,7 @@ export default function FicheDePaiePage() {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
-      minWidth: 150, // Ensure the Actions column is always fully visible
+      minWidth: 150, 
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>
@@ -248,7 +248,7 @@ export default function FicheDePaiePage() {
     const { name, value } = e.target;
     setSelectedFicheDePaie((prevData) => {
       const updatedData = { ...prevData, [name]: value };
-      return calculateSalary(updatedData); // Recalculate salary after updating the field
+      return calculateSalary(updatedData); 
     });
   };
 
@@ -347,7 +347,7 @@ export default function FicheDePaiePage() {
     }
 
     const salaireData = {
-      employe: ficheDePaieData.employe?.matricule || "", // Ensure matricule is provided
+      employe: ficheDePaieData.employe?.matricule || "", 
       salaire_base: parseFloat(ficheDePaieData.salaire_base || 0).toFixed(2),
       jour_heure_travaille: parseFloat(
         ficheDePaieData.jour_heure_travaille || 0
@@ -356,7 +356,7 @@ export default function FicheDePaiePage() {
       taux_heure_sup: Math.min(
         parseFloat(ficheDePaieData.taux_heure_sup || 0),
         999.99
-      ).toFixed(2), // Ensure it's within range
+      ).toFixed(2), 
       heures_sup: parseFloat(ficheDePaieData.heures_sup || 0).toFixed(2),
       prix_tot_sup: parseFloat(ficheDePaieData.prix_tot_sup || 0).toFixed(2),
       prime_transport: parseFloat(ficheDePaieData.prime_transport || 0).toFixed(
@@ -391,7 +391,7 @@ export default function FicheDePaiePage() {
         ficheDePaieData.salaire_imposable || 0
       ).toFixed(2),
       salaire_net: parseFloat(ficheDePaieData.salaire_net || 0).toFixed(2),
-      mode_paiement: ficheDePaieData.mode_paiement || "virement bancaire", // Default to "virement bancaire"
+      mode_paiement: ficheDePaieData.mode_paiement || "virement bancaire", 
     };
 
 
@@ -402,14 +402,12 @@ export default function FicheDePaiePage() {
       severity: "success",
       message: "Fiche de paie ajoutée avec succès!",
     });
-    setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+    setRefresh((prev) => !prev); 
 
-    setOpen(false); // Close the modal
+    setOpen(false); 
     
   } catch (error) {
-    if (error.response) {
-    } else {
-    }
+    
     setSnackbar({
       open: true,
       severity: "error",
@@ -422,12 +420,17 @@ export default function FicheDePaiePage() {
     try {
       await downloadSalaire(salaireId);
     } catch (error) {
+      setSnackbar({
+        open: true,
+        severity: "error",
+        message: "Erreur lors du téléchargement de la fiche de paie.",
+      });
     }
   };
 
   const handleDeleteFicheDePaie = async () => {
     try {
-      await deleteSalaire(ficheDePaieToDelete); // Call the delete API
+      await deleteSalaire(ficheDePaieToDelete); 
       setSnackbar({
         open: true,
         severity: "success",
@@ -435,10 +438,10 @@ export default function FicheDePaiePage() {
       });
       setSalaires((prev) =>
         prev.filter((salaire) => salaire.id !== ficheDePaieToDelete)
-      ); // Remove the deleted item from the state
-      setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+      ); 
+      setRefresh((prev) => !prev);
 
-      setOpenDeleteDialog(false); // Close the dialog
+      setOpenDeleteDialog(false); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -449,7 +452,6 @@ export default function FicheDePaiePage() {
   };
   const handleUpdateFicheDePaie = async () => {
     try {
-      // Prepare the updated data to send to the API
       const updatedSalaireData = {
         employe: selectedFicheDePaie.employe, // Matricule of the employee
         salaire_base: parseFloat(selectedFicheDePaie.salaire_base).toFixed(2),
@@ -497,30 +499,25 @@ export default function FicheDePaiePage() {
         mode_paiement: selectedFicheDePaie.mode_paiement,
       };
 
-      // Call the updateSalaire API
       await updateSalaire(selectedFicheDePaie.id, updatedSalaireData);
 
-      // Show success message
       setSnackbar({
         open: true,
         severity: "success",
         message: "Fiche de paie mise à jour avec succès!",
       });
 
-      // Update the local state with the updated data
       setSalaires((prev) =>
         prev.map((salaire) =>
           salaire.id === selectedFicheDePaie.id ? selectedFicheDePaie : salaire
         )
       );
 
-      // Close the modal
-      setRefresh((prev) => !prev); // Toggle refresh state to trigger update
+      setRefresh((prev) => !prev); 
 
       setOpenEditModal(false);
     } catch (error) {
   
-      // Show error message
       setSnackbar({
         open: true,
         severity: "error",

@@ -7,7 +7,6 @@ export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all types of leave
 export const fetchTypeConges = async () => {
   try {
     const token = getAccessToken(); 
@@ -22,7 +21,6 @@ export const fetchTypeConges = async () => {
   }
 };
 
-// Fetch a single type of leave by ID
 export const fetchTypeCongeById = async (typeCongeId) => {
   try {
     const token = getAccessToken(); 
@@ -37,7 +35,6 @@ export const fetchTypeCongeById = async (typeCongeId) => {
   }
 };
 
-// Add a new type of leave
 export const addTypeConge = async (typeCongeData) => {
   try {
     const token = getAccessToken(); 
@@ -52,7 +49,6 @@ export const addTypeConge = async (typeCongeData) => {
   }
 };
 
-// Update an existing type of leave
 export const updateTypeConge = async (typeCongeId, updatedTypeConge) => {
   try {
     const token = getAccessToken(); 
@@ -71,7 +67,6 @@ export const updateTypeConge = async (typeCongeId, updatedTypeConge) => {
   }
 };
 
-// Delete a type of leave
 export const deleteTypeConge = async (typeCongeId) => {
   try {
     const token = getAccessToken();

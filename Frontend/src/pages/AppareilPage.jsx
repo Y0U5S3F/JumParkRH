@@ -54,9 +54,9 @@ const useStyles = makeStyles((theme) => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "70%", // Use percentage for dynamic width
-    height: "auto", // Allow height to adjust dynamically
-    maxHeight: "70%", // Limit the height to 90% of the viewport
+    width: "70%", 
+    height: "auto", 
+    maxHeight: "70%", 
     backgroundColor: `${theme.palette.background.default}`,
     boxShadow: 24,
     padding: "20px",
@@ -68,10 +68,10 @@ const useStyles = makeStyles((theme) => ({
   contentContainer: {
     flex: 1,
     overflowY: "auto",
-    paddingRight: "10px", // Prevents content from touching the scrollbar
-    scrollbarWidth: "none", // Hides scrollbar in Firefox
+    paddingRight: "10px", 
+    scrollbarWidth: "none", 
     "&::-webkit-scrollbar": {
-      display: "none", // Hides scrollbar in Chrome/Safari
+      display: "none", 
     },
   },
   formContainer: {
@@ -117,7 +117,7 @@ export default function AppareilPage() {
     severity: "",
     message: "",
   });
-  const [refresh, setRefresh] = useState(0); // State to trigger re-fetch
+  const [refresh, setRefresh] = useState(0); 
   const [loading, setLoading] = useState(true);
   const [newAppareil, setNewAppareil] = useState(new Appareil("", "", "", ""));
 
@@ -125,7 +125,7 @@ export default function AppareilPage() {
   const [pageTitle, setPageTitle] = useState("Appareil");
       
         useEffect(() => {
-          document.title = pageTitle; // Update the document title
+          document.title = pageTitle; 
         }, [pageTitle]);
 
   useEffect(() => {
@@ -134,9 +134,9 @@ export default function AppareilPage() {
       try {
         const appareilsData = await fetchAppareils();
         
-        // Format data for DataGrid
+        
         const formattedAppareils = appareilsData.map((appareil) => ({
-          id: appareil.id, // Ensure each row has a unique id
+          id: appareil.id, 
           nom: appareil.nom,
           ip: appareil.ip,
           port: appareil.port,
@@ -194,7 +194,7 @@ export default function AppareilPage() {
       const appareilToSend = {
         nom: newAppareil.nom,
         ip: newAppareil.ip,
-        port: parseInt(newAppareil.port, 10), // Ensure port is an integer
+        port: parseInt(newAppareil.port, 10), 
         status: newAppareil.status,
       };
       const response = await addAppareil(appareilToSend);
@@ -204,7 +204,7 @@ export default function AppareilPage() {
         message: "Appareil ajouté avec succès!",
       });
       setOpen(false);
-      setRefresh((prev) => prev + 1); // Trigger re-fetch
+      setRefresh((prev) => prev + 1); 
     } catch (error) {
       setSnackbar({
         open: true,
@@ -280,7 +280,7 @@ export default function AppareilPage() {
       field: "actions",
       headerName: "Actions",
       flex: 0.6,
-      minWidth: 50, // Ensure the Actions column is always fully visible
+      minWidth: 50, 
       renderCell: (params) => (
         <div style={{ display: "flex" }}>
           <IconButton onClick={() => handleEdit(params.row)}>

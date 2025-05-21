@@ -13,7 +13,6 @@ function ProtectedRoute() {
         });
     }, []);
 
-    // Function to refresh token using the refresh token
     const refreshToken = async () => {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN) || sessionStorage.getItem(REFRESH_TOKEN);
 
@@ -32,7 +31,6 @@ function ProtectedRoute() {
         }
     };
 
-    // Function to authenticate user by checking token validity
     const auth = async () => {
         const token = localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 

@@ -3,18 +3,16 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 
 const EMPLOYEE_API_URL = "http://127.0.0.1:8000/api/employe/employes/";
 
-// Helper function to get the token from local storage
 export const getAccessToken = () => {
   return localStorage.getItem(ACCESS_TOKEN) || sessionStorage.getItem(ACCESS_TOKEN);
 };
 
-// Fetch all employees with token
 export const fetchEmployes = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(EMPLOYEE_API_URL, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data.map((emp) => ({
@@ -28,13 +26,12 @@ export const fetchEmployes = async () => {
   }
 };
 
-// Delete an employee by matricule with token
 export const deleteEmployee = async (matricule) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     await axios.delete(`${EMPLOYEE_API_URL}${matricule}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
   } catch (error) {
@@ -42,13 +39,12 @@ export const deleteEmployee = async (matricule) => {
   }
 };
 
-// Add a new employee with token
 export const addEmployee = async (employeeData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.post(EMPLOYEE_API_URL, employeeData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response;
@@ -57,13 +53,12 @@ export const addEmployee = async (employeeData) => {
   }
 };
 
-// Update an existing employee by matricule with token
 export const updateEmployee = async (matricule, updatedData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.put(`${EMPLOYEE_API_URL}${matricule}/`, updatedData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response;
@@ -72,13 +67,12 @@ export const updateEmployee = async (matricule, updatedData) => {
   }
 };
 
-// Fetch minimal employee data with token
 export const fetchMinimalEmployes = async () => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${EMPLOYEE_API_URL}minimal/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
     return response.data.map((emp) => ({
@@ -91,32 +85,30 @@ export const fetchMinimalEmployes = async () => {
   }
 };
 
-// Fetch employee minimal data by matricule with token
 export const fetchEmployeeMinimalByMatricule = async (matricule) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
     const response = await axios.get(`${EMPLOYEE_API_URL}minimal/${matricule}/`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
-    return response.data; // Expected to return { nom: "John", prenom: "Doe" }
+    return response.data; 
   } catch (error) {
-    return { nom: "N/A", prenom: "N/A" }; // Default values in case of error
+    return { nom: "N/A", prenom: "N/A" }; 
   }
 };
 
-// Fetch employees as a stream with token
 export const fetchEmployesStream = async (onData) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
+    const token = getAccessToken(); 
 
     const response = await axios({
       method: "GET",
       url: `${EMPLOYEE_API_URL}?stream=true`,
-      responseType: "stream", // Ensure the response is treated as a stream
+      responseType: "stream", 
       headers: {
-        Authorization: `Bearer ${token}`, // Add the token to the headers
+        Authorization: `Bearer ${token}`, 
       },
     });
 
@@ -131,13 +123,13 @@ export const fetchEmployesStream = async (onData) => {
       buffer += decoder.decode(value, { stream: true });
 
       let lines = buffer.split("\n");
-      buffer = lines.pop(); // Keep any incomplete JSON object for next iteration
+      buffer = lines.pop(); 
 
       for (let line of lines) {
         if (line.trim()) {
           try {
             const parsedData = JSON.parse(line);
-            onData(parsedData); // Pass each employee object to a callback
+            onData(parsedData); 
           } catch (err) {
           }
         }
@@ -149,21 +141,20 @@ export const fetchEmployesStream = async (onData) => {
 
 export const DownloadPresence = async (reportYear,reportMonth) => {
   try {
-    const token = getAccessToken(); // Retrieve the token
-    const url = "http://127.0.0.1:8000/api/label/monthly_report/"; // Replace with your API endpoint
+    const token = getAccessToken(); 
+    const url = "http://127.0.0.1:8000/api/label/monthly_report/"; 
 
     const response = await axios.post(
       url,
-      { report_month: reportMonth, report_year: reportYear }, // Send month and year in the body
+      { report_month: reportMonth, report_year: reportYear }, 
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the headers
+          Authorization: `Bearer ${token}`, 
         },
-        responseType: "blob", // Get response as a Blob for binary data
+        responseType: "blob", 
       }
     );
 
-    // Extract filename from Content-Disposition header if available
     const contentDisposition = response.headers["content-disposition"];
     let filename = `presence_${reportYear}_${reportMonth}.csv`;
     if (contentDisposition) {
@@ -173,14 +164,12 @@ export const DownloadPresence = async (reportYear,reportMonth) => {
       }
     }
 
-    // Create a URL for the Blob and simulate a download link click
     const blobUrl = window.URL.createObjectURL(new Blob([response.data], { type: "application/csv" }));
     const link = document.createElement("a");
     link.href = blobUrl;
     link.setAttribute("download", filename);
     document.body.appendChild(link);
     link.click();
-    // Clean up the DOM and revoke the object URL
     link.parentNode.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
 

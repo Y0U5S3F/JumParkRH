@@ -6,25 +6,20 @@ export const ThemeContext = createContext({
   toggleTheme: () => {},
 });
 
-// Create the provider component
 export const ThemeProvider = ({ children }) => {
-  // Check localStorage for previously set theme preference
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('darkMode');
     return savedTheme ? JSON.parse(savedTheme) : false;
   });
 
-  // Update localStorage when theme changes
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
-  // Toggle function to switch theme
   const toggleTheme = () => {
     setIsDarkMode(prevMode => !prevMode);
   };
 
-  // Values to be provided to consuming components
   const value = {
     isDarkMode,
     toggleTheme,
@@ -37,7 +32,6 @@ export const ThemeProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the theme context
 export const useThemeToggle = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
