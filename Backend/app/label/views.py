@@ -113,7 +113,6 @@ class LabelDataCreateManualView(generics.CreateAPIView):
         data['label'] = label.id
         data['matricule'] = matricule
 
-        # Serialize and save the new LabelData instance
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

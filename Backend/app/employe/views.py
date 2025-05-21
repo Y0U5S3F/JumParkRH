@@ -51,7 +51,7 @@ class EmployeMinimalDetailView(generics.RetrieveAPIView):
     lookup_field = 'matricule'
 
 class EmployeLoginView(APIView):
-    permission_classes = [AllowAny]  # Allow unauthenticated access
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         email = request.data.get("email")
         password = request.data.get("password")

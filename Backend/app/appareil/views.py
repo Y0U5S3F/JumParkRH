@@ -27,7 +27,6 @@ class AppareilRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([IsAuthenticated])
 def AIChatBot(request):
 
-    # PostgreSQL connection details
     DB_CONFIG = {
         "dbname": os.getenv("DB_NAME"),
         "user": os.getenv("DB_USER"),
@@ -43,7 +42,6 @@ def AIChatBot(request):
 
     client = OpenAI(base_url=ENDPOINT, api_key=GITHUB_TOKEN)
 
-    # Get user query from the body of the request (message field)
     user_query = request.data.get('message', '')
 
     if not user_query:
@@ -89,7 +87,6 @@ def AIChatBot(request):
 
         return schema_info
 
-    # Pre-fetch and store the schema
     schema_info = get_table_schema(as_string=True)
 
     def generate_sql_query(user_query):
@@ -150,10 +147,8 @@ def AIChatBot(request):
 
         return response.choices[0].message.content.strip()
 
-    # Generate SQL query, execute it, and humanize results
     sql_query = generate_sql_query(user_query)
     sql_results = execute_sql_query_and_return_string(sql_query)
     humanized_results = humanize_sql_results(user_query, sql_results)
 
-    # Return the humanized results as JSON response
     return Response({"result": humanized_results})
