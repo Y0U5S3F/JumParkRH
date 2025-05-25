@@ -600,7 +600,7 @@ export default function DemandeCongePage() {
                   <Select
                     label="Type de congé"
                     value={editConge.typeconge}
-                    onChange={handleInputChange}
+                    onChange={handleInputModifyChange}
                     name="typeconge"
                   >
                     {typeConges.map((type) => (

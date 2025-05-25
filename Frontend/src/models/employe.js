@@ -3,7 +3,7 @@ class Employe {
     matricule = "", nom = "", prenom = "", email = "", password="", date_de_naissance = "", lieu_de_naissance = "",
     nationalite = "", genre_legal = "", situation_familiale = "", CIN = "",uid = "",num_telephone = "", adresse = "",
     ville = "", code_postal = "", nom_urgence = "", num_telephone_urgence = "", role = "", departement_id = "",
-    service_id = "",salaire_base = "",cnss = "",compte_bancaire = "", rib_bancaire = ""
+    service_id = "",salaire_base = "",CNSS = "",compte_bancaire = "", rib_bancaire = ""
   ) {
     this.matricule = matricule;
     this.nom = nom;
@@ -27,7 +27,7 @@ class Employe {
     this.departement_id = departement_id;
     this.service_id = service_id;
     this.salaire_base = salaire_base;
-    this.cnss = cnss;
+    this.CNSS = CNSS;
     this.compte_bancaire = compte_bancaire;
     this.rib_bancaire = rib_bancaire;
   }

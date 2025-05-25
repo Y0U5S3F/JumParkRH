@@ -750,7 +750,7 @@ export default function EmployePage() {
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
                   <Typography variant="subtitle1">
-                    <strong>Numero CNSS:</strong> {selectedEmployee.cnss}
+                    <strong>Numero CNSS:</strong> {selectedEmployee.CNSS}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
@@ -1161,11 +1161,11 @@ export default function EmployePage() {
                 <TextField
                   id="outlined-search"
                   label="Numero CNSS"
-                  name="cnss"
+                  name="CNSS"
                   required
                   type="search"
                   variant="outlined"
-                  value={newEmployee.cnss}
+                  value={newEmployee.CNSS}
                   onChange={handleInputChange}
                   fullWidth
                 />
@@ -1616,10 +1616,10 @@ Informations bancaires            </Typography>
                   id="outlined-search"
                   label="Numero CNSS"
                   required
-                  name="cnss"
+                  name="CNSS"
                   type="search"
                   variant="outlined"
-                  value={editEmployee.cnss}
+                  value={editEmployee.CNSS}
                   onChange={handleInputModifyChange}
                   fullWidth
                 />
