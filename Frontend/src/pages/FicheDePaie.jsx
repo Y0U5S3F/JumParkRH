@@ -306,6 +306,7 @@ export default function FicheDePaiePage() {
   };
 
   const calculerImpot = (salaire_imposable) => {
+    salaire_imposable *= 12
     const tranches = [
       { limite: 5000, taux: 0 },
       { limite: 10000, taux: 0.15 },
@@ -333,6 +334,7 @@ export default function FicheDePaiePage() {
       }
     }
 
+    impot /= 12;
     return impot;
   };
 
