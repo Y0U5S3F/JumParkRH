@@ -71,7 +71,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     date_de_naissance = models.DateField(null=True, blank=True, verbose_name="Date de Naissance")
     lieu_de_naissance = models.CharField(max_length=100, blank=True, default="", verbose_name="Lieu de Naissance")
     nationalite = models.CharField(max_length=100, blank=True, default="", verbose_name="Nationalité")
-    genre_legal = models.CharField(max_length=10, choices=GENRE_CHOICES, null=False, blank=False, verbose_name="Genre Légal")
+    genre_legal = models.CharField(max_length=10, choices=GENRE_CHOICES, verbose_name="Genre Légal")
     situation_familiale = models.CharField(max_length=20, choices=SITUATION_CHOICES, null=False, blank=False, verbose_name="Situation Familiale")
     CIN = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="CIN", db_index=True)
     num_telephone = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="Numéro de Téléphone", db_index=True)

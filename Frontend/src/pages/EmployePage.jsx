@@ -193,7 +193,7 @@ export default function EmployePage() {
 
   const handleDelete = async (matricule) => {
     try {
-      await deleteEmployee(matricule); // Call the service
+      await deleteEmployee(matricule);
       setEmployees((prev) =>
         prev.filter((employee) => employee.matricule !== matricule)
       );
@@ -223,16 +223,16 @@ export default function EmployePage() {
       "prenom",
       "email",
       "role",
-      "genre",
+      "genre_legal",
       "situation_familiale",
-      "cin",
+      "CIN",
       "telephone",
       "contact_urgence_nom",
       "contact_urgence_telephone",
       "salaire_base",
       "departement_id",
       "service_id",
-      "cnss",
+      "CNSS",
       "compte_bancaire",
       "rib_bancaire",
     ];
@@ -258,9 +258,9 @@ export default function EmployePage() {
         newEmployee.date_naissance,
         newEmployee.lieu_naissance,
         newEmployee.nationalite,
-        newEmployee.genre,
+        newEmployee.genre_legal,
         newEmployee.situation_familiale,
-        newEmployee.cin,
+        newEmployee.CIN,
         newEmployee.uid,
         newEmployee.telephone,
         newEmployee.adresse,
@@ -272,11 +272,12 @@ export default function EmployePage() {
         newEmployee.departement_id,
         newEmployee.service_id,
         newEmployee.salaire_base,
-        newEmployee.cnss,
+        newEmployee.CNSS,
         newEmployee.compte_bancaire,
         newEmployee.rib_bancaire
       );
       const response = await addEmployee(employeeToSend);
+      console.log(response); // DEBUG THIS
 
       if (response.status === 201) {
         setSnackbar({
@@ -919,9 +920,9 @@ export default function EmployePage() {
                   <InputLabel>Genre légal</InputLabel>
                   <Select
                     label="Genre légal"
-                    value={newEmployee.genre}
+                    value={newEmployee.genre_legal || ""} // Ensure a valid value
                     onChange={handleInputChange}
-                    name="genre"
+                    name="genre_legal"
                   >
                     <MenuItem value="Homme">Homme</MenuItem>
                     <MenuItem value="Femme">Femme</MenuItem>
@@ -949,9 +950,9 @@ export default function EmployePage() {
                   fullWidth
                   variant="outlined"
                   label="CIN"
-                  name="cin"
+                  name="CIN"
                   required
-                  value={newEmployee.cin}
+                  value={newEmployee.CIN}
                   onChange={handleInputChange}
                   inputProps={{ maxLength: 8 }}
                 />
@@ -1374,18 +1375,18 @@ export default function EmployePage() {
                 />
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
-                <FormControl fullWidth required variant="outlined">
-                  <InputLabel>Genre légal</InputLabel>
-                  <Select
-                    label="Genre légal"
-                    value={editEmployee.genre_legal}
-                    onChange={handleInputModifyChange}
-                    name="genre_legal"
-                  >
-                    <MenuItem value="Homme">Homme</MenuItem>
-                    <MenuItem value="Femme">Femme</MenuItem>
-                  </Select>
-                </FormControl>
+              <FormControl fullWidth required variant="outlined">
+                <InputLabel>Genre légal</InputLabel>
+                <Select
+                  label="Genre légal"
+                  value={editEmployee.genre_legal || ""} 
+                  onChange={handleInputModifyChange}
+                  name="genre_legal"
+                >
+                  <MenuItem value="Homme">Homme</MenuItem>
+                  <MenuItem value="Femme">Femme</MenuItem>
+                </Select>
+              </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <FormControl fullWidth required variant="outlined">
