@@ -4,6 +4,7 @@ from departement.models import Departement
 from service.models import Service
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.timezone import now
+from django.core.validators import MinLengthValidator
 from django.contrib.auth.hashers import make_password
 
 class EmployeManager(BaseUserManager):
@@ -73,7 +74,7 @@ class Employe(AbstractBaseUser, PermissionsMixin):
     nationalite = models.CharField(max_length=100, blank=True, default="", verbose_name="Nationalité")
     genre_legal = models.CharField(max_length=10, choices=GENRE_CHOICES, verbose_name="Genre Légal")
     situation_familiale = models.CharField(max_length=20, choices=SITUATION_CHOICES, null=False, blank=False, verbose_name="Situation Familiale")
-    CIN = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="CIN", db_index=True)
+    CIN = models.CharField(max_length=8,unique=True,null=False,blank=False,validators=[MinLengthValidator(8)],verbose_name="CIN",db_index=True)   
     num_telephone = models.CharField(max_length=20, unique=True, null=False, blank=False, verbose_name="Numéro de Téléphone", db_index=True)
     uid = models.PositiveIntegerField(unique=True, null=True, blank=True, verbose_name="UID")
 
