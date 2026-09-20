@@ -43,7 +43,7 @@ This repository contains both the frontend and backend code to support the JumpP
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed on your local machine:
+Before you begin, ensure you have the following installed on your local machine :
 
 - **Node.js** (version 14.x or higher)
 - **npm** or **yarn**
